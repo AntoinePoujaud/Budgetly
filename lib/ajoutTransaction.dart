@@ -3,7 +3,6 @@ import 'package:budgetly/Enum/CategorieEnum.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/material.dart';
 import 'Enum/TransactionEnum.dart';
-import 'Enum/CategorieEnum.dart';
 import 'mysql.dart';
 
 class AjoutTransaction extends StatefulWidget {
@@ -27,7 +26,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   double? montant;
   DateTime? currentDate;
   String? description;
-  String? categorie;
+  String? categorie = CategorieEnum.LOISIRS;
 
   @override
   void initState() {
@@ -106,14 +105,23 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                       fontSize: 32,
                     ),
                   ),
-                  onPressed: () => {
-                    addTransaction([
-                      currentDate,
-                      transactionType,
-                      montant,
-                      description,
-                      CategorieEnum().GetIdFromEnum(selectedItem),
-                    ])
+                  onPressed: () async {
+                    try {
+                      await addTransaction([
+                        currentDate,
+                        transactionType,
+                        montant,
+                        description,
+                        CategorieEnum().getIdFromEnum(selectedItem),
+                      ]);
+                      resetAllValues();
+                      // ignore: use_build_context_synchronously
+                      showToast(context,
+                          const Text("Transaction added successfully"));
+                    } catch (e) {
+                      showToast(context,
+                          const Text("Error while adding transaction"));
+                    }
                   },
                 )
               ],
@@ -347,19 +355,32 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   }
 
   Future<void> addTransaction(List<dynamic> params) async {
-    String query =
-        "INSERT INTO transaction(date, type, montant, description, categorieID) VALUES (?, ?, ?, ?, ?)";
-    var connection = await db.getConnection();
-    var stmt = await connection.prepare(
-      query,
-    );
-    await stmt.execute([
-      "${params[0].year}-${params[0].month}-${params[0].day}",
-      params[1],
-      params[2],
-      params[3],
-      params[4]
-    ]);
-    await stmt.deallocate();
+    try {
+      String query =
+          "INSERT INTO transaction(date, type, montant, description, categorieID) VALUES (?, ?, ?, ?, ?)";
+      var connection = await db.getConnection();
+      var stmt = await connection.prepare(
+        query,
+      );
+      await stmt.execute([
+        "${params[0].year}-${params[0].month}-${params[0].day}",
+        params[1],
+        params[2],
+        params[3],
+        params[4]
+      ]);
+      await stmt.deallocate();
+    } catch (e) {
+      throw Exception();
+    }
+  }
+
+  void showToast(BuildContext context, content) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(SnackBar(content: content));
+  }
+
+  void resetAllValues() {
+    Navigator.popAndPushNamed(context, "/addTransaction");
   }
 }

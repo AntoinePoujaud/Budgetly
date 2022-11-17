@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, non_constant_identifier_names
+
 class CategorieEnum {
   static String get LOISIRS => "Loisirs";
   static String get LOYER => "Loyer";
@@ -5,7 +7,7 @@ class CategorieEnum {
   static String get PRET => "Prêt";
   static String get REMBOURSEMENT => "Remboursement";
 
-  int GetIdFromEnum(String? str) {
+  int getIdFromEnum(String? str) {
     switch (str) {
       case "Loisirs":
         return 1;
