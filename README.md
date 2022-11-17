@@ -1,6 +1,6 @@
-# budgetly
+# Budgetly
 
-A new Flutter project.
+Projet Flutter pour gérer son budget.
 
 ## Getting Started
 
