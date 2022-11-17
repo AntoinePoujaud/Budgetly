@@ -28,8 +28,11 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   String? description;
   String? categorie = CategorieEnum.LOISIRS;
 
+  double? actualUserAmount;
+
   @override
   void initState() {
+    getActualRealAmount();
     super.initState();
   }
 
@@ -114,6 +117,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                         description,
                         CategorieEnum().getIdFromEnum(selectedItem),
                       ]);
+
+                      await updateRealMontant(transactionType, montant);
                       resetAllValues();
                       // ignore: use_build_context_synchronously
                       showToast(context,
@@ -357,8 +362,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   Future<void> addTransaction(List<dynamic> params) async {
     try {
       String query =
-          "INSERT INTO transaction(date, type, montant, description, categorieID) VALUES (?, ?, ?, ?, ?)";
+          "INSERT INTO transaction(date, type, montant, description, categorieID) VALUES (?, ?, ?, ?, ?);";
       var connection = await db.getConnection();
+
       var stmt = await connection.prepare(
         query,
       );
@@ -367,8 +373,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
         params[1],
         params[2],
         params[3],
-        params[4]
+        params[4],
       ]);
+
       await stmt.deallocate();
     } catch (e) {
       throw Exception();
@@ -378,6 +385,29 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   void showToast(BuildContext context, content) {
     final scaffold = ScaffoldMessenger.of(context);
     scaffold.showSnackBar(SnackBar(content: content));
+  }
+
+  Future<void> updateRealMontant(String? type, double? montant) async {
+    if (type == TransactionEnum.DEPENSE) {
+      montant = (actualUserAmount! - montant!);
+    } else if (type == TransactionEnum.REVENU) {
+      montant = (montant! + actualUserAmount!);
+    }
+    String query =
+        "UPDATE user SET current_real_amount = $montant WHERE id = 1;";
+    var connection = await db.getConnection();
+    await connection.execute(query, {}, true);
+    connection.close();
+  }
+
+  Future<void> getActualRealAmount() async {
+    String query = "SELECT current_real_amount FROM user WHERE id = 1;";
+    var connection = await db.getConnection();
+    var results = await connection.execute(query, {}, true);
+    results.rowsStream.listen((row) {
+      actualUserAmount = double.tryParse(row.assoc().values.first!);
+    });
+    connection.close();
   }
 
   void resetAllValues() {
