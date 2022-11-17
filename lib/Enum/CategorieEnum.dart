@@ -6,6 +6,7 @@ class CategorieEnum {
   static String get COURSES => "Courses";
   static String get PRET => "Prêt";
   static String get REMBOURSEMENT => "Remboursement";
+  static String get SALAIRE => "Salaire";
 
   int getIdFromEnum(String? str) {
     switch (str) {
@@ -19,6 +20,8 @@ class CategorieEnum {
         return 4;
       case "Remboursement":
         return 5;
+      case "Salaire":
+        return 6;
       default:
         return 0;
     }

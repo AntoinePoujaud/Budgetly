@@ -11,18 +11,23 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    var routes = {
+      "/": (context) => const TableauRecap(title: "Tableau récapitulatif"),
+      "/addTransaction": (context) =>
+          const AjoutTransaction(title: "Ajouter transaction"),
+      "/tableauGeneral": (context) =>
+          const TableauGeneral(title: "Tableau Général"),
+    };
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: "/addTransaction",
-      routes: {
-        "/": (context) => const TableauRecap(title: "Tableau récapitulatif"),
-        "/addTransaction": (context) =>
-            const AjoutTransaction(title: "Ajouter transaction"),
-        "/tableauGeneral": (context) =>
-            const TableauGeneral(title: "Tableau Général"),
+      initialRoute: "/",
+      // routes: routes,
+      onGenerateRoute: (settings) {
+        return PageRouteBuilder(
+            pageBuilder: (_, a1, a2) => routes[settings.name]!(context));
       },
     );
   }
