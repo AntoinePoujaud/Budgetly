@@ -21,7 +21,13 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   final _formKey = GlobalKey<FormState>();
   DateTime date = DateTime.now();
   List<String>? dropDownItems = [];
-  String? selectedItem = "";
+  String? selectedItem;
+
+  String? transactionType;
+  double? montant;
+  DateTime? currentDate;
+  String? description;
+  String? categorie;
 
   @override
   void initState() {
@@ -102,11 +108,11 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                   ),
                   onPressed: () => {
                     addTransaction([
-                      DateTime.now(),
-                      TransactionEnum.DEPENSE,
-                      45,
-                      "aled",
-                      CategorieEnum().GetIdFromEnum(CategorieEnum.LOISIRS),
+                      currentDate,
+                      transactionType,
+                      montant,
+                      description,
+                      CategorieEnum().GetIdFromEnum(selectedItem),
                     ])
                   },
                 )
@@ -148,6 +154,11 @@ class AjoutTransactionState extends State<AjoutTransaction> {
           color: Colors.white,
           fontSize: 24,
         ),
+        onChanged: ((value) {
+          setState(() {
+            description = value;
+          });
+        }),
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Please enter some text';
@@ -174,6 +185,11 @@ class AjoutTransactionState extends State<AjoutTransaction> {
           color: Colors.white,
           fontSize: 24,
         ),
+        onChanged: ((value) {
+          setState(() {
+            montant = double.parse(value);
+          });
+        }),
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Please enter some text';
@@ -219,6 +235,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
               if (newDate == null) return;
               setState(() {
                 date = newDate;
+                currentDate = newDate;
               });
             },
             child: const Text(
@@ -299,6 +316,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
             onChanged: (String? value) {
               setState(() {
                 _groupValue = value;
+                transactionType = value;
               });
             }),
       ),
@@ -336,11 +354,11 @@ class AjoutTransactionState extends State<AjoutTransaction> {
       query,
     );
     await stmt.execute([
-      "${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}",
-      TransactionEnum.DEPENSE,
-      45,
-      "aled",
-      CategorieEnum().GetIdFromEnum(CategorieEnum.LOISIRS)
+      "${params[0].year}-${params[0].month}-${params[0].day}",
+      params[1],
+      params[2],
+      params[3],
+      params[4]
     ]);
     await stmt.deallocate();
   }

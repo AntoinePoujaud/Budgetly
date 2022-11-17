@@ -5,7 +5,7 @@ class CategorieEnum {
   static String get PRET => "Prêt";
   static String get REMBOURSEMENT => "Remboursement";
 
-  int GetIdFromEnum(String str) {
+  int GetIdFromEnum(String? str) {
     switch (str) {
       case "Loisirs":
         return 1;
