@@ -1,10 +1,10 @@
 import 'package:mysql_client/mysql_client.dart';
 
 class Mysql {
-  static String host = 'localhost',
+  static String host = '34.79.201.223',
       user = 'root',
-      password = 'root',
-      db = 'budgetly';
+      password = 'entree1510',
+      db = 'MyPersonalBudgetly';
   static int port = 3306;
 
   Mysql();

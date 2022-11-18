@@ -23,8 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: "/",
-      // routes: routes,
+      initialRoute: "/tableauGeneral",
       onGenerateRoute: (settings) {
         return PageRouteBuilder(
             pageBuilder: (_, a1, a2) => routes[settings.name]!(context));

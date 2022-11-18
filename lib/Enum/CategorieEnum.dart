@@ -26,4 +26,23 @@ class CategorieEnum {
         return 0;
     }
   }
+
+  String getStringFromId(int? id) {
+    switch (id) {
+      case 1:
+        return "Loisirs";
+      case 2:
+        return "Loyer";
+      case 3:
+        return "Courses";
+      case 4:
+        return "Prêt";
+      case 5:
+        return "Remboursement";
+      case 6:
+        return "Salaire";
+      default:
+        return "";
+    }
+  }
 }
