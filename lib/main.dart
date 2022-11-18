@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       initialRoute: "/tableauGeneral",
-      // routes: routes,
       onGenerateRoute: (settings) {
         return PageRouteBuilder(
             pageBuilder: (_, a1, a2) => routes[settings.name]!(context));
