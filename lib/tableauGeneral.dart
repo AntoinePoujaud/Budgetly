@@ -1,8 +1,10 @@
 // ignore_for_file: file_names
+import 'package:budgetly/Enum/CategorieEnum.dart';
 import 'package:budgetly/Enum/FilterGeneralEnum.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/material.dart';
 import 'mysql.dart';
+import 'package:intl/intl.dart';
 
 class TableauGeneral extends StatefulWidget {
   const TableauGeneral({Key? key, required this.title}) : super(key: key);
@@ -18,10 +20,12 @@ class TableauGeneralState extends State<TableauGeneral> {
   var currentAmount = '';
   var currentRealAmount = '';
   String? _groupValue = FilterGeneralEnum.LAST;
+  List<Map<String, String?>> resultTransactions = [];
 
   @override
   void initState() {
     _getMyInformations();
+    getTransactionsForMonth();
     super.initState();
   }
 
@@ -64,6 +68,65 @@ class TableauGeneralState extends State<TableauGeneral> {
                           generalCurrentInformations(
                               'Montant réel disponible', currentRealAmount),
                         ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Container(
+                            margin:
+                                const EdgeInsets.only(left: 40.0, top: 20.0),
+                            width: _deviceWidth! * 0.40,
+                            height: _deviceHeight! * 0.8,
+                            child: ListView.builder(
+                                itemCount: resultTransactions.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  String? newDate = formatDate(
+                                      resultTransactions[index]["date"]!);
+                                  return ListTile(
+                                      tileColor: Colors.black,
+                                      leading: const Icon(Icons.list),
+                                      title: Text(resultTransactions[index]
+                                          ["description"]!),
+                                      subtitle: Text(newDate!),
+                                      trailing: SizedBox(
+                                          width: _deviceWidth! * 0.12,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              SizedBox(
+                                                width: _deviceWidth! * 0.02,
+                                                child: Text(
+                                                  resultTransactions[index]
+                                                      ['montant']!,
+                                                  style: const TextStyle(
+                                                      fontSize: 18),
+                                                  textAlign: TextAlign.end,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: _deviceHeight! * 0.03,
+                                              ),
+                                              SizedBox(
+                                                width: _deviceWidth! * 0.07,
+                                                child: Text(
+                                                  CategorieEnum()
+                                                      .getStringFromId(int.parse(
+                                                          resultTransactions[
+                                                                  index][
+                                                              'categorieID']!)),
+                                                  style: const TextStyle(
+                                                    fontSize: 18,
+                                                  ),
+                                                  textAlign: TextAlign.end,
+                                                ),
+                                              ),
+                                            ],
+                                          )));
+                                }),
+                          ),
+                        ],
                       )
                     ],
                   ),
@@ -74,6 +137,13 @@ class TableauGeneralState extends State<TableauGeneral> {
         ],
       ),
     );
+  }
+
+  String? formatDate(String date) {
+    DateFormat dateFormat = DateFormat("yyyy-MM-dd");
+    DateTime convertedDate = dateFormat.parse(date);
+    dateFormat = DateFormat("dd-MM-yyyy");
+    return dateFormat.format(convertedDate);
   }
 
   Widget radioButtonLabelledFilter(
@@ -181,5 +251,18 @@ class TableauGeneralState extends State<TableauGeneral> {
 
   double customTransactionInputWidth() {
     return _deviceWidth! * 0.5;
+  }
+
+  Future<void> getTransactionsForMonth() async {
+    String query =
+        "SELECT date, type, montant, description, categorieID FROM transaction where MONTH(date) = MONTH(NOW()) ORDER BY DAY(date);";
+    var connection = await db.getConnection();
+    var results = await connection.execute(query, {}, true);
+    results.rowsStream.listen((row) {
+      setState(() {
+        resultTransactions.add(row.assoc());
+      });
+    });
+    connection.close();
   }
 }
