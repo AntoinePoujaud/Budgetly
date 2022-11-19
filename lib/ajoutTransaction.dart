@@ -101,11 +101,11 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                     ),
                     backgroundColor: const Color.fromARGB(255, 29, 161, 242),
                   ),
-                  child: const Text(
+                  child: Text(
                     "Enregistrer transaction",
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 32,
+                      fontSize: _deviceWidth! * 0.02,
                     ),
                   ),
                   onPressed: () async {
@@ -140,13 +140,16 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   Widget selectTransactionWidget() {
     return Row(
       mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         radioButtonLabelledTransactions(
-            "Dépense", TransactionEnum.DEPENSE, _groupValue, "end"),
+            "Dépense", TransactionEnum.DEPENSE, _groupValue),
+        SizedBox(
+          width: _deviceWidth! * 0.2,
+        ),
         radioButtonLabelledTransactions(
-            "Revenu", TransactionEnum.REVENU, _groupValue, ""),
+            "Revenu", TransactionEnum.REVENU, _groupValue),
       ],
     );
   }
@@ -158,14 +161,14 @@ class AjoutTransactionState extends State<AjoutTransaction> {
         keyboardType: TextInputType.text,
         decoration: InputDecoration(
           labelText: "Entrer une Description".toUpperCase(),
-          labelStyle: const TextStyle(
+          labelStyle: TextStyle(
             color: Colors.grey,
-            fontSize: 20,
+            fontSize: _deviceWidth! * 0.015,
           ),
         ),
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
-          fontSize: 24,
+          fontSize: _deviceWidth! * 0.015,
         ),
         onChanged: ((value) {
           setState(() {
@@ -189,14 +192,14 @@ class AjoutTransactionState extends State<AjoutTransaction> {
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
           labelText: "Entrer un Montant".toUpperCase(),
-          labelStyle: const TextStyle(
+          labelStyle: TextStyle(
             color: Colors.grey,
-            fontSize: 20,
+            fontSize: _deviceWidth! * 0.015,
           ),
         ),
-        style: const TextStyle(
+        style: TextStyle(
           color: Colors.white,
-          fontSize: 24,
+          fontSize: _deviceWidth! * 0.015,
         ),
         onChanged: ((value) {
           setState(() {
@@ -220,13 +223,13 @@ class AjoutTransactionState extends State<AjoutTransaction> {
         children: [
           Text(
             '${date.day}/${date.month}/${date.year}',
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 32,
+              fontSize: _deviceWidth! * 0.015,
             ),
           ),
           SizedBox(
-            width: _deviceWidth! * 0.05,
+            width: _deviceWidth! * 0.1,
             height: _deviceHeight! * 0.05,
           ),
           ElevatedButton(
@@ -251,9 +254,10 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                 currentDate = newDate;
               });
             },
-            child: const Text(
+            child: Text(
               "Sélectionner la date d'apparition de la transaction",
-              style: TextStyle(color: Colors.white, fontSize: 16),
+              style: TextStyle(
+                  color: Colors.white, fontSize: _deviceWidth! * 0.012),
             ),
           ),
         ],
@@ -287,9 +291,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                 value: item,
                 child: Text(
                   item,
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 20,
+                    fontSize: _deviceWidth! * 0.013,
                   ),
                 ),
               ),
@@ -303,18 +307,16 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     String title,
     String value,
     String? groupValue,
-    String align,
   ) {
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: _deviceWidth! * 0.1,
+        maxWidth: _deviceWidth! * 0.12,
         maxHeight: _deviceHeight! * 0.8,
       ),
       child: ListTile(
         title: Text(
           title,
           style: customTextStyle(),
-          textAlign: align == "end" ? TextAlign.end : TextAlign.start,
         ),
         leading: Radio<String>(
             fillColor: MaterialStateProperty.resolveWith<Color>(
@@ -337,9 +339,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   }
 
   TextStyle customTextStyle() {
-    return const TextStyle(
+    return TextStyle(
       color: Colors.white,
-      fontSize: 24,
+      fontSize: _deviceWidth! * 0.011,
     );
   }
 
