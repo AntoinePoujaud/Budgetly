@@ -2,6 +2,7 @@
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:budgetly/widgets/NavDrawer.dart';
 import 'package:flutter/material.dart';
+import 'package:localization/localization.dart';
 import 'mysql.dart';
 
 class TableauRecap extends StatefulWidget {
@@ -73,10 +74,8 @@ class TableauRecapState extends State<TableauRecap> {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              homeCurrentInformations(
-                  'Montant actuel sur le compte', currentAmount),
-              homeCurrentInformations(
-                  'Montant réel disponible', currentRealAmount),
+              homeCurrentInformations('actual_amount'.i18n(), currentAmount),
+              homeCurrentInformations('real_amount'.i18n(), currentRealAmount),
             ],
           ),
         ],
