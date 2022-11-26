@@ -1,0 +1,26 @@
+{
+    "tableau_general_title": "Tableau Général",
+    "tableau_recap_title": "Tableau Récapitulatif",
+    "add_transaction_title": "Ajouter une transaction",
+
+    "actual_amount": "Montant actuel sur le compte",
+    "real_amount": "Montant réel disponible",
+
+    "label_depense": "Dépense",
+    "label_revenu": "Revenu",
+    "label_enter_desc": "Entrez une description",
+    "label_enter_amount": "Entrez un montant",
+    "label_select_date_transaction": "Sélectionner la date d'apparition de la transaction",
+    "label_save_transaction": "Enregistrer transaction",
+    
+    "enum_categorie_hobby": "Loisirs",
+    "enum_categorie_rent": "Loyer",
+    "enum_categorie_shopping": "Courses",
+    "enum_categorie_loan": "Prêt",
+    "enum_categorie_refund": "Remboursement",
+    "enum_categorie_salary": "Salaire",
+
+    "enum_label_none": "none",
+    "enum_label_depense": "depense",
+    "enum_label_revenu": "revenu"
+}
