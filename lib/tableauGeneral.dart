@@ -3,6 +3,7 @@ import 'package:budgetly/Enum/CategorieEnum.dart';
 import 'package:budgetly/Enum/FilterGeneralEnum.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/material.dart';
+import 'package:localization/localization.dart';
 import 'mysql.dart';
 import 'package:intl/intl.dart';
 
@@ -53,85 +54,85 @@ class TableauGeneralState extends State<TableauGeneral> {
                 child: radioButtonLabelledFilter("LAST TRANSACTIONS",
                     FilterGeneralEnum.LAST, _groupValue, ""),
               ),
-              Container(
-                margin: const EdgeInsets.only(left: 30.0),
-                color: Colors.blue,
-                child: SizedBox(
-                  width: _deviceWidth! * 0.82,
-                  height: _deviceHeight! * 0.9,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: <Widget>[
-                          generalCurrentInformations(
-                              'Montant actuel sur le compte', currentAmount),
-                          generalCurrentInformations(
-                              'Montant réel disponible', currentRealAmount),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Container(
-                            margin:
-                                const EdgeInsets.only(left: 40.0, top: 20.0),
-                            width: _deviceWidth! * 0.40,
-                            height: _deviceHeight! * 0.8,
-                            child: ListView.builder(
-                                itemCount: resultTransactions.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  String? newDate = formatDate(
-                                      resultTransactions[index]["date"]!);
-                                  return ListTile(
-                                      tileColor: Colors.black,
-                                      leading: const Icon(Icons.list),
-                                      title: Text(resultTransactions[index]
-                                          ["description"]!),
-                                      subtitle: Text(newDate!),
-                                      trailing: SizedBox(
-                                          width: _deviceWidth! * 0.12,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              SizedBox(
-                                                width: _deviceWidth! * 0.02,
-                                                child: Text(
+              SizedBox(
+                width: _deviceWidth! * 0.82,
+                height: _deviceHeight! * 0.9,
+                child: Column(
+                  children: [
+                    Row(
+                      children: <Widget>[
+                        generalCurrentInformations(
+                            'actual_amount'.i18n(), currentAmount),
+                        generalCurrentInformations(
+                            'real_amount'.i18n(), currentRealAmount),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(left: 40.0, top: 20.0),
+                          width: _deviceWidth! * 0.40,
+                          height: _deviceHeight! * 0.8,
+                          child: ListView.builder(
+                            itemCount: resultTransactions.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              String? newDate = formatDate(
+                                  resultTransactions[index]["date"]!);
+                              return ListTile(
+                                tileColor: Colors.yellow,
+                                leading: const Icon(Icons.list),
+                                title: Text(
+                                    resultTransactions[index]["description"]!),
+                                subtitle: Text(newDate!),
+                                trailing: SizedBox(
+                                  width: _deviceWidth! * 0.12,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      SizedBox(
+                                        width: _deviceWidth! * 0.03,
+                                        child: Text(
+                                          resultTransactions[index]['montant']!,
+                                          style: const TextStyle(fontSize: 18),
+                                          textAlign: TextAlign.end,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: _deviceHeight! * 0.03,
+                                      ),
+                                      SizedBox(
+                                        width: _deviceWidth! * 0.07,
+                                        child: Text(
+                                          CategorieEnum().getStringFromId(
+                                              int.parse(
                                                   resultTransactions[index]
-                                                      ['montant']!,
-                                                  style: const TextStyle(
-                                                      fontSize: 18),
-                                                  textAlign: TextAlign.end,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: _deviceHeight! * 0.03,
-                                              ),
-                                              SizedBox(
-                                                width: _deviceWidth! * 0.07,
-                                                child: Text(
-                                                  CategorieEnum()
-                                                      .getStringFromId(int.parse(
-                                                          resultTransactions[
-                                                                  index][
-                                                              'categorieID']!)),
-                                                  style: const TextStyle(
-                                                    fontSize: 18,
-                                                  ),
-                                                  textAlign: TextAlign.end,
-                                                ),
-                                              ),
-                                            ],
-                                          )));
-                                }),
+                                                      ['categorieID']!)),
+                                          style: const TextStyle(
+                                            fontSize: 18,
+                                          ),
+                                          textAlign: TextAlign.end,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                        ],
-                      )
-                    ],
-                  ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(left: 20.0, top: 20.0),
+                          width: _deviceWidth! * 0.38,
+                          height: _deviceHeight! * 0.8,
+                          color: Colors.green,
+                        )
+                      ],
+                    )
+                  ],
                 ),
-              )
+              ),
             ],
           ),
         ],

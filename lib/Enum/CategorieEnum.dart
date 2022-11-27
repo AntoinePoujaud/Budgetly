@@ -1,5 +1,8 @@
 // ignore_for_file: file_names, non_constant_identifier_names
 
+import 'package:flutter/cupertino.dart';
+import 'package:localization/localization.dart';
+
 class CategorieEnum {
   static String get LOISIRS => "Loisirs";
   static String get LOYER => "Loyer";
@@ -8,7 +11,7 @@ class CategorieEnum {
   static String get REMBOURSEMENT => "Remboursement";
   static String get SALAIRE => "Salaire";
 
-  int getIdFromEnum(String? str) {
+  int getIdFromEnum(BuildContext context, String? str) {
     switch (str) {
       case "Loisirs":
         return 1;
@@ -30,17 +33,17 @@ class CategorieEnum {
   String getStringFromId(int? id) {
     switch (id) {
       case 1:
-        return "Loisirs";
+        return 'enum_categorie_hobby'.i18n();
       case 2:
-        return "Loyer";
+        return 'enum_categorie_rent'.i18n();
       case 3:
-        return "Courses";
+        return 'enum_categorie_shopping'.i18n();
       case 4:
-        return "Prêt";
+        return 'enum_categorie_loan'.i18n();
       case 5:
-        return "Remboursement";
+        return 'enum_categorie_refund'.i18n();
       case 6:
-        return "Salaire";
+        return 'enum_categorie_salary'.i18n();
       default:
         return "";
     }

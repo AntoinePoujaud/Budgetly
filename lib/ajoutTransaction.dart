@@ -2,6 +2,7 @@
 import 'package:budgetly/Enum/CategorieEnum.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/material.dart';
+import 'package:localization/localization.dart';
 import 'Enum/TransactionEnum.dart';
 import 'mysql.dart';
 
@@ -102,7 +103,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                     backgroundColor: const Color.fromARGB(255, 29, 161, 242),
                   ),
                   child: Text(
-                    "Enregistrer transaction",
+                    'label_save_transaction'.i18n(),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: _deviceWidth! * 0.02,
@@ -115,7 +116,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                         transactionType,
                         montant,
                         description,
-                        CategorieEnum().getIdFromEnum(selectedItem),
+                        CategorieEnum().getIdFromEnum(context, selectedItem),
                       ]);
 
                       await updateRealMontant(transactionType, montant);
@@ -144,12 +145,12 @@ class AjoutTransactionState extends State<AjoutTransaction> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         radioButtonLabelledTransactions(
-            "Dépense", TransactionEnum.DEPENSE, _groupValue),
+            'label_depense'.i18n(), TransactionEnum.DEPENSE, _groupValue),
         SizedBox(
           width: _deviceWidth! * 0.2,
         ),
         radioButtonLabelledTransactions(
-            "Revenu", TransactionEnum.REVENU, _groupValue),
+            'label_revenu'.i18n(), TransactionEnum.REVENU, _groupValue),
       ],
     );
   }
@@ -160,7 +161,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
       child: TextFormField(
         keyboardType: TextInputType.text,
         decoration: InputDecoration(
-          labelText: "Entrer une Description".toUpperCase(),
+          labelText: 'label_enter_desc'.i18n().toUpperCase(),
           labelStyle: TextStyle(
             color: Colors.grey,
             fontSize: _deviceWidth! * 0.015,
@@ -191,7 +192,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
       child: TextFormField(
         keyboardType: TextInputType.number,
         decoration: InputDecoration(
-          labelText: "Entrer un Montant".toUpperCase(),
+          labelText: 'label_enter_amount'.i18n().toUpperCase(),
           labelStyle: TextStyle(
             color: Colors.grey,
             fontSize: _deviceWidth! * 0.015,
@@ -229,8 +230,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
             ),
           ),
           SizedBox(
-            width: _deviceWidth! * 0.1,
-            height: _deviceHeight! * 0.05,
+            width: _deviceWidth! * 0.05,
+            height: _deviceHeight! * 0.01,
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
@@ -255,7 +256,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
               });
             },
             child: Text(
-              "Sélectionner la date d'apparition de la transaction",
+              'label_select_date_transaction'.i18n(),
               style: TextStyle(
                   color: Colors.white, fontSize: _deviceWidth! * 0.012),
             ),
