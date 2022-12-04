@@ -204,7 +204,13 @@ class AjoutTransactionState extends State<AjoutTransaction> {
         ),
         onChanged: ((value) {
           setState(() {
-            montant = double.parse(value);
+            if (value.contains(",")) {
+              value =
+                  "${value.substring(0, value.indexOf(","))}.${value.substring(value.indexOf(",") + 1)}";
+            }
+            if (value.trim() != "") {
+              montant = double.parse(value);
+            }
           });
         }),
         validator: (value) {

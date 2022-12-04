@@ -1,26 +1,44 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:localization/localization.dart';
 
 class NavDrawer extends StatefulWidget {
   const NavDrawer({Key? key, required this.currentPage}) : super(key: key);
   final String currentPage;
 
-  static void setLocale(BuildContext context, Locale newLocale) async {
-    NavDrawerState? state = context.findAncestorStateOfType<NavDrawerState>();
-    state!.changeLanguage(newLocale);
-  }
-
   @override
   NavDrawerState createState() => NavDrawerState();
 }
 
 class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
+  bool isInitialized = false;
+
   double? _deviceHeight, _deviceWidth;
   String? currentBtnValue;
   Locale? currentLocale;
+
+  // void setLocale(Locale newLocale) {
+  //   setState(() {
+  //     currentLocale = newLocale;
+  //   });
+  // }
+
+  // void initializeLocale(BuildContext context) {
+  //   currentLocale = Localizations.localeOf(context);
+  //   isInitialized = true;
+  // }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
+    // if (!isInitialized) {
+    //   initializeLocale(context);
+    // }
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     String currentPage = widget.currentPage;
@@ -30,16 +48,19 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            height: _deviceHeight! * 0.03,
-            width: _deviceWidth! * 0.02,
-            child: MaterialButton(
-              onPressed: (() {
-                changeLanguagePage(context);
-              }),
-              child: Text(
-                locale.toString() == 'fr_FR' ? "EN" : "FR",
-                style: const TextStyle(color: Colors.white70),
+          Visibility(
+            visible: false, // FR only tant que la feature de changement de langue ne fonctionne pas correctement
+            child: SizedBox(
+              height: _deviceHeight! * 0.03,
+              width: _deviceWidth! * 0.02,
+              child: MaterialButton(
+                onPressed: (() {
+                  changeLanguagePage(context);
+                }),
+                child: Text(
+                  locale.toString() == 'fr_FR' ? "EN" : "FR",
+                  style: const TextStyle(color: Colors.white70),
+                ),
               ),
             ),
           ),
@@ -118,15 +139,17 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
   }
 
   void changeLanguagePage(BuildContext context) {
-    Locale newLocale = Localizations.localeOf(context).toString() == "en_EN"
+    Locale newLocale = currentLocale == const Locale('en', 'EN')
         ? const Locale('fr', 'FR')
         : const Locale('en', 'EN');
-    NavDrawer.setLocale(context, newLocale);
+    Get.updateLocale(newLocale);
+    // print(newLocale);
+    // setLocale(newLocale);
   }
 
-  changeLanguage(Locale locale) {
-    setState(() {
-      currentLocale = locale;
-    });
-  }
+  // changeLanguage(Locale locale) {
+  //   setState(() {
+  //     currentLocale = locale;
+  //   });
+  // }
 }
