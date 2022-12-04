@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
 import 'tableauRecap.dart';
+import 'package:get/get.dart';
 
 void main() => runApp(const MyApp());
 
@@ -24,13 +25,17 @@ class MyApp extends StatelessWidget {
       "/tableauGeneral": (context) =>
           TableauGeneral(title: 'tableau_general_title'.i18n()),
     };
-    return MaterialApp(
+    return GetMaterialApp(
+      supportedLocales: const [
+        Locale('en', 'EN'),
+        // Locale('fr', 'FR'),
+      ],
       localeResolutionCallback: (locale, supportedLocales) {
         if (supportedLocales.contains(locale)) {
           return locale;
         }
 
-        // define pt_BR as default when de language code is 'pt'
+        // define fr_FR as default when de language code is 'fr'
         if (locale?.languageCode == 'fr') {
           return const Locale('fr', 'FR');
         }
