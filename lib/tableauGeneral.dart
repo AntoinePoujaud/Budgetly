@@ -5,6 +5,8 @@ import 'package:budgetly/Enum/TransactionEnum.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/material.dart';
 import 'package:localization/localization.dart';
+import 'package:mysql_client/mysql_client.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'mysql.dart';
 import 'package:intl/intl.dart';
 
@@ -203,44 +205,68 @@ class TableauGeneralState extends State<TableauGeneral> {
               montantWidget(),
               dateSelectionWidget(),
               categorieSelectionWidget(),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.all(20.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40),
-                  ),
-                  backgroundColor: const Color.fromARGB(255, 29, 161, 242),
-                ),
-                child: Text(
-                  'label_save_transaction'.i18n(),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: _deviceWidth! * 0.015,
-                  ),
-                ),
-                onPressed: () async {
-                  try {
-                    await updateRealMontant(
-                        transactionType, montant, selectedTileId);
-                    await updateTransaction([
-                      date,
-                      transactionType,
-                      montant,
-                      description,
-                      // ignore: use_build_context_synchronously
-                      CategorieEnum().getIdFromEnum(context, selectedItem),
-                      selectedTileId
-                    ]);
-                    resultTransactions = [];
-                    await getTransactionsForMonth();
-                    // ignore: use_build_context_synchronously
-                    showToast(context,
-                        const Text("Transaction updated successfully"));
-                  } catch (e) {
-                    showToast(context,
-                        const Text("Error while updating transaction"));
-                  }
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  MouseRegion(
+                      cursor: SystemMouseCursors.click,
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.delete,
+                          color: Colors.red.shade800,
+                        ),
+                        onPressed: () async {
+                          try {
+                            deleteTransaction(selectedTileId!);
+                            showToast(context,
+                                const Text("Transaction deleted successfully"));
+                          } catch (e) {
+                            showToast(context,
+                                const Text("Error while deleting transaction"));
+                          }
+                        },
+                      )),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.all(20.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                      backgroundColor: const Color.fromARGB(255, 29, 161, 242),
+                    ),
+                    child: Text(
+                      'label_save_transaction'.i18n(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: _deviceWidth! * 0.015,
+                      ),
+                    ),
+                    onPressed: () async {
+                      try {
+                        await updateRealMontant(
+                            transactionType, montant, selectedTileId!);
+                        await updateTransaction([
+                          date,
+                          transactionType,
+                          montant,
+                          description,
+                          // ignore: use_build_context_synchronously
+                          CategorieEnum().getIdFromEnum(context, selectedItem),
+                          selectedTileId
+                        ]);
+                        resultTransactions = [];
+                        await getTransactionsForMonth();
+                        // ignore: use_build_context_synchronously
+                        showToast(context,
+                            const Text("Transaction updated successfully"));
+                      } catch (e) {
+                        showToast(context,
+                            const Text("Error while updating transaction"));
+                      }
+                    },
+                  )
+                ],
               )
             ],
           ),
@@ -249,13 +275,48 @@ class TableauGeneralState extends State<TableauGeneral> {
     );
   }
 
+  Future<void> deleteTransaction(String id) async {
+    await updateRealMontant(null, null, id);
+    await updateUserMontant(currentRealAmount);
+    await deleteTransactionInDb(id);
+    await getTransactionsForMonth();
+  }
+
+  Future<void> updateUserMontant(double? currentRealAmount) async {
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    String query =
+        "UPDATE user SET current_real_amount = $currentRealAmount WHERE id = $userId;";
+    var connection = await db.getConnection();
+    await connection.execute(query, {}, true);
+    await connection.close();
+  }
+
+  Future<void> deleteTransactionInDb(String id) async {
+    String query = "DELETE FROM transaction WHERE id = $id";
+    var connection = await db.getConnection();
+    await connection.execute(query, {}, true);
+    await connection.close();
+  }
+
   Future<void> updateRealMontant(
-      String? type, double? montant, String? id) async {
+      String? type, double? montant, String id) async {
     await removeOldMontant(id);
-    await addNewMontant(type, montant);
+    if (type != null && montant != null) {
+      print("coucocu");
+      await addNewMontant(type, montant);
+    }
   }
 
   Future<void> addNewMontant(String? type, double? montant) async {
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
     if (type == TransactionEnum.DEPENSE) {
       montant =
           double.parse((currentRealAmount! - montant!).toStringAsFixed(2));
@@ -266,7 +327,7 @@ class TableauGeneralState extends State<TableauGeneral> {
       currentRealAmount = montant;
     }
     String query =
-        "UPDATE user SET current_real_amount = $montant WHERE id = 1;";
+        "UPDATE user SET current_real_amount = $montant WHERE id = $userId;";
     var connection = await db.getConnection();
     await connection.execute(query, {}, true);
     await connection.close();
@@ -398,7 +459,12 @@ class TableauGeneralState extends State<TableauGeneral> {
   }
 
   Future<void> _getMyCurrentAmount() async {
-    String query = 'SELECT current_amount FROM user where id = 1;';
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    String query = 'SELECT current_amount FROM user where id = $userId;';
     var connection = await db.getConnection();
     var results = await connection.execute(query, {}, true);
     results.rowsStream.listen((row) {
@@ -410,7 +476,12 @@ class TableauGeneralState extends State<TableauGeneral> {
   }
 
   Future<void> _getMyCurrentRealAmount() async {
-    String query = 'SELECT current_real_amount FROM user where id = 1;';
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    String query = 'SELECT current_real_amount FROM user where id = $userId;';
     var connection = await db.getConnection();
     var results = await connection.execute(query, {}, true);
     results.rowsStream.listen((row) {
@@ -433,15 +504,28 @@ class TableauGeneralState extends State<TableauGeneral> {
   }
 
   Future<void> getTransactionsForMonth() async {
+    bool isResultEmpty = true;
+    resultTransactions = [];
+    selectedTileId = null;
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
     String query =
-        "SELECT id, date, type, montant, description, categorieID FROM transaction where MONTH(date) >= MONTH(NOW()) ORDER BY DAY(date);";
+        "SELECT id, date, type, montant, description, categorieID FROM transaction where MONTH(date) >= MONTH(NOW()) AND userID = $userId ORDER BY DAY(date);";
     var connection = await db.getConnection();
     var results = await connection.execute(query, {}, true);
     results.rowsStream.listen((row) {
+      isResultEmpty = false;
       setState(() {
         resultTransactions.add(row.assoc());
       });
     });
+    if (isResultEmpty) {
+      setState(() {});
+    }
+
     connection.close();
   }
 
