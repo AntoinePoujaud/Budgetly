@@ -3,6 +3,7 @@ import 'package:budgetly/utils/menuLayout.dart';
 import 'package:budgetly/widgets/NavDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:localization/localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'mysql.dart';
 
 class TableauRecap extends StatefulWidget {
@@ -26,7 +27,12 @@ class TableauRecapState extends State<TableauRecap> {
   }
 
   Future<void> _getMyCurrentAmount() async {
-    String query = 'SELECT current_amount FROM user where id = 1;';
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    String query = 'SELECT current_amount FROM user where id = $userId;';
     var connection = await db.getConnection();
     var results = await connection.execute(query, {}, true);
     results.rowsStream.listen((row) {
@@ -38,7 +44,12 @@ class TableauRecapState extends State<TableauRecap> {
   }
 
   Future<void> _getMyCurrentRealAmount() async {
-    String query = 'SELECT current_real_amount FROM user where id = 1;';
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    String query = 'SELECT current_real_amount FROM user where id = $userId;';
     var connection = await db.getConnection();
     var results = await connection.execute(query, {}, true);
     results.rowsStream.listen((row) {

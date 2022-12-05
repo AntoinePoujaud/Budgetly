@@ -3,6 +3,7 @@ import 'package:budgetly/Enum/CategorieEnum.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/material.dart';
 import 'package:localization/localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'Enum/TransactionEnum.dart';
 import 'mysql.dart';
 
@@ -41,6 +42,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
+    currentDate = date;
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 20, 23, 26),
@@ -369,9 +371,14 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   }
 
   Future<void> addTransaction(List<dynamic> params) async {
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
     try {
       String query =
-          "INSERT INTO transaction(date, type, montant, description, categorieID) VALUES (?, ?, ?, ?, ?);";
+          "INSERT INTO transaction(date, type, montant, description, categorieID, userID) VALUES (?, ?, ?, ?, ?, $userId);";
       var connection = await db.getConnection();
 
       var stmt = await connection.prepare(
@@ -387,6 +394,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
       await stmt.deallocate();
     } catch (e) {
+      print(e.toString());
       throw Exception();
     }
   }
@@ -397,20 +405,30 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   }
 
   Future<void> updateRealMontant(String? type, double? montant) async {
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
     if (type == TransactionEnum.DEPENSE) {
       montant = (actualUserAmount! - montant!);
     } else if (type == TransactionEnum.REVENU) {
       montant = (montant! + actualUserAmount!);
     }
     String query =
-        "UPDATE user SET current_real_amount = $montant WHERE id = 1;";
+        "UPDATE user SET current_real_amount = $montant WHERE id = $userId;";
     var connection = await db.getConnection();
     await connection.execute(query, {}, true);
     connection.close();
   }
 
   Future<void> getActualRealAmount() async {
-    String query = "SELECT current_real_amount FROM user WHERE id = 1;";
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    String query = "SELECT current_real_amount FROM user WHERE id = $userId;";
     var connection = await db.getConnection();
     var results = await connection.execute(query, {}, true);
     results.rowsStream.listen((row) {
