@@ -3,6 +3,7 @@ import 'package:budgetly/Enum/CategorieEnum.dart';
 import 'package:budgetly/Enum/FilterGeneralEnum.dart';
 import 'package:budgetly/Enum/TransactionEnum.dart';
 import 'package:budgetly/utils/menuLayout.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:localization/localization.dart';
 import 'package:mysql_client/mysql_client.dart';
@@ -87,92 +88,139 @@ class TableauGeneralState extends State<TableauGeneral> {
                             'real_amount'.i18n(), currentRealAmount.toString()),
                       ],
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(left: 40.0, top: 20.0),
-                          width: _deviceWidth! * 0.40,
-                          height: _deviceHeight! * 0.8,
-                          child: ListView.builder(
-                            itemCount: resultTransactions.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              String? newDate = formatDate(
-                                  resultTransactions[index]["date"]!);
-                              return ListTile(
-                                onTap: () {
-                                  setState(() {
-                                    selectedTileId =
-                                        resultTransactions[index]["id"];
-                                    description = resultTransactions[index]
-                                        ["description"]!;
-                                    descriptionTxt.text =
-                                        resultTransactions[index]
-                                            ["description"]!;
-                                    montant = double.parse(
-                                        resultTransactions[index]["montant"]!);
-                                    montantTxt.text =
-                                        resultTransactions[index]["montant"]!;
-                                    transactionType =
-                                        resultTransactions[index]["type"];
-                                    _groupValueTransaction =
-                                        resultTransactions[index]["type"];
-                                    date = DateTime.parse(
-                                        resultTransactions[index]["date"]!);
-                                    selectedItem = CategorieEnum()
-                                        .getStringFromId(int.parse(
-                                            resultTransactions[index]
-                                                ["categorieID"]!));
-                                  });
-                                },
-                                tileColor: resultTransactions[index]["type"] ==
-                                        TransactionEnum.REVENU
-                                    ? Colors.green
-                                    : Colors.red,
-                                leading: const Icon(Icons.list),
-                                title: Text(
-                                    resultTransactions[index]["description"]!),
-                                subtitle: Text(newDate!),
-                                trailing: SizedBox(
-                                  width: _deviceWidth! * 0.12,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      SizedBox(
-                                        width: _deviceWidth! * 0.03,
-                                        child: Text(
-                                          resultTransactions[index]['montant']!,
-                                          style: const TextStyle(fontSize: 18),
-                                          textAlign: TextAlign.end,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        width: _deviceHeight! * 0.03,
-                                      ),
-                                      SizedBox(
-                                        width: _deviceWidth! * 0.07,
-                                        child: Text(
-                                          CategorieEnum().getStringFromId(
-                                              int.parse(
+                    resultTransactions.isNotEmpty
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Container(
+                                  margin: const EdgeInsets.only(
+                                      left: 40.0, top: 20.0),
+                                  width: _deviceWidth! * 0.40,
+                                  height: _deviceHeight! * 0.8,
+                                  child: ListView.builder(
+                                    itemCount: resultTransactions.length,
+                                    itemBuilder:
+                                        (BuildContext context, int index) {
+                                      String? newDate = formatDate(
+                                          resultTransactions[index]["date"]!);
+                                      return ListTile(
+                                        onTap: () {
+                                          setState(() {
+                                            selectedTileId =
+                                                resultTransactions[index]["id"];
+                                            description =
+                                                resultTransactions[index]
+                                                    ["description"]!;
+                                            descriptionTxt.text =
+                                                resultTransactions[index]
+                                                    ["description"]!;
+                                            montant = double.parse(
+                                                resultTransactions[index]
+                                                    ["montant"]!);
+                                            montantTxt.text =
+                                                resultTransactions[index]
+                                                    ["montant"]!;
+                                            transactionType =
+                                                resultTransactions[index]
+                                                    ["type"];
+                                            _groupValueTransaction =
+                                                resultTransactions[index]
+                                                    ["type"];
+                                            date = DateTime.parse(
+                                                resultTransactions[index]
+                                                    ["date"]!);
+                                            selectedItem = CategorieEnum()
+                                                .getStringFromId(int.parse(
+                                                    resultTransactions[index]
+                                                        ["categorieID"]!));
+                                          });
+                                        },
+                                        tileColor: resultTransactions[index]
+                                                    ["type"] ==
+                                                TransactionEnum.REVENU
+                                            ? Colors.green
+                                            : Colors.red,
+                                        leading: const Icon(Icons.list),
+                                        title: Text(resultTransactions[index]
+                                            ["description"]!),
+                                        subtitle: Text(newDate!),
+                                        trailing: SizedBox(
+                                          width: _deviceWidth! * 0.12,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              SizedBox(
+                                                width: _deviceWidth! * 0.03,
+                                                child: Text(
                                                   resultTransactions[index]
-                                                      ['categorieID']!)),
-                                          style: const TextStyle(
-                                            fontSize: 18,
+                                                      ['montant']!,
+                                                  style: const TextStyle(
+                                                      fontSize: 18),
+                                                  textAlign: TextAlign.end,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: _deviceHeight! * 0.03,
+                                              ),
+                                              SizedBox(
+                                                width: _deviceWidth! * 0.07,
+                                                child: Text(
+                                                  CategorieEnum()
+                                                      .getStringFromId(int.parse(
+                                                          resultTransactions[
+                                                                  index][
+                                                              'categorieID']!)),
+                                                  style: const TextStyle(
+                                                    fontSize: 18,
+                                                  ),
+                                                  textAlign: TextAlign.end,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          textAlign: TextAlign.end,
                                         ),
-                                      ),
-                                    ],
+                                      );
+                                    },
+                                  )),
+                              showForm()
+                            ],
+                          )
+                        : SizedBox(
+                            width: _deviceWidth! * 0.75,
+                            height: _deviceHeight! * 0.8,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Vous n'avez pas encore de transaction pour le mois de ${DateFormat.MMMM("fr").format(date)}",
+                                    style: const TextStyle(
+                                        color: Colors.white, fontSize: 45),
+                                    textAlign: TextAlign.center,
                                   ),
-                                ),
-                              );
-                            },
+                                  RichText(
+                                    text: TextSpan(
+                                        text:
+                                            "Ajouter une nouvelle transaction",
+                                        style: TextStyle(
+                                            color: Colors.grey.shade600,
+                                            fontSize: 24,
+                                            decoration:
+                                                TextDecoration.underline),
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () {
+                                            Navigator.pushNamed(
+                                                context, "/addTransaction");
+                                          }),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                        showForm()
-                      ],
-                    )
                   ],
                 ),
               ),
@@ -183,7 +231,7 @@ class TableauGeneralState extends State<TableauGeneral> {
     );
   }
 
-  Widget pageWidget() {
+  Widget updateTransactionSectionWidget() {
     return Visibility(
       visible: selectedTileId == null ? false : true,
       child: Container(
@@ -275,110 +323,6 @@ class TableauGeneralState extends State<TableauGeneral> {
     );
   }
 
-  Future<void> deleteTransaction(String id) async {
-    await updateRealMontant(null, null, id);
-    await updateUserMontant(currentRealAmount);
-    await deleteTransactionInDb(id);
-    await getTransactionsForMonth();
-  }
-
-  Future<void> updateUserMontant(double? currentRealAmount) async {
-    String? userId = "1";
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("userId") != null) {
-      userId = prefs.getString("userId");
-    }
-    String query =
-        "UPDATE user SET current_real_amount = $currentRealAmount WHERE id = $userId;";
-    var connection = await db.getConnection();
-    await connection.execute(query, {}, true);
-    await connection.close();
-  }
-
-  Future<void> deleteTransactionInDb(String id) async {
-    String query = "DELETE FROM transaction WHERE id = $id";
-    var connection = await db.getConnection();
-    await connection.execute(query, {}, true);
-    await connection.close();
-  }
-
-  Future<void> updateRealMontant(
-      String? type, double? montant, String id) async {
-    await removeOldMontant(id);
-    if (type != null && montant != null) {
-      print("coucocu");
-      await addNewMontant(type, montant);
-    }
-  }
-
-  Future<void> addNewMontant(String? type, double? montant) async {
-    String? userId = "1";
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("userId") != null) {
-      userId = prefs.getString("userId");
-    }
-    if (type == TransactionEnum.DEPENSE) {
-      montant =
-          double.parse((currentRealAmount! - montant!).toStringAsFixed(2));
-      currentRealAmount = montant;
-    } else if (type == TransactionEnum.REVENU) {
-      montant =
-          double.parse((montant! + currentRealAmount!).toStringAsFixed(2));
-      currentRealAmount = montant;
-    }
-    String query =
-        "UPDATE user SET current_real_amount = $montant WHERE id = $userId;";
-    var connection = await db.getConnection();
-    await connection.execute(query, {}, true);
-    await connection.close();
-  }
-
-  Future<void> removeOldMontant(String? id) async {
-    double? oldMontant;
-    String? oldType;
-    String query = "SELECT montant, type FROM transaction WHERE id = $id;";
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      oldMontant = double.parse(row.assoc().values.first!);
-      oldType = row.assoc().values.last;
-      // setState(() {
-      if (oldType == TransactionEnum.DEPENSE) {
-        currentRealAmount =
-            double.parse((currentRealAmount! + oldMontant!).toStringAsFixed(2));
-      } else if (oldType == TransactionEnum.REVENU) {
-        currentRealAmount =
-            double.parse((currentRealAmount! - oldMontant!).toStringAsFixed(2));
-      }
-      // });
-    });
-    await connection.close();
-  }
-
-  Future<void> updateTransaction(List<dynamic> params) async {
-    try {
-      String query =
-          "UPDATE transaction set date = ?, type = ?, montant = ?, description = ?, categorieID = ? WHERE id = ?;";
-      var connection = await db.getConnection();
-
-      var stmt = await connection.prepare(
-        query,
-      );
-      await stmt.execute([
-        "${params[0].year}-${params[0].month}-${params[0].day}",
-        params[1],
-        params[2],
-        params[3],
-        params[4],
-        params[5]
-      ]);
-
-      await stmt.deallocate();
-    } catch (e) {
-      throw Exception();
-    }
-  }
-
   String? formatDate(String date) {
     DateFormat dateFormat = DateFormat("yyyy-MM-dd");
     DateTime convertedDate = dateFormat.parse(date);
@@ -453,45 +397,6 @@ class TableauGeneralState extends State<TableauGeneral> {
     );
   }
 
-  Future<void> _getMyInformations() async {
-    _getMyCurrentAmount();
-    _getMyCurrentRealAmount();
-  }
-
-  Future<void> _getMyCurrentAmount() async {
-    String? userId = "1";
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("userId") != null) {
-      userId = prefs.getString("userId");
-    }
-    String query = 'SELECT current_amount FROM user where id = $userId;';
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      setState(() {
-        currentAmount = double.parse(row.assoc().values.first!);
-      });
-    });
-    connection.close();
-  }
-
-  Future<void> _getMyCurrentRealAmount() async {
-    String? userId = "1";
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("userId") != null) {
-      userId = prefs.getString("userId");
-    }
-    String query = 'SELECT current_real_amount FROM user where id = $userId;';
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      setState(() {
-        currentRealAmount = double.parse(row.assoc().values.first!);
-      });
-    });
-    connection.close();
-  }
-
   TextStyle customTextStyle() {
     return const TextStyle(
       color: Colors.white,
@@ -501,32 +406,6 @@ class TableauGeneralState extends State<TableauGeneral> {
 
   double customTransactionInputWidth() {
     return _deviceWidth! * 0.3;
-  }
-
-  Future<void> getTransactionsForMonth() async {
-    bool isResultEmpty = true;
-    resultTransactions = [];
-    selectedTileId = null;
-    String? userId = "1";
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("userId") != null) {
-      userId = prefs.getString("userId");
-    }
-    String query =
-        "SELECT id, date, type, montant, description, categorieID FROM transaction where MONTH(date) >= MONTH(NOW()) AND userID = $userId ORDER BY DAY(date);";
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      isResultEmpty = false;
-      setState(() {
-        resultTransactions.add(row.assoc());
-      });
-    });
-    if (isResultEmpty) {
-      setState(() {});
-    }
-
-    connection.close();
   }
 
   Widget selectTransactionWidget() {
@@ -743,6 +622,27 @@ class TableauGeneralState extends State<TableauGeneral> {
     scaffold.showSnackBar(SnackBar(content: content));
   }
 
+  Widget showForm() {
+    if (dropDownItems!.isEmpty) {
+      return FutureBuilder(
+        future: getAllCategories(),
+        builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+          if (snapshot.hasData) {
+            dropDownItems = snapshot.data;
+            selectedItem = dropDownItems![0];
+            return updateTransactionSectionWidget();
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      );
+    } else {
+      return updateTransactionSectionWidget();
+    }
+  }
+
   Future<List<String>> getAllCategories() async {
     List<String> allCategories = [];
     String query = "SELECT nom FROM categorie;";
@@ -755,24 +655,171 @@ class TableauGeneralState extends State<TableauGeneral> {
     return allCategories;
   }
 
-  Widget showForm() {
-    if (dropDownItems!.isEmpty) {
-      return FutureBuilder(
-        future: getAllCategories(),
-        builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
-          if (snapshot.hasData) {
-            dropDownItems = snapshot.data;
-            selectedItem = dropDownItems![0];
-            return pageWidget();
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
-      );
-    } else {
-      return pageWidget();
+  Future<void> _getMyInformations() async {
+    _getMyCurrentAmount();
+    _getMyCurrentRealAmount();
+  }
+
+  Future<void> _getMyCurrentAmount() async {
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
     }
+    String query = 'SELECT current_amount FROM user where id = $userId;';
+    var connection = await db.getConnection();
+    var results = await connection.execute(query, {}, true);
+    results.rowsStream.listen((row) {
+      setState(() {
+        currentAmount = double.parse(row.assoc().values.first!);
+      });
+    });
+    connection.close();
+  }
+
+  Future<void> _getMyCurrentRealAmount() async {
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    String query = 'SELECT current_real_amount FROM user where id = $userId;';
+    var connection = await db.getConnection();
+    var results = await connection.execute(query, {}, true);
+    results.rowsStream.listen((row) {
+      setState(() {
+        currentRealAmount = double.parse(row.assoc().values.first!);
+      });
+    });
+    connection.close();
+  }
+
+  Future<void> deleteTransaction(String id) async {
+    await updateRealMontant(null, null, id);
+    await updateUserMontant(currentRealAmount);
+    await deleteTransactionInDb(id);
+    await getTransactionsForMonth();
+  }
+
+  Future<void> updateUserMontant(double? currentRealAmount) async {
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    String query =
+        "UPDATE user SET current_real_amount = $currentRealAmount WHERE id = $userId;";
+    var connection = await db.getConnection();
+    await connection.execute(query, {}, true);
+    await connection.close();
+  }
+
+  Future<void> deleteTransactionInDb(String id) async {
+    String query = "DELETE FROM transaction WHERE id = $id";
+    var connection = await db.getConnection();
+    await connection.execute(query, {}, true);
+    await connection.close();
+  }
+
+  Future<void> updateRealMontant(
+      String? type, double? montant, String id) async {
+    await removeOldMontant(id);
+    if (type != null && montant != null) {
+      await addNewMontant(type, montant);
+    }
+  }
+
+  Future<void> addNewMontant(String? type, double? montant) async {
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    if (type == TransactionEnum.DEPENSE) {
+      montant =
+          double.parse((currentRealAmount! - montant!).toStringAsFixed(2));
+      currentRealAmount = montant;
+    } else if (type == TransactionEnum.REVENU) {
+      montant =
+          double.parse((montant! + currentRealAmount!).toStringAsFixed(2));
+      currentRealAmount = montant;
+    }
+    String query =
+        "UPDATE user SET current_real_amount = $montant WHERE id = $userId;";
+    var connection = await db.getConnection();
+    await connection.execute(query, {}, true);
+    await connection.close();
+  }
+
+  Future<void> removeOldMontant(String? id) async {
+    double? oldMontant;
+    String? oldType;
+    String query = "SELECT montant, type FROM transaction WHERE id = $id;";
+    var connection = await db.getConnection();
+    var results = await connection.execute(query, {}, true);
+    results.rowsStream.listen((row) {
+      oldMontant = double.parse(row.assoc().values.first!);
+      oldType = row.assoc().values.last;
+      // setState(() {
+      if (oldType == TransactionEnum.DEPENSE) {
+        currentRealAmount =
+            double.parse((currentRealAmount! + oldMontant!).toStringAsFixed(2));
+      } else if (oldType == TransactionEnum.REVENU) {
+        currentRealAmount =
+            double.parse((currentRealAmount! - oldMontant!).toStringAsFixed(2));
+      }
+      // });
+    });
+    await connection.close();
+  }
+
+  Future<void> updateTransaction(List<dynamic> params) async {
+    try {
+      String query =
+          "UPDATE transaction set date = ?, type = ?, montant = ?, description = ?, categorieID = ? WHERE id = ?;";
+      var connection = await db.getConnection();
+
+      var stmt = await connection.prepare(
+        query,
+      );
+      await stmt.execute([
+        "${params[0].year}-${params[0].month}-${params[0].day}",
+        params[1],
+        params[2],
+        params[3],
+        params[4],
+        params[5]
+      ]);
+
+      await stmt.deallocate();
+    } catch (e) {
+      throw Exception();
+    }
+  }
+
+  Future<void> getTransactionsForMonth() async {
+    bool isResultEmpty = true;
+    resultTransactions = [];
+    selectedTileId = null;
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    String query =
+        "SELECT id, date, type, montant, description, categorieID FROM transaction where MONTH(date) >= MONTH(NOW()) AND userID = $userId ORDER BY DAY(date);";
+    var connection = await db.getConnection();
+    var results = await connection.execute(query, {}, true);
+    results.rowsStream.listen((row) {
+      isResultEmpty = false;
+      setState(() {
+        resultTransactions.add(row.assoc());
+      });
+    });
+    if (isResultEmpty) {
+      setState(() {});
+    }
+
+    connection.close();
   }
 }
