@@ -8,21 +8,24 @@ import 'package:window_manager/window_manager.dart';
 import 'loginPage.dart';
 import 'tableauRecap.dart';
 import 'package:get/get.dart';
+import 'dart:io' show Platform;
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  // Must add this line.
-  await windowManager.ensureInitialized();
+  if (Platform.isWindows) {
+    WidgetsFlutterBinding.ensureInitialized();
+    // Must add this line.
+    await windowManager.ensureInitialized();
 
-  WindowOptions windowOptions = const WindowOptions(
-    backgroundColor: Colors.transparent,
-    skipTaskbar: false,
-  );
-  windowManager.waitUntilReadyToShow(windowOptions, () async {
-    await windowManager.show();
-    await windowManager.focus();
-    await windowManager.maximize();
-  });
+    WindowOptions windowOptions = const WindowOptions(
+      backgroundColor: Colors.transparent,
+      skipTaskbar: false,
+    );
+    windowManager.waitUntilReadyToShow(windowOptions, () async {
+      await windowManager.show();
+      await windowManager.focus();
+      await windowManager.maximize();
+    });
+  }
 
   runApp(const MyApp());
 }

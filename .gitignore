@@ -32,6 +32,10 @@ migrate_working_dir/
 .pub/
 /build/
 
+*/generated_plugin_registrant.cc
+*/generated_plugins.cmake
+*/GeneratedPluginRegistrant.swift
+
 # Symbolication related
 app.*.symbols
 
