@@ -50,11 +50,6 @@ class MyAppState extends State<MyApp> with WindowListener {
     super.dispose();
   }
 
-  @override
-  void onWindowEvent(String eventName) {
-    print('[WindowManager] onWindowEvent: $eventName');
-  }
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
