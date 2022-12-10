@@ -6,7 +6,6 @@ import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:localization/localization.dart';
-import 'package:mysql_client/mysql_client.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'mysql.dart';
 import 'package:intl/intl.dart';
@@ -93,98 +92,8 @@ class TableauGeneralState extends State<TableauGeneral> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             mainAxisSize: MainAxisSize.max,
                             children: [
-                              Container(
-                                  margin: const EdgeInsets.only(
-                                      left: 40.0, top: 20.0),
-                                  width: _deviceWidth! * 0.40,
-                                  height: _deviceHeight! * 0.8,
-                                  child: ListView.builder(
-                                    itemCount: resultTransactions.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      String? newDate = formatDate(
-                                          resultTransactions[index]["date"]!);
-                                      return ListTile(
-                                        onTap: () {
-                                          setState(() {
-                                            selectedTileId =
-                                                resultTransactions[index]["id"];
-                                            description =
-                                                resultTransactions[index]
-                                                    ["description"]!;
-                                            descriptionTxt.text =
-                                                resultTransactions[index]
-                                                    ["description"]!;
-                                            montant = double.parse(
-                                                resultTransactions[index]
-                                                    ["montant"]!);
-                                            montantTxt.text =
-                                                resultTransactions[index]
-                                                    ["montant"]!;
-                                            transactionType =
-                                                resultTransactions[index]
-                                                    ["type"];
-                                            _groupValueTransaction =
-                                                resultTransactions[index]
-                                                    ["type"];
-                                            date = DateTime.parse(
-                                                resultTransactions[index]
-                                                    ["date"]!);
-                                            selectedItem = CategorieEnum()
-                                                .getStringFromId(int.parse(
-                                                    resultTransactions[index]
-                                                        ["categorieID"]!));
-                                          });
-                                        },
-                                        tileColor: resultTransactions[index]
-                                                    ["type"] ==
-                                                TransactionEnum.REVENU
-                                            ? Colors.green
-                                            : Colors.red,
-                                        leading: const Icon(Icons.list),
-                                        title: Text(resultTransactions[index]
-                                            ["description"]!),
-                                        subtitle: Text(newDate!),
-                                        trailing: SizedBox(
-                                          width: _deviceWidth! * 0.12,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.end,
-                                            children: [
-                                              SizedBox(
-                                                width: _deviceWidth! * 0.03,
-                                                child: Text(
-                                                  resultTransactions[index]
-                                                      ['montant']!,
-                                                  style: const TextStyle(
-                                                      fontSize: 18),
-                                                  textAlign: TextAlign.end,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: _deviceHeight! * 0.03,
-                                              ),
-                                              SizedBox(
-                                                width: _deviceWidth! * 0.07,
-                                                child: Text(
-                                                  CategorieEnum()
-                                                      .getStringFromId(int.parse(
-                                                          resultTransactions[
-                                                                  index][
-                                                              'categorieID']!)),
-                                                  style: const TextStyle(
-                                                    fontSize: 18,
-                                                  ),
-                                                  textAlign: TextAlign.end,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  )),
-                              showForm()
+                              transactionListWidget(),
+                              showForm(),
                             ],
                           )
                         : SizedBox(
@@ -227,6 +136,73 @@ class TableauGeneralState extends State<TableauGeneral> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget transactionListWidget() {
+    return Container(
+      margin: const EdgeInsets.only(left: 40.0, top: 20.0),
+      width: _deviceWidth! * 0.40,
+      height: _deviceHeight! * 0.8,
+      child: ListView.builder(
+        itemCount: resultTransactions.length,
+        itemBuilder: (BuildContext context, int index) {
+          String? newDate = formatDate(resultTransactions[index]["date"]!);
+          return ListTile(
+            onTap: () {
+              setState(() {
+                selectedTileId = resultTransactions[index]["id"];
+                description = resultTransactions[index]["description"]!;
+                descriptionTxt.text = resultTransactions[index]["description"]!;
+                montant = double.parse(resultTransactions[index]["montant"]!);
+                montantTxt.text = resultTransactions[index]["montant"]!;
+                transactionType = resultTransactions[index]["type"];
+                _groupValueTransaction = resultTransactions[index]["type"];
+                date = DateTime.parse(resultTransactions[index]["date"]!);
+                selectedItem = CategorieEnum().getStringFromId(
+                    int.parse(resultTransactions[index]["categorieID"]!));
+              });
+            },
+            tileColor:
+                resultTransactions[index]["type"] == TransactionEnum.REVENU
+                    ? Colors.green
+                    : Colors.red,
+            leading: const Icon(Icons.list),
+            title: Text(resultTransactions[index]["description"]!),
+            subtitle: Text(newDate!),
+            trailing: SizedBox(
+              width: _deviceWidth! * 0.12,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    width: _deviceWidth! * 0.03,
+                    child: Text(
+                      resultTransactions[index]['montant']!,
+                      style: const TextStyle(fontSize: 18),
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
+                  SizedBox(
+                    width: _deviceHeight! * 0.03,
+                  ),
+                  SizedBox(
+                    width: _deviceWidth! * 0.07,
+                    child: Text(
+                      CategorieEnum().getStringFromId(
+                          int.parse(resultTransactions[index]['categorieID']!)),
+                      style: const TextStyle(
+                        fontSize: 18,
+                      ),
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }

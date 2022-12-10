@@ -394,8 +394,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
       await stmt.deallocate();
     } catch (e) {
-      print(e.toString());
-      throw Exception();
+      throw Exception(e.toString());
     }
   }
 
