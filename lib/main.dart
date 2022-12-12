@@ -96,7 +96,7 @@ class MyAppState extends State<MyApp> with WindowListener {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: "/login",
+      initialRoute: "/tableauGeneral",
       onGenerateRoute: (settings) {
         return PageRouteBuilder(
             pageBuilder: (_, a1, a2) => routes[settings.name]!(context));

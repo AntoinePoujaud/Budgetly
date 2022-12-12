@@ -43,14 +43,18 @@ class TableauGeneralState extends State<TableauGeneral> {
 
   List<int>? months;
   int? currentMonthId;
+  List<int>? years;
+  int? currentYear;
 
   @override
   void initState() {
     _getMyInformations();
-    getTransactionsForMonth();
+    getTransactionsForMonthAndYear();
     months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     currentMonthId = MonthEnum()
         .getIdFromString(DateFormat.MMMM("en").format(date).toLowerCase());
+    years = [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030];
+    currentYear = date.year;
     super.initState();
   }
 
@@ -94,7 +98,7 @@ class TableauGeneralState extends State<TableauGeneral> {
                             'real_amount'.i18n(), currentRealAmount.toString()),
                       ],
                     ),
-                    selectMonthWidget(),
+                    selectMonthYearWidget(),
                     resultTransactions.isNotEmpty
                         ? transactionsNotNullWidget()
                         : noTransactionWidget()
@@ -108,7 +112,7 @@ class TableauGeneralState extends State<TableauGeneral> {
     );
   }
 
-  Widget selectMonthWidget() {
+  Widget selectMonthYearWidget() {
     return SizedBox(
       width: _deviceWidth! * 0.79,
       child: Row(
@@ -116,16 +120,14 @@ class TableauGeneralState extends State<TableauGeneral> {
         mainAxisSize: MainAxisSize.max,
         children: [
           IconButton(
-            onPressed: () async{
+            onPressed: () async {
               if (currentMonthId == 1) {
-                  currentMonthId = 12;
-                } else {
-                  currentMonthId = currentMonthId! - 1;
-                }
-                await getTransactionsForMonth();
-              setState(() {
-                
-              });
+                currentMonthId = 12;
+              } else {
+                currentMonthId = currentMonthId! - 1;
+              }
+              await getTransactionsForMonthAndYear();
+              setState(() {});
             },
             icon: const Icon(
               Icons.chevron_left,
@@ -138,7 +140,7 @@ class TableauGeneralState extends State<TableauGeneral> {
             onChanged: (value) {
               setState(() {
                 currentMonthId = int.parse(value!);
-                getTransactionsForMonth();
+                getTransactionsForMonthAndYear();
               });
             },
             items: months!
@@ -159,14 +161,66 @@ class TableauGeneralState extends State<TableauGeneral> {
           IconButton(
             onPressed: () async {
               if (currentMonthId == 12) {
-                  currentMonthId = 1;
-                } else {
-                  currentMonthId = currentMonthId! + 1;
-                }
-                await getTransactionsForMonth();
+                currentMonthId = 1;
+              } else {
+                currentMonthId = currentMonthId! + 1;
+              }
+              await getTransactionsForMonthAndYear();
+              setState(() {});
+            },
+            icon: const Icon(
+              Icons.chevron_right,
+              color: Colors.white,
+            ),
+          ),
+          IconButton(
+            onPressed: () async {
+              if (currentYear == 2022) {
+                currentYear = years![years!.length - 1];
+              } else {
+                currentYear = currentYear! - 1;
+              }
+              await getTransactionsForMonthAndYear();
+              setState(() {});
+            },
+            icon: const Icon(
+              Icons.chevron_left,
+              color: Colors.white,
+            ),
+          ),
+          DropdownButton<String>(
+            dropdownColor: const Color.fromARGB(255, 29, 161, 242),
+            value: currentYear.toString(),
+            onChanged: (value) {
               setState(() {
-                
+                currentYear = int.parse(value!);
+                getTransactionsForMonthAndYear();
               });
+            },
+            items: years!
+                .map(
+                  (item) => DropdownMenuItem<String>(
+                    value: item.toString(),
+                    child: Text(
+                      item.toString(),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: _deviceWidth! * 0.013,
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+          IconButton(
+            onPressed: () async {
+              if (currentYear == 2030) {
+                currentYear = years![0];
+              } else {
+                currentYear = currentYear! + 1;
+              }
+              await getTransactionsForMonthAndYear();
+              setState(() {});
             },
             icon: const Icon(
               Icons.chevron_right,
@@ -366,7 +420,7 @@ class TableauGeneralState extends State<TableauGeneral> {
                           selectedTileId
                         ]);
                         resultTransactions = [];
-                        await getTransactionsForMonth();
+                        await getTransactionsForMonthAndYear();
                         // ignore: use_build_context_synchronously
                         showToast(context,
                             const Text("Transaction updated successfully"));
@@ -585,8 +639,8 @@ class TableauGeneralState extends State<TableauGeneral> {
               DateTime? newDate = await showDatePicker(
                 context: context,
                 initialDate: date,
-                firstDate: DateTime(1900),
-                lastDate: DateTime(2100),
+                firstDate: DateTime(2022),
+                lastDate: DateTime(2030),
               );
 
               if (newDate == null) return;
@@ -760,7 +814,7 @@ class TableauGeneralState extends State<TableauGeneral> {
     await updateRealMontant(null, null, id);
     await updateUserMontant(currentRealAmount);
     await deleteTransactionInDb(id);
-    await getTransactionsForMonth();
+    await getTransactionsForMonthAndYear();
   }
 
   Future<void> updateUserMontant(double? currentRealAmount) async {
@@ -859,7 +913,7 @@ class TableauGeneralState extends State<TableauGeneral> {
     }
   }
 
-  Future<void> getTransactionsForMonth() async {
+  Future<void> getTransactionsForMonthAndYear() async {
     bool isResultEmpty = true;
     resultTransactions = [];
     selectedTileId = null;
@@ -869,7 +923,7 @@ class TableauGeneralState extends State<TableauGeneral> {
       userId = prefs.getString("userId");
     }
     String query =
-        "SELECT id, date, type, montant, description, categorieID FROM transaction where MONTH(date) = $currentMonthId AND userID = $userId ORDER BY DAY(date);";
+        "SELECT id, date, type, montant, description, categorieID FROM transaction where MONTH(date) = $currentMonthId AND YEAR(date) = $currentYear AND userID = $userId ORDER BY DAY(date);";
     var connection = await db.getConnection();
     var results = await connection.execute(query, {}, true);
     results.rowsStream.listen((row) {

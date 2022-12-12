@@ -35,5 +35,7 @@
     "label_month_september": "Septembre",
     "label_month_october": "Octobre",
     "label_month_november": "Novembre",
-    "label_month_december": "Décembre"
+    "label_month_december": "Décembre",
+
+    "label_disconnect": "Se déconnecter"
 }
