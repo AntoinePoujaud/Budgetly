@@ -123,6 +123,11 @@ class TableauGeneralState extends State<TableauGeneral> {
             onPressed: () async {
               if (currentMonthId == 1) {
                 currentMonthId = 12;
+                if (currentYear == 2022) {
+                  currentYear = years![years!.length - 1];
+                } else {
+                  currentYear = currentYear! - 1;
+                }
               } else {
                 currentMonthId = currentMonthId! - 1;
               }
@@ -162,6 +167,11 @@ class TableauGeneralState extends State<TableauGeneral> {
             onPressed: () async {
               if (currentMonthId == 12) {
                 currentMonthId = 1;
+                if (currentYear == 2030) {
+                  currentYear = years![0];
+                } else {
+                  currentYear = currentYear! + 1;
+                }
               } else {
                 currentMonthId = currentMonthId! + 1;
               }
