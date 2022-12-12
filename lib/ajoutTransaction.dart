@@ -253,8 +253,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
               DateTime? newDate = await showDatePicker(
                 context: context,
                 initialDate: date,
-                firstDate: DateTime(1900),
-                lastDate: DateTime(2100),
+                firstDate: DateTime(2022),
+                lastDate: DateTime(2030),
               );
 
               if (newDate == null) return;

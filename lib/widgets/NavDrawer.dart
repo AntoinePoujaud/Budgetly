@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:localization/localization.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NavDrawer extends StatefulWidget {
   const NavDrawer({Key? key, required this.currentPage}) : super(key: key);
@@ -18,17 +19,6 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
   String? currentBtnValue;
   Locale? currentLocale;
 
-  // void setLocale(Locale newLocale) {
-  //   setState(() {
-  //     currentLocale = newLocale;
-  //   });
-  // }
-
-  // void initializeLocale(BuildContext context) {
-  //   currentLocale = Localizations.localeOf(context);
-  //   isInitialized = true;
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -36,9 +26,6 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
 
   @override
   Widget build(BuildContext context) {
-    // if (!isInitialized) {
-    //   initializeLocale(context);
-    // }
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     String currentPage = widget.currentPage;
@@ -49,7 +36,8 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Visibility(
-            visible: false, // FR only tant que la feature de changement de langue ne fonctionne pas correctement
+            visible:
+                false, // FR only tant que la feature de changement de langue ne fonctionne pas correctement
             child: SizedBox(
               height: _deviceHeight! * 0.03,
               width: _deviceWidth! * 0.02,
@@ -65,7 +53,7 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
             ),
           ),
           SizedBox(
-            height: _deviceHeight! * 0.7,
+            height: _deviceHeight,
             child: ListView(
               padding: EdgeInsets.zero,
               children: <Widget>[
@@ -87,8 +75,6 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                     ),
                   ),
                   onTap: () {
-                    // currentBtnValue = 'tableau_recap_title'.i18n();
-                    // loadPage(context, currentPage, currentBtnValue);
                     currentPage != 'tableau_recap_title'.i18n()
                         ? Navigator.pushNamed(context, "/")
                         : "";
@@ -105,8 +91,6 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                     ),
                   ),
                   onTap: () {
-                    // currentBtnValue = 'add_transaction_title'.i18n();
-                    // loadPage(context, currentPage, currentBtnValue);
                     currentPage != 'add_transaction_title'.i18n()
                         ? Navigator.pushNamed(context, "/addTransaction")
                         : "";
@@ -123,11 +107,26 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                     ),
                   ),
                   onTap: () {
-                    // currentBtnValue = 'tableau_general_title'.i18n();
-                    // loadPage(context, currentPage, currentBtnValue);
                     currentPage != 'tableau_general_title'.i18n()
                         ? Navigator.pushNamed(context, "/tableauGeneral")
                         : "";
+                  },
+                ),
+                SizedBox(
+                  height: _deviceHeight! * 0.64,
+                ),
+                ListTile(
+                  title: Text(
+                    'label_disconnect'.i18n(),
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                  ),
+                  onTap: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setString("userId", "");
+                    // ignore: use_build_context_synchronously
+                    Navigator.pushNamed(context, "/login");
                   },
                 ),
               ],
