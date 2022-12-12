@@ -75,6 +75,8 @@ class LoginPageState extends State<LoginPage> {
                 SizedBox(height: _deviceHeight! * 0.05),
                 TextFormField(
                   controller: passwordTxt,
+                  obscureText: true,
+                  obscuringCharacter: "*",
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                     labelText: 'Mot de passe',

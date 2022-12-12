@@ -22,5 +22,18 @@
 
     "enum_label_none": "none",
     "enum_label_depense": "depense",
-    "enum_label_revenu": "revenu"
+    "enum_label_revenu": "revenu",
+
+    "label_month_january": "Janvier",
+    "label_month_february": "Février",
+    "label_month_march": "Mars",
+    "label_month_april": "Avril",
+    "label_month_may": "Mai",
+    "label_month_june": "Juin",
+    "label_month_july": "Juillet",
+    "label_month_august": "Août",
+    "label_month_september": "Septembre",
+    "label_month_october": "Octobre",
+    "label_month_november": "Novembre",
+    "label_month_december": "Décembre"
 }

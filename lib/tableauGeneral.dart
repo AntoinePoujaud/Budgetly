@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'Enum/MonthEnum.dart';
 import 'mysql.dart';
 import 'package:intl/intl.dart';
 
@@ -40,10 +41,16 @@ class TableauGeneralState extends State<TableauGeneral> {
   TextEditingController descriptionTxt = TextEditingController();
   TextEditingController montantTxt = TextEditingController();
 
+  List<int>? months;
+  int? currentMonthId;
+
   @override
   void initState() {
     _getMyInformations();
     getTransactionsForMonth();
+    months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+    currentMonthId = MonthEnum()
+        .getIdFromString(DateFormat.MMMM("en").format(date).toLowerCase());
     super.initState();
   }
 
@@ -87,49 +94,10 @@ class TableauGeneralState extends State<TableauGeneral> {
                             'real_amount'.i18n(), currentRealAmount.toString()),
                       ],
                     ),
+                    selectMonthWidget(),
                     resultTransactions.isNotEmpty
-                        ? Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              transactionListWidget(),
-                              showForm(),
-                            ],
-                          )
-                        : SizedBox(
-                            width: _deviceWidth! * 0.75,
-                            height: _deviceHeight! * 0.8,
-                            child: Center(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.max,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    "Vous n'avez pas encore de transaction pour le mois de ${DateFormat.MMMM("fr").format(date)}",
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 45),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  RichText(
-                                    text: TextSpan(
-                                        text:
-                                            "Ajouter une nouvelle transaction",
-                                        style: TextStyle(
-                                            color: Colors.grey.shade600,
-                                            fontSize: 24,
-                                            decoration:
-                                                TextDecoration.underline),
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () {
-                                            Navigator.pushNamed(
-                                                context, "/addTransaction");
-                                          }),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                        ? transactionsNotNullWidget()
+                        : noTransactionWidget()
                   ],
                 ),
               ),
@@ -140,11 +108,129 @@ class TableauGeneralState extends State<TableauGeneral> {
     );
   }
 
+  Widget selectMonthWidget() {
+    return SizedBox(
+      width: _deviceWidth! * 0.79,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          IconButton(
+            onPressed: () async{
+              if (currentMonthId == 1) {
+                  currentMonthId = 12;
+                } else {
+                  currentMonthId = currentMonthId! - 1;
+                }
+                await getTransactionsForMonth();
+              setState(() {
+                
+              });
+            },
+            icon: const Icon(
+              Icons.chevron_left,
+              color: Colors.white,
+            ),
+          ),
+          DropdownButton<String>(
+            dropdownColor: const Color.fromARGB(255, 29, 161, 242),
+            value: currentMonthId.toString(),
+            onChanged: (value) {
+              setState(() {
+                currentMonthId = int.parse(value!);
+                getTransactionsForMonth();
+              });
+            },
+            items: months!
+                .map(
+                  (item) => DropdownMenuItem<String>(
+                    value: item.toString(),
+                    child: Text(
+                      MonthEnum().getStringFromId(item),
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: _deviceWidth! * 0.013,
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+          ),
+          IconButton(
+            onPressed: () async {
+              if (currentMonthId == 12) {
+                  currentMonthId = 1;
+                } else {
+                  currentMonthId = currentMonthId! + 1;
+                }
+                await getTransactionsForMonth();
+              setState(() {
+                
+              });
+            },
+            icon: const Icon(
+              Icons.chevron_right,
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget transactionsNotNullWidget() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            transactionListWidget(),
+            showForm(),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget noTransactionWidget() {
+    return SizedBox(
+      width: _deviceWidth! * 0.75,
+      height: _deviceHeight! * 0.8,
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Vous n'avez pas encore de transaction pour le mois de ${MonthEnum().getStringFromId(currentMonthId)}",
+              style: const TextStyle(color: Colors.white, fontSize: 45),
+              textAlign: TextAlign.center,
+            ),
+            RichText(
+              text: TextSpan(
+                  text: "Ajouter une nouvelle transaction",
+                  style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 24,
+                      decoration: TextDecoration.underline),
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      Navigator.pushNamed(context, "/addTransaction");
+                    }),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget transactionListWidget() {
     return Container(
       margin: const EdgeInsets.only(left: 40.0, top: 20.0),
       width: _deviceWidth! * 0.40,
-      height: _deviceHeight! * 0.8,
+      height: _deviceHeight! * 0.78,
       child: ListView.builder(
         itemCount: resultTransactions.length,
         itemBuilder: (BuildContext context, int index) {
@@ -213,7 +299,7 @@ class TableauGeneralState extends State<TableauGeneral> {
       child: Container(
         margin: const EdgeInsets.only(left: 20.0, top: 20.0),
         width: _deviceWidth! * 0.38,
-        height: _deviceHeight! * 0.8,
+        height: _deviceHeight! * 0.78,
         decoration: BoxDecoration(
             color: Colors.grey.shade800,
             borderRadius: BorderRadius.circular(40)),
@@ -783,7 +869,7 @@ class TableauGeneralState extends State<TableauGeneral> {
       userId = prefs.getString("userId");
     }
     String query =
-        "SELECT id, date, type, montant, description, categorieID FROM transaction where MONTH(date) >= MONTH(NOW()) AND userID = $userId ORDER BY DAY(date);";
+        "SELECT id, date, type, montant, description, categorieID FROM transaction where MONTH(date) = $currentMonthId AND userID = $userId ORDER BY DAY(date);";
     var connection = await db.getConnection();
     var results = await connection.execute(query, {}, true);
     results.rowsStream.listen((row) {
