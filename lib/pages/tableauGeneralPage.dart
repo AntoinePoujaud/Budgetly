@@ -7,19 +7,19 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Enum/MonthEnum.dart';
-import 'mysql.dart';
+import '../Enum/MonthEnum.dart';
+import '../sql/mysql.dart';
 import 'package:intl/intl.dart';
 
-class TableauGeneral extends StatefulWidget {
-  const TableauGeneral({Key? key, required this.title}) : super(key: key);
+class MainPage extends StatefulWidget {
+  const MainPage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
-  TableauGeneralState createState() => TableauGeneralState();
+  MainPageState createState() => MainPageState();
 }
 
-class TableauGeneralState extends State<TableauGeneral> {
+class MainPageState extends State<MainPage> {
   double? _deviceHeight, _deviceWidth;
   var db = Mysql();
   double? currentAmount;

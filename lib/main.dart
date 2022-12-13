@@ -1,12 +1,12 @@
-import 'package:budgetly/ajoutTransaction.dart';
-import 'package:budgetly/signinPage.dart';
-import 'package:budgetly/tableauGeneral.dart';
+import 'package:budgetly/pages/ajoutTransactionPage.dart';
+import 'package:budgetly/pages/signinPage.dart';
+import 'package:budgetly/pages/tableauGeneralPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
 import 'package:window_manager/window_manager.dart';
-import 'loginPage.dart';
-import 'tableauRecap.dart';
+import 'pages/loginPage.dart';
+import 'pages/mainPage.dart';
 import 'package:get/get.dart';
 import 'dart:io' show Platform;
 
@@ -61,8 +61,7 @@ class MyAppState extends State<MyApp> with WindowListener {
       "/": (context) => TableauRecap(title: 'tableau_recap_title'.i18n()),
       "/addTransaction": (context) =>
           AjoutTransaction(title: 'add_transaction_title'.i18n()),
-      "/tableauGeneral": (context) =>
-          TableauGeneral(title: 'tableau_general_title'.i18n()),
+      "/tableauGeneral": (context) => MainPage(title: 'tableau_general_title'.i18n()),
       "/login": (context) => const LoginPage(title: 'Se connecter'),
       "/signIn": (context) => const SignInPage(title: 'Se connecter'),
     };
@@ -96,7 +95,7 @@ class MyAppState extends State<MyApp> with WindowListener {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: "/tableauGeneral",
+      initialRoute: "/",
       onGenerateRoute: (settings) {
         return PageRouteBuilder(
             pageBuilder: (_, a1, a2) => routes[settings.name]!(context));

@@ -1,9 +1,10 @@
 // ignore_for_file: file_names
 
+import 'package:budgetly/src/algorithms/pbkdf2.dart';
+import 'package:budgetly/src/password.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
-import 'mysql.dart';
+import '../sql/mysql.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key, required this.title}) : super(key: key);
@@ -155,8 +156,11 @@ class SignInPageState extends State<SignInPage> {
   }
 
   Future<void> addUser(String mail, String password) async {
+    final algorithm = PBKDF2();
+    final hash = Password.hash(password, algorithm);
+
     String query =
-        "INSERT INTO user (email, password, current_amount, current_real_amount) VALUES ('$mail', '$password', 0, 0)";
+        "INSERT INTO user (email, password, current_amount, current_real_amount) VALUES ('$mail', '$hash', 0, 0)";
     var connection = await db.getConnection();
     await connection.execute(query);
     await connection.close();

@@ -4,8 +4,8 @@ import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/material.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Enum/TransactionEnum.dart';
-import 'mysql.dart';
+import '../Enum/TransactionEnum.dart';
+import '../sql/mysql.dart';
 
 class AjoutTransaction extends StatefulWidget {
   const AjoutTransaction({Key? key, required this.title}) : super(key: key);

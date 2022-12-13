@@ -4,7 +4,7 @@ import 'package:budgetly/widgets/NavDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'mysql.dart';
+import '../sql/mysql.dart';
 
 class TableauRecap extends StatefulWidget {
   const TableauRecap({Key? key, required this.title}) : super(key: key);
