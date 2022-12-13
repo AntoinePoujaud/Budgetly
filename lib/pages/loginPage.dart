@@ -1,10 +1,11 @@
 // ignore_for_file: file_names
 
+import 'package:budgetly/src/password.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'mysql.dart';
+import '../sql/mysql.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required this.title}) : super(key: key);
@@ -192,7 +193,7 @@ class LoginPageState extends State<LoginPage> {
     var connection = await db.getConnection();
     var results = await connection.execute(query, {}, true);
     results.rowsStream.listen((row) {
-      if (row.assoc().values.first.toString() == password) {
+      if (Password.verify(password, row.assoc().values.first.toString())) {
         isPasswordCorrect = true;
       } else {
         isPasswordCorrect = false;
