@@ -1,4 +1,6 @@
 // ignore_for_file: file_names
+import 'dart:convert';
+
 import 'package:budgetly/Enum/CategorieEnum.dart';
 import 'package:budgetly/Enum/FilterGeneralEnum.dart';
 import 'package:budgetly/Enum/TransactionEnum.dart';
@@ -8,8 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Enum/MonthEnum.dart';
+import '../models/TransactionByMonthAndYear.dart';
 import '../sql/mysql.dart';
 import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key, required this.title}) : super(key: key);
@@ -48,7 +52,6 @@ class MainPageState extends State<MainPage> {
 
   @override
   void initState() {
-    _getMyInformations();
     getTransactionsForMonthAndYear();
     months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     currentMonthId = MonthEnum()
@@ -305,13 +308,13 @@ class MainPageState extends State<MainPage> {
                 selectedTileId = resultTransactions[index]["id"];
                 description = resultTransactions[index]["description"]!;
                 descriptionTxt.text = resultTransactions[index]["description"]!;
-                montant = double.parse(resultTransactions[index]["montant"]!);
-                montantTxt.text = resultTransactions[index]["montant"]!;
+                montant = double.parse(resultTransactions[index]["amount"]!);
+                montantTxt.text = resultTransactions[index]["amount"]!;
                 transactionType = resultTransactions[index]["type"];
                 _groupValueTransaction = resultTransactions[index]["type"];
                 date = DateTime.parse(resultTransactions[index]["date"]!);
                 selectedItem = CategorieEnum().getStringFromId(
-                    int.parse(resultTransactions[index]["categorieID"]!));
+                    int.parse(resultTransactions[index]["catId"]!));
               });
             },
             tileColor:
@@ -329,7 +332,7 @@ class MainPageState extends State<MainPage> {
                   SizedBox(
                     width: _deviceWidth! * 0.03,
                     child: Text(
-                      resultTransactions[index]['montant']!,
+                      resultTransactions[index]['amount']!,
                       style: const TextStyle(fontSize: 18),
                       textAlign: TextAlign.end,
                     ),
@@ -341,7 +344,7 @@ class MainPageState extends State<MainPage> {
                     width: _deviceWidth! * 0.07,
                     child: Text(
                       CategorieEnum().getStringFromId(
-                          int.parse(resultTransactions[index]['categorieID']!)),
+                          int.parse(resultTransactions[index]['catId']!)),
                       style: const TextStyle(
                         fontSize: 18,
                       ),
@@ -418,12 +421,10 @@ class MainPageState extends State<MainPage> {
                     ),
                     onPressed: () async {
                       try {
-                        await updateRealMontant(
-                            transactionType, montant, selectedTileId!);
                         await updateTransaction([
                           date,
                           transactionType,
-                          montant,
+                          double.parse(montant!.toStringAsFixed(2)),
                           description,
                           // ignore: use_build_context_synchronously
                           CategorieEnum().getIdFromEnum(context, selectedItem),
@@ -771,160 +772,60 @@ class MainPageState extends State<MainPage> {
 
   Future<List<String>> getAllCategories() async {
     List<String> allCategories = [];
-    String query = "SELECT nom FROM categorie;";
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      allCategories.add(row.assoc().values.first.toString());
-    });
-    connection.close();
-    return allCategories;
+    var response =
+        await http.get(Uri.parse("http://localhost:8081/getCategories"));
+    if (json.decode(response.body) != null) {
+      for (var i = 0; i < json.decode(response.body).length; i++) {
+        allCategories.add(json.decode(response.body)[i]["name"]);
+      }
+      return allCategories;
+    }
+    return [];
   }
 
   Future<void> _getMyInformations() async {
-    _getMyCurrentAmount();
-    _getMyCurrentRealAmount();
-  }
-
-  Future<void> _getMyCurrentAmount() async {
     String? userId = "1";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    String query = 'SELECT current_amount FROM user where id = $userId;';
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      setState(() {
-        currentAmount = double.parse(row.assoc().values.first!);
-      });
-    });
-    connection.close();
-  }
-
-  Future<void> _getMyCurrentRealAmount() async {
-    String? userId = "1";
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("userId") != null) {
-      userId = prefs.getString("userId");
+    var response =
+        await http.get(Uri.parse("http://localhost:8081/getAmounts/$userId"));
+    if (response.statusCode != 200) {
+      throw Exception();
     }
-    String query = 'SELECT current_real_amount FROM user where id = $userId;';
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      setState(() {
-        currentRealAmount = double.parse(row.assoc().values.first!);
-      });
+    setState(() {
+      currentAmount = double.parse(json
+          .decode(response.body)["currentAmount"]
+          .toDouble()
+          .toStringAsFixed(2));
+      currentRealAmount = double.parse(json
+          .decode(response.body)["currentRealAmount"]
+          .toDouble()
+          .toStringAsFixed(2));
     });
-    connection.close();
   }
 
   Future<void> deleteTransaction(String id) async {
-    await updateRealMontant(null, null, id);
-    await updateUserMontant(currentRealAmount);
-    await deleteTransactionInDb(id);
+    var response = await http
+        .delete(Uri.parse("http://localhost:8081/deleteTransaction/$id"));
+    if (response.statusCode != 204) {
+      throw Exception();
+    }
     await getTransactionsForMonthAndYear();
   }
 
-  Future<void> updateUserMontant(double? currentRealAmount) async {
-    String? userId = "1";
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("userId") != null) {
-      userId = prefs.getString("userId");
-    }
-    String query =
-        "UPDATE user SET current_real_amount = $currentRealAmount WHERE id = $userId;";
-    var connection = await db.getConnection();
-    await connection.execute(query, {}, true);
-    await connection.close();
-  }
-
-  Future<void> deleteTransactionInDb(String id) async {
-    String query = "DELETE FROM transaction WHERE id = $id";
-    var connection = await db.getConnection();
-    await connection.execute(query, {}, true);
-    await connection.close();
-  }
-
-  Future<void> updateRealMontant(
-      String? type, double? montant, String id) async {
-    await removeOldMontant(id);
-    if (type != null && montant != null) {
-      await addNewMontant(type, montant);
-    }
-  }
-
-  Future<void> addNewMontant(String? type, double? montant) async {
-    String? userId = "1";
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("userId") != null) {
-      userId = prefs.getString("userId");
-    }
-    if (type == TransactionEnum.DEPENSE) {
-      montant =
-          double.parse((currentRealAmount! - montant!).toStringAsFixed(2));
-      currentRealAmount = montant;
-    } else if (type == TransactionEnum.REVENU) {
-      montant =
-          double.parse((montant! + currentRealAmount!).toStringAsFixed(2));
-      currentRealAmount = montant;
-    }
-    String query =
-        "UPDATE user SET current_real_amount = $montant WHERE id = $userId;";
-    var connection = await db.getConnection();
-    await connection.execute(query, {}, true);
-    await connection.close();
-  }
-
-  Future<void> removeOldMontant(String? id) async {
-    double? oldMontant;
-    String? oldType;
-    String query = "SELECT montant, type FROM transaction WHERE id = $id;";
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      oldMontant = double.parse(row.assoc().values.first!);
-      oldType = row.assoc().values.last;
-      // setState(() {
-      if (oldType == TransactionEnum.DEPENSE) {
-        currentRealAmount =
-            double.parse((currentRealAmount! + oldMontant!).toStringAsFixed(2));
-      } else if (oldType == TransactionEnum.REVENU) {
-        currentRealAmount =
-            double.parse((currentRealAmount! - oldMontant!).toStringAsFixed(2));
-      }
-      // });
-    });
-    await connection.close();
-  }
-
   Future<void> updateTransaction(List<dynamic> params) async {
-    try {
-      String query =
-          "UPDATE transaction set date = ?, type = ?, montant = ?, description = ?, categorieID = ? WHERE id = ?;";
-      var connection = await db.getConnection();
-
-      var stmt = await connection.prepare(
-        query,
-      );
-      await stmt.execute([
-        "${params[0].year}-${params[0].month}-${params[0].day}",
-        params[1],
-        params[2],
-        params[3],
-        params[4],
-        params[5]
-      ]);
-
-      await stmt.deallocate();
-    } catch (e) {
+    var response = await http.put(
+      Uri.parse(
+          "http://localhost:8081/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}"),
+    );
+    if (response.statusCode != 200) {
       throw Exception();
     }
   }
 
   Future<void> getTransactionsForMonthAndYear() async {
-    bool isResultEmpty = true;
     resultTransactions = [];
     selectedTileId = null;
     String? userId = "1";
@@ -932,20 +833,27 @@ class MainPageState extends State<MainPage> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    String query =
-        "SELECT id, date, type, montant, description, categorieID FROM transaction where MONTH(date) = $currentMonthId AND YEAR(date) = $currentYear AND userID = $userId ORDER BY DAY(date);";
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      isResultEmpty = false;
+    var fetchedTransactions = await fetchTransactions(userId);
+    if (fetchedTransactions.isNotEmpty) {
       setState(() {
-        resultTransactions.add(row.assoc());
+        for (var transaction in fetchedTransactions) {
+          resultTransactions.add(transaction.convertTransaction());
+        }
       });
-    });
-    if (isResultEmpty) {
+    } else {
       setState(() {});
     }
+    _getMyInformations();
+  }
 
-    connection.close();
+  Future<List<TransactionByMonthAndYear>> fetchTransactions(
+      String? userId) async {
+    var response = await http.get(Uri.parse(
+        "http://localhost:8081/getTransactionsForMonthAndYear?userId=$userId&selectedMonthId=$currentMonthId&selectedYear=$currentYear"));
+    return json.decode(response.body) != null
+        ? (json.decode(response.body) as List)
+            .map((e) => TransactionByMonthAndYear.fromJson(e))
+            .toList()
+        : [];
   }
 }

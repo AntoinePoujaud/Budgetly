@@ -63,7 +63,7 @@ class MyAppState extends State<MyApp> with WindowListener {
           AjoutTransaction(title: 'add_transaction_title'.i18n()),
       "/tableauGeneral": (context) => MainPage(title: 'tableau_general_title'.i18n()),
       "/login": (context) => const LoginPage(title: 'Se connecter'),
-      "/signIn": (context) => const SignInPage(title: 'Se connecter'),
+      "/signIn": (context) => const SignInPage(title: "S'inscrire"),
     };
     return GetMaterialApp(
       supportedLocales: const [
