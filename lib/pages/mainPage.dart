@@ -29,7 +29,7 @@ class TableauRecapState extends State<TableauRecap> {
   Future<void> _getMyCurrentAmount() async {
     String? userId = "1";
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("userId") != null) {
+    if (prefs.getString("userId") != null && prefs.getString("userId") != "") {
       userId = prefs.getString("userId");
     }
     String query = 'SELECT current_amount FROM user where id = $userId;';
@@ -46,7 +46,7 @@ class TableauRecapState extends State<TableauRecap> {
   Future<void> _getMyCurrentRealAmount() async {
     String? userId = "1";
     final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("userId") != null) {
+    if (prefs.getString("userId") != null && prefs.getString("userId") != "") {
       userId = prefs.getString("userId");
     }
     String query = 'SELECT current_real_amount FROM user where id = $userId;';

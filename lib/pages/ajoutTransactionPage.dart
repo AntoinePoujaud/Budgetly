@@ -1,11 +1,15 @@
 // ignore_for_file: file_names
+import 'dart:convert';
+
 import 'package:budgetly/Enum/CategorieEnum.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Enum/TransactionEnum.dart';
 import '../sql/mysql.dart';
+import 'package:http/http.dart' as http;
 
 class AjoutTransaction extends StatefulWidget {
   const AjoutTransaction({Key? key, required this.title}) : super(key: key);
@@ -30,11 +34,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   String? description;
   String? categorie = CategorieEnum.LOISIRS;
 
-  double? actualUserAmount;
-
   @override
   void initState() {
-    getActualRealAmount();
     super.initState();
   }
 
@@ -116,12 +117,11 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                       await addTransaction([
                         currentDate,
                         transactionType,
-                        montant,
+                        double.parse(montant!.toStringAsFixed(2)),
                         description,
                         CategorieEnum().getIdFromEnum(context, selectedItem),
                       ]);
 
-                      await updateRealMontant(transactionType, montant);
                       resetAllValues();
                       // ignore: use_build_context_synchronously
                       showToast(context,
@@ -192,7 +192,10 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     return SizedBox(
       width: customTransactionInputWidth(),
       child: TextFormField(
-        keyboardType: TextInputType.number,
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter.allow(RegExp(r'[0-9]+[,.]{0,1}[0-9]*')),
+        ],
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
         decoration: InputDecoration(
           labelText: 'label_enter_amount'.i18n().toUpperCase(),
           labelStyle: TextStyle(
@@ -360,14 +363,15 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   Future<List<String>> getAllCategories() async {
     List<String> allCategories = [];
-    String query = "SELECT nom FROM categorie;";
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      allCategories.add(row.assoc().values.first.toString());
-    });
-    connection.close();
-    return allCategories;
+    var response =
+        await http.get(Uri.parse("http://localhost:8081/getCategories"));
+    if (json.decode(response.body) != null) {
+      for (var i = 0; i < json.decode(response.body).length; i++) {
+        allCategories.add(json.decode(response.body)[i]["name"]);
+      }
+      return allCategories;
+    }
+    return [];
   }
 
   Future<void> addTransaction(List<dynamic> params) async {
@@ -376,64 +380,17 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    try {
-      String query =
-          "INSERT INTO transaction(date, type, montant, description, categorieID, userID) VALUES (?, ?, ?, ?, ?, $userId);";
-      var connection = await db.getConnection();
 
-      var stmt = await connection.prepare(
-        query,
-      );
-      await stmt.execute([
-        "${params[0].year}-${params[0].month}-${params[0].day}",
-        params[1],
-        params[2],
-        params[3],
-        params[4],
-      ]);
-
-      await stmt.deallocate();
-    } catch (e) {
-      throw Exception(e.toString());
+    var response = await http.post(Uri.parse(
+        "http://localhost:8081/addTransaction?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&userId=${userId}"));
+    if (response.statusCode != 201) {
+      throw Exception();
     }
   }
 
   void showToast(BuildContext context, content) {
     final scaffold = ScaffoldMessenger.of(context);
     scaffold.showSnackBar(SnackBar(content: content));
-  }
-
-  Future<void> updateRealMontant(String? type, double? montant) async {
-    String? userId = "1";
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("userId") != null) {
-      userId = prefs.getString("userId");
-    }
-    if (type == TransactionEnum.DEPENSE) {
-      montant = (actualUserAmount! - montant!);
-    } else if (type == TransactionEnum.REVENU) {
-      montant = (montant! + actualUserAmount!);
-    }
-    String query =
-        "UPDATE user SET current_real_amount = $montant WHERE id = $userId;";
-    var connection = await db.getConnection();
-    await connection.execute(query, {}, true);
-    connection.close();
-  }
-
-  Future<void> getActualRealAmount() async {
-    String? userId = "1";
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("userId") != null) {
-      userId = prefs.getString("userId");
-    }
-    String query = "SELECT current_real_amount FROM user WHERE id = $userId;";
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      actualUserAmount = double.tryParse(row.assoc().values.first!);
-    });
-    connection.close();
   }
 
   void resetAllValues() {
