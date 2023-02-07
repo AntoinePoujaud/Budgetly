@@ -2,8 +2,8 @@
 
 import 'dart:convert';
 
-import 'package:budgetly/src/algorithms/pbkdf2.dart';
-import 'package:budgetly/src/password.dart';
+import 'package:Budgetly/src/algorithms/pbkdf2.dart';
+import 'package:Budgetly/src/password.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

@@ -1,8 +1,8 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 
-import 'package:budgetly/utils/menuLayout.dart';
-import 'package:budgetly/widgets/NavDrawer.dart';
+import 'package:Budgetly/utils/menuLayout.dart';
+import 'package:Budgetly/widgets/NavDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localization/localization.dart';

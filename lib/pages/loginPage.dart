@@ -8,8 +8,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:budgetly/src/algorithms/pbkdf2.dart';
-import 'package:budgetly/src/password.dart';
+import 'package:Budgetly/src/algorithms/pbkdf2.dart';
+import 'package:Budgetly/src/password.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required this.title}) : super(key: key);

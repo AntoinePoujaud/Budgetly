@@ -1,6 +1,6 @@
-import 'package:budgetly/pages/ajoutTransactionPage.dart';
-import 'package:budgetly/pages/signinPage.dart';
-import 'package:budgetly/pages/tableauGeneralPage.dart';
+import 'package:Budgetly/pages/ajoutTransactionPage.dart';
+import 'package:Budgetly/pages/signinPage.dart';
+import 'package:Budgetly/pages/tableauGeneralPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
