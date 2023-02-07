@@ -74,7 +74,7 @@ flutter:
   # json files directory
   assets:
     - lib/i18n/
-    - assets/.env
+    - lib/.env
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg
