@@ -7,11 +7,11 @@ import 'package:budgetly/Enum/TransactionEnum.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Enum/MonthEnum.dart';
 import '../models/TransactionByMonthAndYear.dart';
-import '../sql/mysql.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
@@ -25,7 +25,6 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> {
   double? _deviceHeight, _deviceWidth;
-  var db = Mysql();
   double? currentAmount;
   double? currentRealAmount;
   String? _groupValue = FilterGeneralEnum.LAST;
@@ -773,7 +772,7 @@ class MainPageState extends State<MainPage> {
   Future<List<String>> getAllCategories() async {
     List<String> allCategories = [];
     var response =
-        await http.get(Uri.parse("http://localhost:8081/getCategories"));
+        await http.get(Uri.parse("${dotenv.env['SERVER_URL']}/getCategories"));
     if (json.decode(response.body) != null) {
       for (var i = 0; i < json.decode(response.body).length; i++) {
         allCategories.add(json.decode(response.body)[i]["name"]);
@@ -790,7 +789,7 @@ class MainPageState extends State<MainPage> {
       userId = prefs.getString("userId");
     }
     var response =
-        await http.get(Uri.parse("http://localhost:8081/getAmounts/$userId"));
+        await http.get(Uri.parse("${dotenv.env['SERVER_URL']}/getAmounts/$userId"));
     if (response.statusCode != 200) {
       throw Exception();
     }
@@ -808,7 +807,7 @@ class MainPageState extends State<MainPage> {
 
   Future<void> deleteTransaction(String id) async {
     var response = await http
-        .delete(Uri.parse("http://localhost:8081/deleteTransaction/$id"));
+        .delete(Uri.parse("${dotenv.env['SERVER_URL']}/deleteTransaction/$id"));
     if (response.statusCode != 204) {
       throw Exception();
     }
@@ -818,7 +817,7 @@ class MainPageState extends State<MainPage> {
   Future<void> updateTransaction(List<dynamic> params) async {
     var response = await http.put(
       Uri.parse(
-          "http://localhost:8081/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}"),
+          "${dotenv.env['SERVER_URL']}/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}"),
     );
     if (response.statusCode != 200) {
       throw Exception();
@@ -849,7 +848,7 @@ class MainPageState extends State<MainPage> {
   Future<List<TransactionByMonthAndYear>> fetchTransactions(
       String? userId) async {
     var response = await http.get(Uri.parse(
-        "http://localhost:8081/getTransactionsForMonthAndYear?userId=$userId&selectedMonthId=$currentMonthId&selectedYear=$currentYear"));
+        "${dotenv.env['SERVER_URL']}/getTransactionsForMonthAndYear?userId=$userId&selectedMonthId=$currentMonthId&selectedYear=$currentYear"));
     return json.decode(response.body) != null
         ? (json.decode(response.body) as List)
             .map((e) => TransactionByMonthAndYear.fromJson(e))

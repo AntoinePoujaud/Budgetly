@@ -5,30 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
-import 'package:window_manager/window_manager.dart';
 import 'pages/loginPage.dart';
 import 'pages/mainPage.dart';
 import 'package:get/get.dart';
-import 'dart:io' show Platform;
 
-void main() async {
-  if (Platform.isWindows) {
-    WidgetsFlutterBinding.ensureInitialized();
-    await dotenv.load();
-    // Must add this line.
-    // await windowManager.ensureInitialized();
-
-    // WindowOptions windowOptions = const WindowOptions(
-    //   backgroundColor: Colors.transparent,
-    //   skipTaskbar: false,
-    // );
-    // windowManager.waitUntilReadyToShow(windowOptions, () async {
-    //   await windowManager.show();
-    //   await windowManager.focus();
-    //   await windowManager.maximize();
-    // });
-  }
-
+void main(){
+  // await dotenv.load();
   runApp(const MyApp());
 }
 
@@ -39,19 +21,7 @@ class MyApp extends StatefulWidget {
   MyAppState createState() => MyAppState();
 }
 
-class MyAppState extends State<MyApp> with WindowListener {
-  @override
-  void initState() {
-    windowManager.addListener(this);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    windowManager.removeListener(this);
-    super.dispose();
-  }
-
+class MyAppState extends State<MyApp>{
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -104,34 +74,5 @@ class MyAppState extends State<MyApp> with WindowListener {
             pageBuilder: (_, a1, a2) => routes[settings.name]!(context));
       },
     );
-  }
-
-  void onWindowsClose() async {
-    bool isPreventClose = await windowManager.isPreventClose();
-    if (isPreventClose) {
-      showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            title: const Text('Are you sure you want to close this window?'),
-            actions: [
-              TextButton(
-                child: const Text('No'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              TextButton(
-                child: const Text('Yes'),
-                onPressed: () async {
-                  Navigator.of(context).pop();
-                  await windowManager.destroy();
-                },
-              ),
-            ],
-          );
-        },
-      );
-    }
   }
 }

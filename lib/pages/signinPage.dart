@@ -4,7 +4,8 @@ import 'package:budgetly/src/algorithms/pbkdf2.dart';
 import 'package:budgetly/src/password.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import '../sql/mysql.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key, required this.title}) : super(key: key);
@@ -16,7 +17,6 @@ class SignInPage extends StatefulWidget {
 
 class SignInPageState extends State<SignInPage> {
   double? _deviceHeight, _deviceWidth;
-  var db = Mysql();
   final _formKey = GlobalKey<FormState>();
   String? mail, password;
   TextEditingController passwordTxt = TextEditingController();
@@ -142,43 +142,20 @@ class SignInPageState extends State<SignInPage> {
   }
 
   Future<void> addUserIfNew(String mail, String password) async {
-    bool isMailAlreadyExists = false;
-    if (emailTxt.text != "") {
-      isMailAlreadyExists = await checkIfMailExists(mail);
-    } else {
+    if (emailTxt.text == "") {
       throw Exception("mail can't be empty");
     }
-    if (!isMailAlreadyExists) {
-      addUser(mail, password);
-    } else {
-      throw Exception("mail already exists");
-    }
+    addUser(mail, password);
   }
 
   Future<void> addUser(String mail, String password) async {
     final algorithm = PBKDF2();
     final hash = Password.hash(password, algorithm);
 
-    String query =
-        "INSERT INTO user (email, password, current_amount, current_real_amount) VALUES ('$mail', '$hash', 0, 0)";
-    var connection = await db.getConnection();
-    await connection.execute(query);
-    await connection.close();
-  }
-
-  Future<bool> checkIfMailExists(String mail) async {
-    bool isMailAlreadyExists = false;
-    String query = "SELECT email FROM user where email = '$mail'";
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      if (row.assoc().values.first.toString() == mail) {
-        isMailAlreadyExists = true;
-      } else {
-        isMailAlreadyExists = false;
-      }
-    });
-    await connection.close();
-    return isMailAlreadyExists;
+    var response = await http.post(Uri.parse(
+        "${dotenv.env['SERVER_URL']}/addUser?email=$mail&password=$hash"));
+    if (response.statusCode != 200) {
+      throw Exception();
+    }
   }
 }

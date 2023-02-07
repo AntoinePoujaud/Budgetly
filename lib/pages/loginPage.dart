@@ -1,11 +1,13 @@
 // ignore_for_file: file_names
 
-import 'package:budgetly/src/password.dart';
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
-import '../sql/mysql.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required this.title}) : super(key: key);
@@ -17,7 +19,6 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
   double? _deviceHeight, _deviceWidth;
-  var db = Mysql();
   final _formKey = GlobalKey<FormState>();
   String? mail, password;
 
@@ -144,62 +145,15 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Future<void> login(BuildContext context, String mail, String password) async {
-    if (await checkIfMailExists(mail)) {
-      if (await checkIfPasswordIsCorrect(mail, password)) {
-        String userId = await getUserId();
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString("userId", userId);
-        // ignore: use_build_context_synchronously
-        Navigator.pushNamed(context, "/");
-      } else {
-        throw Exception("Password incorrect. Please try again");
-      }
-    } else {
-      throw Exception("This mail doesn't exists");
+    var response =
+        await http.get(Uri.parse("${dotenv.env['SERVER_URL']}/logUser?email=$mail&password=$password"));
+    if (response.statusCode != 200) {
+      throw Exception();
     }
-  }
-
-  Future<String> getUserId() async {
-    String? userId;
-    String query = "SELECT id FROM user where email = '$mail'";
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      userId = row.assoc().values.first.toString();
-    });
-    await connection.close();
-    return userId!;
-  }
-
-  Future<bool> checkIfMailExists(String mail) async {
-    bool isMailAlreadyExists = false;
-    String query = "SELECT email FROM user where email = '$mail'";
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      if (row.assoc().values.first.toString() == mail) {
-        isMailAlreadyExists = true;
-      } else {
-        isMailAlreadyExists = false;
-      }
-    });
-    await connection.close();
-    return isMailAlreadyExists;
-  }
-
-  Future<bool> checkIfPasswordIsCorrect(String mail, String password) async {
-    bool isPasswordCorrect = false;
-    String query = "SELECT password FROM user WHERE email = '$mail'";
-    var connection = await db.getConnection();
-    var results = await connection.execute(query, {}, true);
-    results.rowsStream.listen((row) {
-      if (Password.verify(password, row.assoc().values.first.toString())) {
-        isPasswordCorrect = true;
-      } else {
-        isPasswordCorrect = false;
-      }
-    });
-    await connection.close();
-    return isPasswordCorrect;
+    String userId = json.decode(response.body)["id"];
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString("userId", userId);
+    // ignore: use_build_context_synchronously
+    Navigator.pushNamed(context, "/");
   }
 }
