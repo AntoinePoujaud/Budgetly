@@ -32,6 +32,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   DateTime? currentDate;
   String? description;
   String? categorie = CategorieEnum.LOISIRS;
+  String serverUrl = dotenv.env["SERVER_URL"].toString();
 
   @override
   void initState() {
@@ -363,7 +364,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   Future<List<String>> getAllCategories() async {
     List<String> allCategories = [];
     var response =
-        await http.get(Uri.parse("${dotenv.env['SERVER_URL']}/getCategories"));
+        await http.get(Uri.parse("$serverUrl/getCategories"));
     if (json.decode(response.body) != null) {
       for (var i = 0; i < json.decode(response.body).length; i++) {
         allCategories.add(json.decode(response.body)[i]["name"]);
@@ -381,7 +382,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     }
 
     var response = await http.post(Uri.parse(
-        "${dotenv.env['SERVER_URL']}/addTransaction?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&userId=$userId"));
+        "$serverUrl/addTransaction?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&userId=$userId"));
     if (response.statusCode != 201) {
       throw Exception();
     }

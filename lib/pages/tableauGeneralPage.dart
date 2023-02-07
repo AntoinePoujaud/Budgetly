@@ -49,6 +49,8 @@ class MainPageState extends State<MainPage> {
   List<int>? years;
   int? currentYear;
 
+  String serverUrl = dotenv.env["SERVER_URL"].toString();
+
   @override
   void initState() {
     getTransactionsForMonthAndYear();
@@ -771,8 +773,7 @@ class MainPageState extends State<MainPage> {
 
   Future<List<String>> getAllCategories() async {
     List<String> allCategories = [];
-    var response =
-        await http.get(Uri.parse("${dotenv.env['SERVER_URL']}/getCategories"));
+    var response = await http.get(Uri.parse("$serverUrl/getCategories"));
     if (json.decode(response.body) != null) {
       for (var i = 0; i < json.decode(response.body).length; i++) {
         allCategories.add(json.decode(response.body)[i]["name"]);
@@ -788,8 +789,8 @@ class MainPageState extends State<MainPage> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    var response =
-        await http.get(Uri.parse("${dotenv.env['SERVER_URL']}/getAmounts/$userId"));
+    print("$serverUrl/getAmounts/$userId");
+    var response = await http.get(Uri.parse("$serverUrl/getAmounts/$userId"));
     if (response.statusCode != 200) {
       throw Exception();
     }
@@ -817,7 +818,7 @@ class MainPageState extends State<MainPage> {
   Future<void> updateTransaction(List<dynamic> params) async {
     var response = await http.put(
       Uri.parse(
-          "${dotenv.env['SERVER_URL']}/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}"),
+          "$serverUrl/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}"),
     );
     if (response.statusCode != 200) {
       throw Exception();
@@ -848,7 +849,7 @@ class MainPageState extends State<MainPage> {
   Future<List<TransactionByMonthAndYear>> fetchTransactions(
       String? userId) async {
     var response = await http.get(Uri.parse(
-        "${dotenv.env['SERVER_URL']}/getTransactionsForMonthAndYear?userId=$userId&selectedMonthId=$currentMonthId&selectedYear=$currentYear"));
+        "$serverUrl/getTransactionsForMonthAndYear?userId=$userId&selectedMonthId=$currentMonthId&selectedYear=$currentYear"));
     return json.decode(response.body) != null
         ? (json.decode(response.body) as List)
             .map((e) => TransactionByMonthAndYear.fromJson(e))

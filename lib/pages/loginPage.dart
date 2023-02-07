@@ -8,6 +8,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import 'package:budgetly/src/algorithms/pbkdf2.dart';
+import 'package:budgetly/src/password.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required this.title}) : super(key: key);
@@ -24,6 +26,9 @@ class LoginPageState extends State<LoginPage> {
 
   TextEditingController passwordTxt = TextEditingController();
   TextEditingController emailTxt = TextEditingController();
+  String serverUrl = dotenv.env["SERVER_URL"].toString();
+  MaterialStatesController submitBtn = MaterialStatesController();
+  bool isEnabled = true;
 
   @override
   Widget build(BuildContext context) {
@@ -105,15 +110,20 @@ class LoginPageState extends State<LoginPage> {
                 ),
                 SizedBox(height: _deviceHeight! * 0.05),
                 ElevatedButton(
+                  statesController: submitBtn,
                   onPressed: () {
-                    login(context, emailTxt.text, passwordTxt.text);
+                    isEnabled
+                        ? login(context, emailTxt.text, passwordTxt.text)
+                        : null;
                   },
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.all(20.0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(40),
                     ),
-                    backgroundColor: const Color.fromARGB(255, 29, 161, 242),
+                    backgroundColor: isEnabled
+                        ? const Color.fromARGB(255, 29, 161, 242)
+                        : Colors.grey,
                   ),
                   child: Text(
                     "Se connecter",
@@ -145,15 +155,24 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Future<void> login(BuildContext context, String mail, String password) async {
-    var response =
-        await http.get(Uri.parse("${dotenv.env['SERVER_URL']}/logUser?email=$mail&password=$password"));
+    final algorithm = PBKDF2();
+    final hash = Password.hash(password, algorithm);
+    var response = await http
+        .get(Uri.parse("$serverUrl/loginUser?email=$mail&password=$hash"));
     if (response.statusCode != 200) {
-      throw Exception();
+      // ignore: use_build_context_synchronously
+      showToast(context, const Text("Login/password incorrect"));
+    } else {
+      String userId = json.decode(response.body)["id"].toString();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("userId", userId);
+      // ignore: use_build_context_synchronously
+      Navigator.pushNamed(context, "/");
     }
-    String userId = json.decode(response.body)["id"];
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString("userId", userId);
-    // ignore: use_build_context_synchronously
-    Navigator.pushNamed(context, "/");
+  }
+
+  void showToast(BuildContext context, content) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(SnackBar(content: content));
   }
 }

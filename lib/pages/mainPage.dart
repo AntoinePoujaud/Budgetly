@@ -22,6 +22,7 @@ class TableauRecapState extends State<TableauRecap> {
   double currentAmount = 0;
   double currentRealAmount = 0;
   String currentPage = 'Tableau récapitulatif';
+  String serverUrl = dotenv.env["SERVER_URL"].toString();
 
   Future<void> _getMyInformations() async {
     String? userId = "1";
@@ -30,7 +31,7 @@ class TableauRecapState extends State<TableauRecap> {
       userId = prefs.getString("userId");
     }
     var response =
-        await http.get(Uri.parse("${dotenv.env['SERVER_URL']}/getAmounts/$userId"));
+        await http.get(Uri.parse("$serverUrl/getAmounts/$userId"));
     if (response.statusCode != 200) {
       throw Exception();
     }

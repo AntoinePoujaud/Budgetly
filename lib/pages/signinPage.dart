@@ -1,11 +1,14 @@
 // ignore_for_file: file_names
 
+import 'dart:convert';
+
 import 'package:budgetly/src/algorithms/pbkdf2.dart';
 import 'package:budgetly/src/password.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key, required this.title}) : super(key: key);
@@ -21,6 +24,7 @@ class SignInPageState extends State<SignInPage> {
   String? mail, password;
   TextEditingController passwordTxt = TextEditingController();
   TextEditingController emailTxt = TextEditingController();
+  String serverUrl = dotenv.env["SERVER_URL"].toString();
 
   @override
   Widget build(BuildContext context) {
@@ -153,9 +157,21 @@ class SignInPageState extends State<SignInPage> {
     final hash = Password.hash(password, algorithm);
 
     var response = await http.post(Uri.parse(
-        "${dotenv.env['SERVER_URL']}/addUser?email=$mail&password=$hash"));
+        "$serverUrl/addUser?email=$mail&password=$hash"));
     if (response.statusCode != 200) {
-      throw Exception();
+      // ignore: use_build_context_synchronously
+      showToast(context, const Text("Error while creating account"));
+    } else {
+      String userId = json.decode(response.body)["id"].toString();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("userId", userId);
+      // ignore: use_build_context_synchronously
+      Navigator.pushNamed(context, "/");
     }
+  }
+
+  void showToast(BuildContext context, content) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(SnackBar(content: content));
   }
 }

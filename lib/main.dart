@@ -9,8 +9,8 @@ import 'pages/loginPage.dart';
 import 'pages/mainPage.dart';
 import 'package:get/get.dart';
 
-void main(){
-  // await dotenv.load();
+void main()async{
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 
@@ -64,11 +64,11 @@ class MyAppState extends State<MyApp>{
         // delegate from localization package
         LocalJsonLocalization.delegate,
       ],
-      title: 'Flutter Demo',
+      title: 'Budgetly',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: "/",
+      initialRoute: "/login",
       onGenerateRoute: (settings) {
         return PageRouteBuilder(
             pageBuilder: (_, a1, a2) => routes[settings.name]!(context));
