@@ -2,6 +2,7 @@ import 'package:budgetly/pages/ajoutTransactionPage.dart';
 import 'package:budgetly/pages/signinPage.dart';
 import 'package:budgetly/pages/tableauGeneralPage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
 import 'package:window_manager/window_manager.dart';
@@ -13,18 +14,19 @@ import 'dart:io' show Platform;
 void main() async {
   if (Platform.isWindows) {
     WidgetsFlutterBinding.ensureInitialized();
+    await dotenv.load();
     // Must add this line.
-    await windowManager.ensureInitialized();
+    // await windowManager.ensureInitialized();
 
-    WindowOptions windowOptions = const WindowOptions(
-      backgroundColor: Colors.transparent,
-      skipTaskbar: false,
-    );
-    windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.show();
-      await windowManager.focus();
-      await windowManager.maximize();
-    });
+    // WindowOptions windowOptions = const WindowOptions(
+    //   backgroundColor: Colors.transparent,
+    //   skipTaskbar: false,
+    // );
+    // windowManager.waitUntilReadyToShow(windowOptions, () async {
+    //   await windowManager.show();
+    //   await windowManager.focus();
+    //   await windowManager.maximize();
+    // });
   }
 
   runApp(const MyApp());
@@ -61,7 +63,8 @@ class MyAppState extends State<MyApp> with WindowListener {
       "/": (context) => TableauRecap(title: 'tableau_recap_title'.i18n()),
       "/addTransaction": (context) =>
           AjoutTransaction(title: 'add_transaction_title'.i18n()),
-      "/tableauGeneral": (context) => MainPage(title: 'tableau_general_title'.i18n()),
+      "/tableauGeneral": (context) =>
+          MainPage(title: 'tableau_general_title'.i18n()),
       "/login": (context) => const LoginPage(title: 'Se connecter'),
       "/signIn": (context) => const SignInPage(title: "S'inscrire"),
     };
