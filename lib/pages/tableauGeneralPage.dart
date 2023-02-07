@@ -789,7 +789,6 @@ class MainPageState extends State<MainPage> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    print("$serverUrl/getAmounts/$userId");
     var response = await http.get(Uri.parse("$serverUrl/getAmounts/$userId"));
     if (response.statusCode != 200) {
       throw Exception();
