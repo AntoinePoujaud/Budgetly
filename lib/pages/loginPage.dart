@@ -26,7 +26,7 @@ class LoginPageState extends State<LoginPage> {
 
   TextEditingController passwordTxt = TextEditingController();
   TextEditingController emailTxt = TextEditingController();
-  String serverUrl = dotenv.env["SERVER_URL"].toString();
+  String serverUrl = 'https://moneytly.herokuapp.com';
   MaterialStatesController submitBtn = MaterialStatesController();
   bool isEnabled = true;
 

@@ -22,7 +22,7 @@ class TableauRecapState extends State<TableauRecap> {
   double currentAmount = 0;
   double currentRealAmount = 0;
   String currentPage = 'Tableau récapitulatif';
-  String serverUrl = dotenv.env["SERVER_URL"].toString();
+  String serverUrl = 'https://moneytly.herokuapp.com';
 
   Future<void> _getMyInformations() async {
     String? userId = "1";

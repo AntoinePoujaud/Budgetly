@@ -49,8 +49,7 @@ class MainPageState extends State<MainPage> {
   List<int>? years;
   int? currentYear;
 
-  String serverUrl = dotenv.env["SERVER_URL"].toString();
-
+  String serverUrl = 'https://moneytly.herokuapp.com';
   @override
   void initState() {
     getTransactionsForMonthAndYear();
@@ -807,7 +806,7 @@ class MainPageState extends State<MainPage> {
 
   Future<void> deleteTransaction(String id) async {
     var response = await http
-        .delete(Uri.parse("${dotenv.env['SERVER_URL']}/deleteTransaction/$id"));
+        .delete(Uri.parse("$serverUrl/deleteTransaction/$id"));
     if (response.statusCode != 204) {
       throw Exception();
     }

@@ -32,7 +32,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   DateTime? currentDate;
   String? description;
   String? categorie = CategorieEnum.LOISIRS;
-  String serverUrl = dotenv.env["SERVER_URL"].toString();
+  String serverUrl = 'https://moneytly.herokuapp.com';
 
   @override
   void initState() {

@@ -10,7 +10,6 @@ import 'pages/mainPage.dart';
 import 'package:get/get.dart';
 
 void main()async{
-  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 

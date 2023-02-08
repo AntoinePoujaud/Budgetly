@@ -24,7 +24,7 @@ class SignInPageState extends State<SignInPage> {
   String? mail, password;
   TextEditingController passwordTxt = TextEditingController();
   TextEditingController emailTxt = TextEditingController();
-  String serverUrl = dotenv.env["SERVER_URL"].toString();
+  String serverUrl = 'https://moneytly.herokuapp.com';
 
   @override
   Widget build(BuildContext context) {
