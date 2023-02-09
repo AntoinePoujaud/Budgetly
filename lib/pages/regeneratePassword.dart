@@ -17,8 +17,8 @@ class RegeneratePasswordState extends State<RegeneratePassword> {
   final _formKey = GlobalKey<FormState>();
   String? password;
   TextEditingController passwordTxt = TextEditingController();
-  // String serverUrl = 'https://moneytly.herokuapp.com';
-  String serverUrl = 'http://localhost:8081';
+  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'http://localhost:8081';
 
   @override
   void initState() {

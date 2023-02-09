@@ -50,8 +50,8 @@ class MainPageState extends State<MainPage> {
   List<int>? years;
   int? currentYear;
 
-  // String serverUrl = 'https://moneytly.herokuapp.com';
-  String serverUrl = 'http://localhost:8081';
+  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'http://localhost:8081';
   @override
   void initState() {
     super.initState();
