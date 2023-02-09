@@ -2,13 +2,11 @@
 
 import 'dart:convert';
 
-import 'package:Budgetly/src/algorithms/pbkdf2.dart';
-import 'package:Budgetly/src/password.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key, required this.title}) : super(key: key);
@@ -24,7 +22,15 @@ class SignInPageState extends State<SignInPage> {
   String? mail, password;
   TextEditingController passwordTxt = TextEditingController();
   TextEditingController emailTxt = TextEditingController();
-  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
+  bool passwordVisible = false;
+
+  @override
+  void initState() {
+    passwordVisible = false;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +93,18 @@ class SignInPageState extends State<SignInPage> {
                       color: Colors.grey,
                       fontSize: _deviceWidth! * 0.015,
                     ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                          passwordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Theme.of(context).primaryColorDark),
+                      onPressed: () {
+                        setState(() {
+                          passwordVisible = !passwordVisible;
+                        });
+                      },
+                    ),
                   ),
                   style: TextStyle(
                     color: Colors.white,
@@ -134,7 +152,7 @@ class SignInPageState extends State<SignInPage> {
                           decoration: TextDecoration.underline),
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          Navigator.pushNamed(context, "/login");
+                          Navigator.of(context).pushNamed("/login");
                         }),
                 ),
               ],
@@ -153,11 +171,8 @@ class SignInPageState extends State<SignInPage> {
   }
 
   Future<void> addUser(String mail, String password) async {
-    final algorithm = PBKDF2();
-    final hash = Password.hash(password, algorithm);
-
     var response = await http.post(Uri.parse(
-        "$serverUrl/addUser?email=$mail&password=$hash"));
+        "$serverUrl/addUser?email=$mail&password=$password"));
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Error while creating account"));
@@ -166,7 +181,7 @@ class SignInPageState extends State<SignInPage> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("userId", userId);
       // ignore: use_build_context_synchronously
-      Navigator.pushNamed(context, "/");
+      Navigator.of(context).pushNamed("/");
     }
   }
 

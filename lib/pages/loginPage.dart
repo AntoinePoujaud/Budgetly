@@ -4,12 +4,8 @@ import 'dart:convert';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:Budgetly/src/algorithms/pbkdf2.dart';
-import 'package:Budgetly/src/password.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required this.title}) : super(key: key);
@@ -26,9 +22,17 @@ class LoginPageState extends State<LoginPage> {
 
   TextEditingController passwordTxt = TextEditingController();
   TextEditingController emailTxt = TextEditingController();
-  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
   MaterialStatesController submitBtn = MaterialStatesController();
   bool isEnabled = true;
+  bool passwordVisible = false;
+
+  @override
+  void initState() {
+    passwordVisible = false;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +86,7 @@ class LoginPageState extends State<LoginPage> {
                 SizedBox(height: _deviceHeight! * 0.05),
                 TextFormField(
                   controller: passwordTxt,
-                  obscureText: true,
+                  obscureText: !passwordVisible,
                   obscuringCharacter: "*",
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
@@ -90,6 +94,18 @@ class LoginPageState extends State<LoginPage> {
                     labelStyle: TextStyle(
                       color: Colors.grey,
                       fontSize: _deviceWidth! * 0.015,
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                          passwordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                          color: Theme.of(context).primaryColorDark),
+                      onPressed: () {
+                        setState(() {
+                          passwordVisible = !passwordVisible;
+                        });
+                      },
                     ),
                   ),
                   style: TextStyle(
@@ -134,17 +150,36 @@ class LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 SizedBox(height: _deviceHeight! * 0.05),
-                RichText(
-                  text: TextSpan(
-                      text: "Créer un compte",
-                      style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 16,
-                          decoration: TextDecoration.underline),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.pushNamed(context, "/signIn");
-                        }),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    RichText(
+                      text: TextSpan(
+                          text: "Créer un compte",
+                          style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 16,
+                              decoration: TextDecoration.underline),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.of(context).pushNamed("/signIn");
+                            }),
+                    ),
+                    RichText(
+                      text: TextSpan(
+                          text: "Mot de passe oublié",
+                          style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 16,
+                              decoration: TextDecoration.underline),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.of(context).pushNamed("/forgotPassword");
+                            }),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -155,20 +190,28 @@ class LoginPageState extends State<LoginPage> {
   }
 
   Future<void> login(BuildContext context, String mail, String password) async {
-    final algorithm = PBKDF2();
-    final hash = Password.hash(password, algorithm);
+    waitForServerResponse();
     var response = await http
-        .get(Uri.parse("$serverUrl/loginUser?email=$mail&password=$hash"));
+        .get(Uri.parse("$serverUrl/loginUser?email=$mail&password=$password"));
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Login/password incorrect"));
+      setState(() {
+        isEnabled = true;
+      });
     } else {
       String userId = json.decode(response.body)["id"].toString();
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("userId", userId);
       // ignore: use_build_context_synchronously
-      Navigator.pushNamed(context, "/");
+      Navigator.of(context).pushNamed("/");
     }
+  }
+
+  void waitForServerResponse() async {
+    setState(() {
+      isEnabled = false;
+    });
   }
 
   void showToast(BuildContext context, content) {

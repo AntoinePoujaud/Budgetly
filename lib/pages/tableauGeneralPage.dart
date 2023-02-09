@@ -1,19 +1,20 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 
-import 'package:Budgetly/Enum/CategorieEnum.dart';
-import 'package:Budgetly/Enum/FilterGeneralEnum.dart';
-import 'package:Budgetly/Enum/TransactionEnum.dart';
-import 'package:Budgetly/utils/menuLayout.dart';
+import 'package:budgetly/Enum/CategorieEnum.dart';
+import 'package:budgetly/Enum/FilterGeneralEnum.dart';
+import 'package:budgetly/Enum/TransactionEnum.dart';
+import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Enum/MonthEnum.dart';
 import '../models/TransactionByMonthAndYear.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
+
+import '../utils/utils.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key, required this.title}) : super(key: key);
@@ -49,16 +50,21 @@ class MainPageState extends State<MainPage> {
   List<int>? years;
   int? currentYear;
 
-  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
   @override
   void initState() {
-    getTransactionsForMonthAndYear();
-    months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-    currentMonthId = MonthEnum()
-        .getIdFromString(DateFormat.MMMM("en").format(date).toLowerCase());
-    years = [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030];
-    currentYear = date.year;
     super.initState();
+    Utils.checkIfConnected(context).then((value) {
+      if (value) {
+        getTransactionsForMonthAndYear();
+        months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        currentMonthId = MonthEnum()
+            .getIdFromString(DateFormat.MMMM("en").format(date).toLowerCase());
+        years = [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030];
+        currentYear = date.year;
+      }
+    });
   }
 
   @override
@@ -284,7 +290,7 @@ class MainPageState extends State<MainPage> {
                       decoration: TextDecoration.underline),
                   recognizer: TapGestureRecognizer()
                     ..onTap = () {
-                      Navigator.pushNamed(context, "/addTransaction");
+                      Navigator.of(context).pushNamed("/addTransaction");
                     }),
             ),
           ],
@@ -805,8 +811,8 @@ class MainPageState extends State<MainPage> {
   }
 
   Future<void> deleteTransaction(String id) async {
-    var response = await http
-        .delete(Uri.parse("$serverUrl/deleteTransaction/$id"));
+    var response =
+        await http.delete(Uri.parse("$serverUrl/deleteTransaction/$id"));
     if (response.statusCode != 204) {
       throw Exception();
     }

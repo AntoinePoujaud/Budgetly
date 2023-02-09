@@ -76,7 +76,7 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                   ),
                   onTap: () {
                     currentPage != 'tableau_recap_title'.i18n()
-                        ? Navigator.pushNamed(context, "/")
+                        ? Navigator.of(context).pushNamed("/")
                         : "";
                   },
                 ),
@@ -92,7 +92,7 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                   ),
                   onTap: () {
                     currentPage != 'add_transaction_title'.i18n()
-                        ? Navigator.pushNamed(context, "/addTransaction")
+                        ? Navigator.of(context).pushNamed("/addTransaction")
                         : "";
                   },
                 ),
@@ -108,7 +108,7 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                   ),
                   onTap: () {
                     currentPage != 'tableau_general_title'.i18n()
-                        ? Navigator.pushNamed(context, "/tableauGeneral")
+                        ? Navigator.of(context).pushNamed("/tableauGeneral")
                         : "";
                   },
                 ),
@@ -126,7 +126,7 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                     final prefs = await SharedPreferences.getInstance();
                     prefs.setString("userId", "");
                     // ignore: use_build_context_synchronously
-                    Navigator.pushNamed(context, "/login");
+                    Navigator.of(context).pushNamed("/login");
                   },
                 ),
               ],

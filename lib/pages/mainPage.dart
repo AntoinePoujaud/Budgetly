@@ -1,13 +1,14 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 
-import 'package:Budgetly/utils/menuLayout.dart';
-import 'package:Budgetly/widgets/NavDrawer.dart';
+import 'package:budgetly/utils/menuLayout.dart';
+import 'package:budgetly/widgets/NavDrawer.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+
+import '../utils/utils.dart';
 
 class TableauRecap extends StatefulWidget {
   const TableauRecap({Key? key, required this.title}) : super(key: key);
@@ -22,7 +23,8 @@ class TableauRecapState extends State<TableauRecap> {
   double currentAmount = 0;
   double currentRealAmount = 0;
   String currentPage = 'Tableau récapitulatif';
-  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
 
   Future<void> _getMyInformations() async {
     String? userId = "1";
@@ -30,8 +32,7 @@ class TableauRecapState extends State<TableauRecap> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    var response =
-        await http.get(Uri.parse("$serverUrl/getAmounts/$userId"));
+    var response = await http.get(Uri.parse("$serverUrl/getAmounts/$userId"));
     if (response.statusCode != 200) {
       throw Exception();
     }
@@ -47,11 +48,14 @@ class TableauRecapState extends State<TableauRecap> {
     });
   }
 
-
   @override
   void initState() {
-    _getMyInformations();
     super.initState();
+    Utils.checkIfConnected(context).then((value) {
+      if (value) {
+        _getMyInformations();
+      }
+    });
   }
 
   @override
@@ -73,8 +77,10 @@ class TableauRecapState extends State<TableauRecap> {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              homeCurrentInformations('actual_amount'.i18n(), currentAmount.toStringAsFixed(2)),
-              homeCurrentInformations('real_amount'.i18n(), currentRealAmount.toStringAsFixed(2)),
+              homeCurrentInformations(
+                  'actual_amount'.i18n(), currentAmount.toStringAsFixed(2)),
+              homeCurrentInformations(
+                  'real_amount'.i18n(), currentRealAmount.toStringAsFixed(2)),
             ],
           ),
         ],

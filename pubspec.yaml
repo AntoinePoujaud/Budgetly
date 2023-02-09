@@ -1,4 +1,4 @@
-name: Budgetly
+name: budgetly
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -49,6 +49,8 @@ dependencies:
   pointycastle: ^3.6.2
   http: ^0.13.5
   flutter_dotenv: ^5.0.2
+  fluro: ^2.0.4
+  url_strategy: ^0.2.0
 
 dev_dependencies:
   flutter_test:

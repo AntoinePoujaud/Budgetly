@@ -1,15 +1,16 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 
-import 'package:Budgetly/Enum/CategorieEnum.dart';
-import 'package:Budgetly/utils/menuLayout.dart';
+import 'package:budgetly/Enum/CategorieEnum.dart';
+import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Enum/TransactionEnum.dart';
 import 'package:http/http.dart' as http;
+
+import '../utils/utils.dart';
 
 class AjoutTransaction extends StatefulWidget {
   const AjoutTransaction({Key? key, required this.title}) : super(key: key);
@@ -32,11 +33,13 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   DateTime? currentDate;
   String? description;
   String? categorie = CategorieEnum.LOISIRS;
-  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
 
   @override
   void initState() {
     super.initState();
+    Utils.checkIfConnected(context);
   }
 
   @override
@@ -363,8 +366,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   Future<List<String>> getAllCategories() async {
     List<String> allCategories = [];
-    var response =
-        await http.get(Uri.parse("$serverUrl/getCategories"));
+    var response = await http.get(Uri.parse("$serverUrl/getCategories"));
     if (json.decode(response.body) != null) {
       for (var i = 0; i < json.decode(response.body).length; i++) {
         allCategories.add(json.decode(response.body)[i]["name"]);
@@ -375,7 +377,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   }
 
   Future<void> addTransaction(List<dynamic> params) async {
-    String? userId = "1";
+    String? userId;
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
@@ -384,7 +386,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     var response = await http.post(Uri.parse(
         "$serverUrl/addTransaction?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&userId=$userId"));
     if (response.statusCode != 201) {
-      throw Exception();
+      // throw Exception();
     }
   }
 

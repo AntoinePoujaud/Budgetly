@@ -1,15 +1,14 @@
-import 'package:Budgetly/pages/ajoutTransactionPage.dart';
-import 'package:Budgetly/pages/signinPage.dart';
-import 'package:Budgetly/pages/tableauGeneralPage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/localization.dart';
-import 'pages/loginPage.dart';
-import 'pages/mainPage.dart';
 import 'package:get/get.dart';
 
-void main()async{
+import 'router.dart';
+import 'package:url_strategy/url_strategy.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  setPathUrlStrategy();
   runApp(const MyApp());
 }
 
@@ -20,7 +19,13 @@ class MyApp extends StatefulWidget {
   MyAppState createState() => MyAppState();
 }
 
-class MyAppState extends State<MyApp>{
+class MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    Routes.defineRoutes();
+  }
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -28,50 +33,38 @@ class MyAppState extends State<MyApp>{
     // default value is ['lib/i18n']
     LocalJsonLocalization.delegate.directories = ['lib/i18n'];
 
-    var routes = {
-      "/": (context) => TableauRecap(title: 'tableau_recap_title'.i18n()),
-      "/addTransaction": (context) =>
-          AjoutTransaction(title: 'add_transaction_title'.i18n()),
-      "/tableauGeneral": (context) =>
-          MainPage(title: 'tableau_general_title'.i18n()),
-      "/login": (context) => const LoginPage(title: 'Se connecter'),
-      "/signIn": (context) => const SignInPage(title: "S'inscrire"),
-    };
     return GetMaterialApp(
-      supportedLocales: const [
-        Locale('en', 'EN'),
-        // Locale('fr', 'FR'),
-      ],
-      localeResolutionCallback: (locale, supportedLocales) {
-        if (supportedLocales.contains(locale)) {
-          return locale;
-        }
+        supportedLocales: const [
+          Locale('en', 'EN'),
+          // Locale('fr', 'FR'),
+        ],
+        localeResolutionCallback: (locale, supportedLocales) {
+          if (supportedLocales.contains(locale)) {
+            return locale;
+          }
 
-        // define fr_FR as default when de language code is 'fr'
-        if (locale?.languageCode == 'fr') {
-          return const Locale('fr', 'FR');
-        }
+          // define fr_FR as default when de language code is 'fr'
+          if (locale?.languageCode == 'fr') {
+            return const Locale('fr', 'FR');
+          }
 
-        // default language
-        return const Locale('en', 'EN');
-      },
-      localizationsDelegates: [
-        // delegate from flutter_localization
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        // delegate from localization package
-        LocalJsonLocalization.delegate,
-      ],
-      title: 'Budgetly',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      initialRoute: "/login",
-      onGenerateRoute: (settings) {
-        return PageRouteBuilder(
-            pageBuilder: (_, a1, a2) => routes[settings.name]!(context));
-      },
-    );
+          // default language
+          return const Locale('en', 'EN');
+        },
+        localizationsDelegates: [
+          // delegate from flutter_localization
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          // delegate from localization package
+          LocalJsonLocalization.delegate,
+        ],
+        title: 'Budgetly',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        initialRoute: "/login",
+        onGenerateRoute: (Routes.router.generator)
+        );
   }
 }
