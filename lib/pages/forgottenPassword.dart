@@ -132,12 +132,13 @@ class ForgottenPasswordPageState extends State<ForgottenPassword> {
         await http.get(Uri.parse("$serverUrl/sendMailPassword?email=$email"));
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
+      showToast(context, const Text("Si votre email est dans notre base de données, un mail vous a été envoyé"));
       setState(() {
         mailSentSuccessfully = false;
       });
     } else {
       // ignore: use_build_context_synchronously
-      showToast(context, const Text("Mail sent!"));
+      showToast(context, const Text("Si votre email est dans notre base de données, un mail vous a été envoyé"));
       setState(() {
         mailSentSuccessfully = true;
       });
