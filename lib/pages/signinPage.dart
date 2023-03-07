@@ -83,7 +83,7 @@ class SignInPageState extends State<SignInPage> {
                 ),
                 SizedBox(height: _deviceHeight! * 0.05),
                 TextFormField(
-                  obscureText: true,
+                  obscureText: !passwordVisible,
                   obscuringCharacter: "*",
                   controller: passwordTxt,
                   keyboardType: TextInputType.text,

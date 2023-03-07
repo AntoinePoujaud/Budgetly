@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:budgetly/Enum/CategorieEnum.dart';
+import 'package:budgetly/models/AllCategories.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,8 +26,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   String? _groupValue = TransactionEnum.NONE;
   final _formKey = GlobalKey<FormState>();
   DateTime date = DateTime.now();
-  List<String>? dropDownItems = [];
-  String? selectedItem;
+  List<AllCategories>? dropDownItems = [];
+  AllCategories? selectedItem;
 
   String? transactionType;
   double? montant;
@@ -58,7 +59,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     if (dropDownItems!.isEmpty) {
       return FutureBuilder(
         future: getAllCategories(),
-        builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+        builder: (BuildContext context,
+            AsyncSnapshot<List<AllCategories>> snapshot) {
           if (snapshot.hasData) {
             dropDownItems = snapshot.data;
             selectedItem = dropDownItems![0];
@@ -96,10 +98,10 @@ class AjoutTransactionState extends State<AjoutTransaction> {
               mainAxisSize: MainAxisSize.max,
               children: [
                 selectTransactionWidget(),
-                descriptionWidget(),
+                categorieSelectionWidget(),
                 montantWidget(),
                 dateSelectionWidget(),
-                categorieSelectionWidget(),
+                descriptionWidget(),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.all(25.0),
@@ -122,7 +124,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                         transactionType,
                         double.parse(montant!.toStringAsFixed(2)),
                         description,
-                        CategorieEnum().getIdFromEnum(context, selectedItem),
+                        CategorieEnum()
+                            .getIdFromEnum(context, selectedItem!.name),
                       ]);
 
                       resetAllValues();
@@ -237,7 +240,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
       child: Row(
         children: [
           Text(
-            '${date.day}/${date.month}/${date.year}',
+            '${date.day < 10 ? '0${date.day}' : date.day}/${date.month < 10 ? '0${date.month}' : date.month}/${date.year}',
             style: TextStyle(
               color: Colors.white,
               fontSize: _deviceWidth! * 0.015,
@@ -285,34 +288,38 @@ class AjoutTransactionState extends State<AjoutTransaction> {
       width: customTransactionInputWidth(),
       child: DropdownButton<String>(
         dropdownColor: const Color.fromARGB(255, 54, 54, 54),
-        value: selectedItem,
+        value: selectedItem!.name,
         onChanged: (value) {
           setState(() {
-            List<String>? temp = [];
-            selectedItem = value.toString();
+            List<AllCategories>? temp = [];
+            selectedItem!.name = value.toString();
             dropDownItems!.removeWhere((element) => element == selectedItem);
             temp.add(selectedItem!);
             //Sort List alphabetically
             dropDownItems!.sort((a, b) {
-              return a[0].toLowerCase().compareTo(b[0].toLowerCase());
+              return a.name[0].toLowerCase().compareTo(b.name[0].toLowerCase());
             });
             temp.addAll(dropDownItems!);
             dropDownItems = temp;
           });
         },
         items: dropDownItems!
-            .map(
-              (item) => DropdownMenuItem<String>(
-                value: item,
-                child: Text(
-                  item,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: _deviceWidth! * 0.013,
+            .map((item) => 
+                  // if (item.type == _groupValue || item.type == "BOTH") {
+                  DropdownMenuItem<String>(
+                    value: item.name,
+                    child: Text(
+                      item.name,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: _deviceWidth! * 0.013,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-            )
+                  // } else {
+
+                  // }
+                )
             .toList(),
       ),
     );
@@ -364,12 +371,16 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     return _deviceWidth! * 0.5;
   }
 
-  Future<List<String>> getAllCategories() async {
-    List<String> allCategories = [];
+  Future<List<AllCategories>> getAllCategories() async {
+    List<AllCategories> allCategories = [];
     var response = await http.get(Uri.parse("$serverUrl/getCategories"));
     if (json.decode(response.body) != null) {
       for (var i = 0; i < json.decode(response.body).length; i++) {
-        allCategories.add(json.decode(response.body)[i]["name"]);
+        AllCategories category = AllCategories(
+            id: 0,
+            name: json.decode(response.body)[i]["name"],
+            type: json.decode(response.body)[i]["type"]);
+        allCategories.add(category);
       }
       return allCategories;
     }
