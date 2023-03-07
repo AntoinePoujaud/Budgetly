@@ -11,19 +11,20 @@ class CategorieEnum {
   static String get REMBOURSEMENT => "Remboursement";
   static String get SALAIRE => "Salaire";
 
-  int getIdFromEnum(BuildContext context, String? str) {
+  int getIdFromEnum(BuildContext context, String str) {
+    str = str!.toLowerCase();
     switch (str) {
-      case "Loisirs":
+      case "loisirs":
         return 1;
-      case "Loyer":
+      case "loyer":
         return 2;
-      case "Courses":
+      case "courses":
         return 3;
-      case "Prêt":
+      case "prêt":
         return 4;
-      case "Remboursement":
+      case "remboursement":
         return 5;
-      case "Salaire":
+      case "salaire":
         return 6;
       default:
         return 0;

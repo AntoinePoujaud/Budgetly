@@ -433,7 +433,7 @@ class MainPageState extends State<MainPage> {
                           double.parse(montant!.toStringAsFixed(2)),
                           description,
                           // ignore: use_build_context_synchronously
-                          CategorieEnum().getIdFromEnum(context, selectedItem),
+                          CategorieEnum().getIdFromEnum(context, selectedItem!),
                           selectedTileId
                         ]);
                         resultTransactions = [];
