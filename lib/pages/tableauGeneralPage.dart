@@ -51,8 +51,8 @@ class MainPageState extends State<MainPage> {
   List<int> years = [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030];
   int currentYear = DateTime.now().year;
 
-  // String serverUrl = 'https://moneytly.herokuapp.com';
-  String serverUrl = 'http://localhost:8081';
+  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'http://localhost:8081';
   @override
   void initState() {
     super.initState();
