@@ -65,55 +65,69 @@ class MainPageState extends State<MainPage> {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     return Visibility(
-      visible: currentAmount == null ? false : true,
+      // visible: currentAmount == null ? false : true,
       child: Scaffold(
         backgroundColor: const Color.fromARGB(255, 20, 23, 26),
-        body: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+        body: showPage(),
+      ),
+    );
+  }
+
+  Widget showPage() {
+    if (currentAmount == null) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      return pageWidget();
+    }
+  }
+
+  Widget pageWidget() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        MenuLayout(
+            title: widget.title,
+            deviceWidth: _deviceWidth,
+            deviceHeight: _deviceHeight),
+        Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            MenuLayout(
-                title: widget.title,
-                deviceWidth: _deviceWidth,
-                deviceHeight: _deviceHeight),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                Visibility(
-                  visible: false, // on verra plus tard pour les filtres
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 30.0),
-                    child: radioButtonLabelledFilter("LAST TRANSACTIONS",
-                        FilterGeneralEnum.LAST, _groupValue, ""),
-                  ),
-                ),
-                SizedBox(
-                  width: _deviceWidth! * 0.82,
-                  height: _deviceHeight! * 0.9,
-                  child: Column(
-                    children: [
-                      Row(
-                        children: <Widget>[
-                          generalCurrentInformations(
-                              'actual_amount'.i18n(), currentAmount.toString()),
-                          generalCurrentInformations(
-                              'real_amount'.i18n(), currentRealAmount.toString()),
-                        ],
-                      ),
-                      selectMonthYearWidget(),
-                      resultTransactions.isNotEmpty
-                          ? transactionsNotNullWidget()
-                          : noTransactionWidget()
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: <Widget>[
+            Visibility(
+              visible: false, // on verra plus tard pour les filtres
+              child: Container(
+                margin: const EdgeInsets.only(left: 30.0),
+                child: radioButtonLabelledFilter("LAST TRANSACTIONS",
+                    FilterGeneralEnum.LAST, _groupValue, ""),
+              ),
+            ),
+            SizedBox(
+              width: _deviceWidth! * 0.82,
+              height: _deviceHeight! * 0.9,
+              child: Column(
+                children: [
+                  Row(
+                    children: <Widget>[
+                      generalCurrentInformations(
+                          'actual_amount'.i18n(), currentAmount.toString()),
+                      generalCurrentInformations(
+                          'real_amount'.i18n(), currentRealAmount.toString()),
                     ],
                   ),
-                ),
-              ],
+                  selectMonthYearWidget(),
+                  resultTransactions.isNotEmpty
+                      ? transactionsNotNullWidget()
+                      : noTransactionWidget()
+                ],
+              ),
             ),
           ],
         ),
-      ),
+      ],
     );
   }
 
@@ -129,12 +143,12 @@ class MainPageState extends State<MainPage> {
               if (currentMonthId == 1) {
                 currentMonthId = 12;
                 if (currentYear == 2022) {
-                  currentYear = years![years!.length - 1];
+                  currentYear = years[years.length - 1];
                 } else {
-                  currentYear = currentYear! - 1;
+                  currentYear = currentYear - 1;
                 }
               } else {
-                currentMonthId = currentMonthId! - 1;
+                currentMonthId = currentMonthId - 1;
               }
               await getTransactionsForMonthAndYear();
               setState(() {});
@@ -153,7 +167,7 @@ class MainPageState extends State<MainPage> {
                 getTransactionsForMonthAndYear();
               });
             },
-            items: months!
+            items: months
                 .map(
                   (item) => DropdownMenuItem<String>(
                     value: item.toString(),
@@ -173,12 +187,12 @@ class MainPageState extends State<MainPage> {
               if (currentMonthId == 12) {
                 currentMonthId = 1;
                 if (currentYear == 2030) {
-                  currentYear = years![0];
+                  currentYear = years[0];
                 } else {
-                  currentYear = currentYear! + 1;
+                  currentYear = currentYear + 1;
                 }
               } else {
-                currentMonthId = currentMonthId! + 1;
+                currentMonthId = currentMonthId + 1;
               }
               await getTransactionsForMonthAndYear();
               setState(() {});
@@ -191,9 +205,9 @@ class MainPageState extends State<MainPage> {
           IconButton(
             onPressed: () async {
               if (currentYear == 2022) {
-                currentYear = years![years!.length - 1];
+                currentYear = years[years.length - 1];
               } else {
-                currentYear = currentYear! - 1;
+                currentYear = currentYear - 1;
               }
               await getTransactionsForMonthAndYear();
               setState(() {});
@@ -212,7 +226,7 @@ class MainPageState extends State<MainPage> {
                 getTransactionsForMonthAndYear();
               });
             },
-            items: years!
+            items: years
                 .map(
                   (item) => DropdownMenuItem<String>(
                     value: item.toString(),
@@ -230,9 +244,9 @@ class MainPageState extends State<MainPage> {
           IconButton(
             onPressed: () async {
               if (currentYear == 2030) {
-                currentYear = years![0];
+                currentYear = years[0];
               } else {
-                currentYear = currentYear! + 1;
+                currentYear = currentYear + 1;
               }
               await getTransactionsForMonthAndYear();
               setState(() {});
@@ -808,7 +822,7 @@ class MainPageState extends State<MainPage> {
 
   Future<void> deleteTransaction(String id) async {
     var response =
-        await http.delete(Uri.parse("$serverUrl/deleteTransaction/$id"));
+        await http.post(Uri.parse("$serverUrl/deleteTransaction/$id"));
     if (response.statusCode != 204) {
       throw Exception();
     }
