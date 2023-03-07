@@ -277,7 +277,7 @@ class MainPageState extends State<MainPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
-              "Vous n'avez pas encore de transaction pour le mois de ${MonthEnum().getStringFromId(currentMonthId)}",
+              "Vous n'avez pas encore de transaction pour le mois de ${MonthEnum().getStringFromId(currentMonthId)} $currentYear",
               style: const TextStyle(color: Colors.white, fontSize: 45),
               textAlign: TextAlign.center,
             ),
@@ -682,11 +682,11 @@ class MainPageState extends State<MainPage> {
       width: customTransactionInputWidth(),
       child: DropdownButton<String>(
         dropdownColor: const Color.fromARGB(255, 29, 161, 242),
-        value: selectedItem,
+        value: selectedItem!.toUpperCase(),
         onChanged: (value) {
           setState(() {
             List<String>? temp = [];
-            selectedItem = value.toString();
+            selectedItem = value.toString().toUpperCase();
             dropDownItems!.removeWhere((element) => element == selectedItem);
             temp.add(selectedItem!);
             //Sort List alphabetically
@@ -820,7 +820,7 @@ class MainPageState extends State<MainPage> {
   }
 
   Future<void> updateTransaction(List<dynamic> params) async {
-    var response = await http.put(
+    var response = await http.post(
       Uri.parse(
           "$serverUrl/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}"),
     );

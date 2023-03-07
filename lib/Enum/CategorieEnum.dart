@@ -4,15 +4,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:localization/localization.dart';
 
 class CategorieEnum {
-  static String get LOISIRS => "Loisirs";
-  static String get LOYER => "Loyer";
+  static String get LOISIRS => "LOISIRS";
+  static String get LOYER => "LOYER";
   static String get COURSES => "Courses";
   static String get PRET => "Prêt";
   static String get REMBOURSEMENT => "Remboursement";
   static String get SALAIRE => "Salaire";
 
   int getIdFromEnum(BuildContext context, String str) {
-    str = str!.toLowerCase();
+    str = str.toLowerCase();
     switch (str) {
       case "loisirs":
         return 1;
