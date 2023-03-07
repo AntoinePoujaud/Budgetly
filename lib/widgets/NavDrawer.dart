@@ -108,7 +108,7 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                   ),
                   onTap: () {
                     currentPage != 'tableau_general_title'.i18n()
-                        ? Navigator.of(context).pushNamed("/tableauGeneral")
+                        ? Navigator.of(context).pushNamed("/transactions")
                         : "";
                   },
                 ),

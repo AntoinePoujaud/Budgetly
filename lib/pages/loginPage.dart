@@ -82,6 +82,11 @@ class LoginPageState extends State<LoginPage> {
                     }
                     return null;
                   },
+                  onFieldSubmitted: (value) => {
+                    isEnabled
+                        ? login(context, emailTxt.text, passwordTxt.text)
+                        : null
+                  },
                 ),
                 SizedBox(height: _deviceHeight! * 0.05),
                 TextFormField(
@@ -108,6 +113,11 @@ class LoginPageState extends State<LoginPage> {
                       },
                     ),
                   ),
+                  onFieldSubmitted: (value) => {
+                    isEnabled
+                        ? login(context, emailTxt.text, passwordTxt.text)
+                        : null
+                  },
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: _deviceWidth! * 0.015,
@@ -176,7 +186,8 @@ class LoginPageState extends State<LoginPage> {
                               decoration: TextDecoration.underline),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              Navigator.of(context).pushNamed("/forgotPassword");
+                              Navigator.of(context)
+                                  .pushNamed("/forgotPassword");
                             }),
                     ),
                   ],
@@ -208,7 +219,7 @@ class LoginPageState extends State<LoginPage> {
     }
   }
 
-  void waitForServerResponse(){
+  void waitForServerResponse() {
     setState(() {
       isEnabled = false;
     });

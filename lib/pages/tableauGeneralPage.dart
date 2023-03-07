@@ -45,78 +45,74 @@ class MainPageState extends State<MainPage> {
   TextEditingController descriptionTxt = TextEditingController();
   TextEditingController montantTxt = TextEditingController();
 
-  List<int>? months;
-  int? currentMonthId;
-  List<int>? years;
-  int? currentYear;
+  List<int> months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  int currentMonthId = MonthEnum().getIdFromString(
+      DateFormat.MMMM("en").format(DateTime.now()).toLowerCase());
+  List<int> years = [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030];
+  int currentYear = DateTime.now().year;
 
-  String serverUrl = 'https://moneytly.herokuapp.com';
-  // String serverUrl = 'http://localhost:8081';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
   @override
   void initState() {
     super.initState();
-    Utils.checkIfConnected(context).then((value) {
-      if (value) {
-        getTransactionsForMonthAndYear();
-        months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-        currentMonthId = MonthEnum()
-            .getIdFromString(DateFormat.MMMM("en").format(date).toLowerCase());
-        years = [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030];
-        currentYear = date.year;
-      }
-    });
+    Utils.checkIfConnected(context);
+    getTransactionsForMonthAndYear();
   }
 
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 20, 23, 26),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          MenuLayout(
-              title: widget.title,
-              deviceWidth: _deviceWidth,
-              deviceHeight: _deviceHeight),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              Visibility(
-                visible: false, // on verra plus tard pour les filtres
-                child: Container(
-                  margin: const EdgeInsets.only(left: 30.0),
-                  child: radioButtonLabelledFilter("LAST TRANSACTIONS",
-                      FilterGeneralEnum.LAST, _groupValue, ""),
+    return Visibility(
+      visible: currentAmount == null ? false : true,
+      child: Scaffold(
+        backgroundColor: const Color.fromARGB(255, 20, 23, 26),
+        body: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            MenuLayout(
+                title: widget.title,
+                deviceWidth: _deviceWidth,
+                deviceHeight: _deviceHeight),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Visibility(
+                  visible: false, // on verra plus tard pour les filtres
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 30.0),
+                    child: radioButtonLabelledFilter("LAST TRANSACTIONS",
+                        FilterGeneralEnum.LAST, _groupValue, ""),
+                  ),
                 ),
-              ),
-              SizedBox(
-                width: _deviceWidth! * 0.82,
-                height: _deviceHeight! * 0.9,
-                child: Column(
-                  children: [
-                    Row(
-                      children: <Widget>[
-                        generalCurrentInformations(
-                            'actual_amount'.i18n(), currentAmount.toString()),
-                        generalCurrentInformations(
-                            'real_amount'.i18n(), currentRealAmount.toString()),
-                      ],
-                    ),
-                    selectMonthYearWidget(),
-                    resultTransactions.isNotEmpty
-                        ? transactionsNotNullWidget()
-                        : noTransactionWidget()
-                  ],
+                SizedBox(
+                  width: _deviceWidth! * 0.82,
+                  height: _deviceHeight! * 0.9,
+                  child: Column(
+                    children: [
+                      Row(
+                        children: <Widget>[
+                          generalCurrentInformations(
+                              'actual_amount'.i18n(), currentAmount.toString()),
+                          generalCurrentInformations(
+                              'real_amount'.i18n(), currentRealAmount.toString()),
+                        ],
+                      ),
+                      selectMonthYearWidget(),
+                      resultTransactions.isNotEmpty
+                          ? transactionsNotNullWidget()
+                          : noTransactionWidget()
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

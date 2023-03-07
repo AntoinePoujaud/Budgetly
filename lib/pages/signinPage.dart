@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key, required this.title}) : super(key: key);
   final String title;
@@ -38,128 +37,134 @@ class SignInPageState extends State<SignInPage> {
     _deviceWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 20, 23, 26),
-      body: Center(
-        child: SizedBox(
-          height: _deviceHeight! * 1,
-          width: _deviceWidth! * 0.3,
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  "Créer un compte",
-                  style: TextStyle(color: Colors.white, fontSize: 60),
-                ),
-                SizedBox(height: _deviceHeight! * 0.15),
-                TextFormField(
-                  controller: emailTxt,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    labelText: 'Email',
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                      fontSize: _deviceWidth! * 0.015,
-                    ),
-                  ),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: _deviceWidth! * 0.015,
-                  ),
-                  onChanged: ((value) {
-                    setState(() {
-                      mail = value;
-                    });
-                  }),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a valid email';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: _deviceHeight! * 0.05),
-                TextFormField(
-                  obscureText: !passwordVisible,
-                  obscuringCharacter: "*",
-                  controller: passwordTxt,
-                  keyboardType: TextInputType.text,
-                  decoration: InputDecoration(
-                    labelText: 'Mot de passe',
-                    labelStyle: TextStyle(
-                      color: Colors.grey,
-                      fontSize: _deviceWidth! * 0.015,
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                          passwordVisible
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                          color: Theme.of(context).primaryColorDark),
-                      onPressed: () {
-                        setState(() {
-                          passwordVisible = !passwordVisible;
-                        });
-                      },
-                    ),
-                  ),
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: _deviceWidth! * 0.015,
-                  ),
-                  onChanged: ((value) {
-                    setState(() {
-                      password = value;
-                    });
-                  }),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    return null;
-                  },
-                ),
-                SizedBox(height: _deviceHeight! * 0.05),
-                ElevatedButton(
-                  onPressed: () {
-                    addUserIfNew(emailTxt.text, passwordTxt.text);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.all(20.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    backgroundColor: const Color.fromARGB(255, 29, 161, 242),
-                  ),
-                  child: Text(
+        backgroundColor: const Color.fromARGB(255, 20, 23, 26),
+        body: Center(
+          child: SizedBox(
+            height: _deviceHeight! * 1,
+            width: _deviceWidth! * 0.3,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
                     "Créer un compte",
+                    style: TextStyle(color: Colors.white, fontSize: 60),
+                  ),
+                  SizedBox(height: _deviceHeight! * 0.15),
+                  TextFormField(
+                    controller: emailTxt,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        fontSize: _deviceWidth! * 0.015,
+                      ),
+                    ),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: _deviceWidth! * 0.015,
                     ),
+                    onChanged: ((value) {
+                      setState(() {
+                        mail = value;
+                      });
+                    }),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
+                    onFieldSubmitted: (value) => {
+                      addUserIfNew(emailTxt.text, passwordTxt.text)
+                    },
                   ),
-                ),
-                SizedBox(height: _deviceHeight! * 0.05),
-                RichText(
-                  text: TextSpan(
-                      text: "Se connecter",
+                  SizedBox(height: _deviceHeight! * 0.05),
+                  TextFormField(
+                    obscureText: !passwordVisible,
+                    obscuringCharacter: "*",
+                    controller: passwordTxt,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      labelText: 'Mot de passe',
+                      labelStyle: TextStyle(
+                        color: Colors.grey,
+                        fontSize: _deviceWidth! * 0.015,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                            passwordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Theme.of(context).primaryColorDark),
+                        onPressed: () {
+                          setState(() {
+                            passwordVisible = !passwordVisible;
+                          });
+                        },
+                      ),
+                    ),
+                    onFieldSubmitted: (value) => {
+                      addUserIfNew(emailTxt.text, passwordTxt.text)
+                    },
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: _deviceWidth! * 0.015,
+                    ),
+                    onChanged: ((value) {
+                      setState(() {
+                        password = value;
+                      });
+                    }),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your password';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: _deviceHeight! * 0.05),
+                  ElevatedButton(
+                    onPressed: () {
+                      addUserIfNew(emailTxt.text, passwordTxt.text);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.all(20.0),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                      backgroundColor: const Color.fromARGB(255, 29, 161, 242),
+                    ),
+                    child: Text(
+                      "Créer un compte",
                       style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 16,
-                          decoration: TextDecoration.underline),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.of(context).pushNamed("/login");
-                        }),
-                ),
-              ],
+                        color: Colors.white,
+                        fontSize: _deviceWidth! * 0.015,
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: _deviceHeight! * 0.05),
+                  RichText(
+                    text: TextSpan(
+                        text: "Se connecter",
+                        style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 16,
+                            decoration: TextDecoration.underline),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.of(context).pushNamed("/login");
+                          }),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
-      ),
     );
   }
 
@@ -171,8 +176,8 @@ class SignInPageState extends State<SignInPage> {
   }
 
   Future<void> addUser(String mail, String password) async {
-    var response = await http.post(Uri.parse(
-        "$serverUrl/addUser?email=$mail&password=$password"));
+    var response = await http
+        .post(Uri.parse("$serverUrl/addUser?email=$mail&password=$password"));
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Error while creating account"));

@@ -44,7 +44,7 @@ class Routes {
         handler: homeHandler, transitionType: TransitionType.none);
     router.define("/addTransaction",
         handler: addTransactionHandler, transitionType: TransitionType.none);
-    router.define("/tableauGeneral",
+    router.define("/transactions",
         handler: tableauGeneralHandler, transitionType: TransitionType.none);
     router.define("/login",
         handler: loginHandler, transitionType: TransitionType.none);
