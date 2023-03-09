@@ -9,6 +9,7 @@
 
     "label_depense": "Dépense",
     "label_revenu": "Revenu",
+    "label_add_categ": "Ajouter une catégorie",
     "label_enter_desc": "Entrez une description",
     "label_enter_amount": "Entrez un montant",
     "label_select_date_transaction": "Sélectionner la date d'apparition de la transaction",
@@ -24,6 +25,27 @@
     "enum_label_none": "none",
     "enum_label_depense": "depense",
     "enum_label_revenu": "revenu",
+
+    "label_cbretrait": "CB Retrait",
+    "label_cbcommerces": "CB Commerces",
+    "label_cheque": "Chèque",
+    "label_virement": "Virement",
+    "label_prelevement": "Prélèvement",
+    "label_paypal": "Paypal",
+
+    "label_cbretrait_short": "CBR",
+    "label_cbcommerces_short": "CBC",
+    "label_cheque_short": "CHQ",
+    "label_virement_short": "VIR",
+    "label_prelevement_short": "PRLT",
+    "label_paypal_short": "Paypal",
+
+    "enum_label_cbretrait": "retrait",
+    "enum_label_cbcommerces": "commerces",
+    "enum_label_cheque": "cheque",
+    "enum_label_virement": "virement",
+    "enum_label_prelevement": "prelevement",
+    "enum_label_paypal": "paypal",
 
     "label_month_january": "Janvier",
     "label_month_february": "Février",

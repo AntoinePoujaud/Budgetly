@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Enum/MonthEnum.dart';
+import '../Enum/PaymentMethodEnum.dart';
+import '../models/AllCategories.dart';
 import '../models/TransactionByMonthAndYear.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
@@ -31,15 +33,17 @@ class MainPageState extends State<MainPage> {
   String? _groupValue = FilterGeneralEnum.LAST;
   List<Map<String, String?>> resultTransactions = [];
   DateTime date = DateTime.now();
-  List<String>? dropDownItems = [];
+  List<AllCategories>? dropDownItems = [];
   final _formKey = GlobalKey<FormState>();
 
-  String? selectedItem;
+  AllCategories? selectedItem;
   String? description;
   String? transactionType;
+  String? paymentMethod;
   double? montant;
   DateTime? currentDate;
   String? _groupValueTransaction;
+  String? _groupValuePaymentMethod;
   String? selectedTileId;
 
   TextEditingController descriptionTxt = TextEditingController();
@@ -65,9 +69,8 @@ class MainPageState extends State<MainPage> {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     return Visibility(
-      // visible: currentAmount == null ? false : true,
       child: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 20, 23, 26),
+        backgroundColor: Colors.black,
         body: showPage(),
       ),
     );
@@ -328,9 +331,12 @@ class MainPageState extends State<MainPage> {
                 montantTxt.text = resultTransactions[index]["amount"]!;
                 transactionType = resultTransactions[index]["type"];
                 _groupValueTransaction = resultTransactions[index]["type"];
+                paymentMethod = resultTransactions[index]["paymentMethod"];
+                _groupValuePaymentMethod =
+                    resultTransactions[index]["paymentMethod"];
                 date = DateTime.parse(resultTransactions[index]["date"]!);
-                selectedItem = CategorieEnum().getStringFromId(
-                    int.parse(resultTransactions[index]["catId"]!));
+                selectedItem =
+                    findCategFromId(resultTransactions[index]["catId"]!);
               });
             },
             tileColor:
@@ -341,10 +347,19 @@ class MainPageState extends State<MainPage> {
             title: Text(resultTransactions[index]["description"]!),
             subtitle: Text(newDate!),
             trailing: SizedBox(
-              width: _deviceWidth! * 0.12,
+              width: _deviceWidth! * 0.15,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  SizedBox(
+                    width: _deviceWidth! * 0.03,
+                    child: Text(
+                      PaymentMethodEnum().getShortLabel(
+                          resultTransactions[index]['paymentMethod']!),
+                      style: const TextStyle(fontSize: 18),
+                      textAlign: TextAlign.end,
+                    ),
+                  ),
                   SizedBox(
                     width: _deviceWidth! * 0.03,
                     child: Text(
@@ -359,10 +374,9 @@ class MainPageState extends State<MainPage> {
                   SizedBox(
                     width: _deviceWidth! * 0.07,
                     child: Text(
-                      CategorieEnum().getStringFromId(
-                          int.parse(resultTransactions[index]['catId']!)),
+                      resultTransactions[index]['catName']!,
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 14,
                       ),
                       textAlign: TextAlign.end,
                     ),
@@ -384,7 +398,7 @@ class MainPageState extends State<MainPage> {
         width: _deviceWidth! * 0.38,
         height: _deviceHeight! * 0.78,
         decoration: BoxDecoration(
-            color: Colors.grey.shade800,
+            color: const Color.fromARGB(51, 94, 93, 93),
             borderRadius: BorderRadius.circular(40)),
         child: Form(
           key: _formKey,
@@ -393,11 +407,12 @@ class MainPageState extends State<MainPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
-              selectTransactionWidget(),
+              selectTransactionWidget(0.01, 0.12),
+              selectPaymentMethodWidget(0.008, 0.1),
+              categorieSelectionWidget(),
               descriptionWidget(),
               montantWidget(),
               dateSelectionWidget(),
-              categorieSelectionWidget(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 mainAxisSize: MainAxisSize.max,
@@ -443,8 +458,9 @@ class MainPageState extends State<MainPage> {
                           double.parse(montant!.toStringAsFixed(2)),
                           description,
                           // ignore: use_build_context_synchronously
-                          CategorieEnum().getIdFromEnum(context, selectedItem!),
-                          selectedTileId
+                          selectedItem!.id,
+                          selectedTileId,
+                          paymentMethod,
                         ]);
                         resultTransactions = [];
                         await getTransactionsForMonthAndYear();
@@ -487,7 +503,7 @@ class MainPageState extends State<MainPage> {
       child: ListTile(
         title: Text(
           title,
-          style: customTextStyle(),
+          style: customTextStyle(0.05),
           textAlign: align == "end" ? TextAlign.end : TextAlign.start,
         ),
         leading: Transform.scale(
@@ -540,10 +556,10 @@ class MainPageState extends State<MainPage> {
     );
   }
 
-  TextStyle customTextStyle() {
-    return const TextStyle(
+  TextStyle customTextStyle(double fontSize) {
+    return TextStyle(
       color: Colors.white,
-      fontSize: 18,
+      fontSize: _deviceWidth! * fontSize,
     );
   }
 
@@ -551,21 +567,40 @@ class MainPageState extends State<MainPage> {
     return _deviceWidth! * 0.3;
   }
 
-  Widget selectTransactionWidget() {
+  Widget selectTransactionWidget(double fontSize, double boxWidth) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        radioButtonLabelledTransactions('label_depense'.i18n(),
-            TransactionEnum.DEPENSE, _groupValueTransaction),
+        radioButtonLabelledTransactions(
+            'label_depense'.i18n(),
+            TransactionEnum.DEPENSE,
+            _groupValueTransaction,
+            fontSize,
+            boxWidth,
+            'transactionType'),
         SizedBox(
           width: _deviceWidth! * 0.05,
         ),
-        radioButtonLabelledTransactions('label_revenu'.i18n(),
-            TransactionEnum.REVENU, _groupValueTransaction),
+        radioButtonLabelledTransactions(
+            'label_revenu'.i18n(),
+            TransactionEnum.REVENU,
+            _groupValueTransaction,
+            fontSize,
+            boxWidth,
+            'transactionType'),
       ],
     );
+  }
+
+  AllCategories findCategFromId(String id) {
+    for (AllCategories category in dropDownItems!) {
+      if (category.id.toString() == id) {
+        return category;
+      }
+    }
+    return dropDownItems![0];
   }
 
   Widget descriptionWidget() {
@@ -644,7 +679,7 @@ class MainPageState extends State<MainPage> {
       child: Row(
         children: [
           Text(
-            '${date.day}/${date.month}/${date.year}',
+            '${date.day < 10 ? '0${date.day}' : date.day}/${date.month < 10 ? '0${date.month}' : date.month}/${date.year}',
             style: TextStyle(
               color: Colors.white,
               fontSize: _deviceWidth! * 0.015,
@@ -691,28 +726,19 @@ class MainPageState extends State<MainPage> {
     return SizedBox(
       width: customTransactionInputWidth(),
       child: DropdownButton<String>(
-        dropdownColor: const Color.fromARGB(255, 29, 161, 242),
-        value: selectedItem!.toUpperCase(),
+        dropdownColor: const Color.fromARGB(255, 54, 54, 54),
+        value: selectedItem!.id.toString(),
         onChanged: (value) {
           setState(() {
-            List<String>? temp = [];
-            selectedItem = value.toString().toUpperCase();
-            dropDownItems!.removeWhere((element) => element == selectedItem);
-            temp.add(selectedItem!);
-            //Sort List alphabetically
-            dropDownItems!.sort((a, b) {
-              return a[0].toLowerCase().compareTo(b[0].toLowerCase());
-            });
-            temp.addAll(dropDownItems!);
-            dropDownItems = temp;
+            selectedItem = findCategFromId(value!);
           });
         },
         items: dropDownItems!
             .map(
               (item) => DropdownMenuItem<String>(
-                value: item,
+                value: item.id.toString(),
                 child: Text(
-                  item,
+                  item.name,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: _deviceWidth! * 0.013,
@@ -725,20 +751,98 @@ class MainPageState extends State<MainPage> {
     );
   }
 
+  Widget selectPaymentMethodWidget(double fontSize, double boxWidth) {
+    return Column(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            radioButtonLabelledTransactions(
+                'label_cbretrait'.i18n(),
+                PaymentMethodEnum.CBRETRAIT,
+                _groupValuePaymentMethod,
+                fontSize,
+                boxWidth,
+                'paymentMethod'),
+            SizedBox(
+              width: _deviceWidth! * 0.005,
+            ),
+            radioButtonLabelledTransactions(
+                'label_cbcommerces'.i18n(),
+                PaymentMethodEnum.CBCOMMERCES,
+                _groupValuePaymentMethod,
+                fontSize,
+                boxWidth,
+                'paymentMethod'),
+            SizedBox(
+              width: _deviceWidth! * 0.005,
+            ),
+            radioButtonLabelledTransactions(
+                'label_cheque'.i18n(),
+                PaymentMethodEnum.CHEQUE,
+                _groupValuePaymentMethod,
+                fontSize,
+                boxWidth,
+                'paymentMethod'),
+          ],
+        ),
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            radioButtonLabelledTransactions(
+                'label_virement'.i18n(),
+                PaymentMethodEnum.VIREMENT,
+                _groupValuePaymentMethod,
+                fontSize,
+                boxWidth,
+                'paymentMethod'),
+            SizedBox(
+              width: _deviceWidth! * 0.005,
+            ),
+            radioButtonLabelledTransactions(
+                'label_prelevement'.i18n(),
+                PaymentMethodEnum.PRELEVEMENT,
+                _groupValuePaymentMethod,
+                fontSize,
+                boxWidth,
+                'paymentMethod'),
+            SizedBox(
+              width: _deviceWidth! * 0.005,
+            ),
+            radioButtonLabelledTransactions(
+                'label_paypal'.i18n(),
+                PaymentMethodEnum.PAYPAL,
+                _groupValuePaymentMethod,
+                fontSize,
+                boxWidth,
+                'paymentMethod'),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget radioButtonLabelledTransactions(
     String title,
     String value,
     String? groupValue,
+    double fontSize,
+    double boxWidth,
+    String groupName,
   ) {
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: _deviceWidth! * 0.12,
+        maxWidth: _deviceWidth! * boxWidth,
         maxHeight: _deviceHeight! * 0.8,
       ),
       child: ListTile(
         title: Text(
           title,
-          style: customTextStyle(),
+          style: customTextStyle(fontSize),
         ),
         leading: Radio<String>(
             fillColor: MaterialStateProperty.resolveWith<Color>(
@@ -752,8 +856,13 @@ class MainPageState extends State<MainPage> {
             groupValue: groupValue,
             onChanged: (String? value) {
               setState(() {
-                _groupValueTransaction = value;
-                transactionType = value;
+                if (groupName == 'paymentMethod') {
+                  _groupValuePaymentMethod = value;
+                  paymentMethod = value;
+                } else {
+                  _groupValue = value;
+                  transactionType = value;
+                }
               });
             }),
       ),
@@ -769,7 +878,8 @@ class MainPageState extends State<MainPage> {
     if (dropDownItems!.isEmpty) {
       return FutureBuilder(
         future: getAllCategories(),
-        builder: (BuildContext context, AsyncSnapshot<List<String>> snapshot) {
+        builder: (BuildContext context,
+            AsyncSnapshot<List<AllCategories>> snapshot) {
           if (snapshot.hasData) {
             dropDownItems = snapshot.data;
             selectedItem = dropDownItems![0];
@@ -786,13 +896,25 @@ class MainPageState extends State<MainPage> {
     }
   }
 
-  Future<List<String>> getAllCategories() async {
-    List<String> allCategories = [];
-    var response = await http.get(Uri.parse("$serverUrl/getCategories"));
+  Future<List<AllCategories>> getAllCategories() async {
+    String? userId;
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    List<AllCategories> allCategories = [];
+    var response =
+        await http.get(Uri.parse("$serverUrl/getCategories?userId=$userId"));
     if (json.decode(response.body) != null) {
       for (var i = 0; i < json.decode(response.body).length; i++) {
-        allCategories.add(json.decode(response.body)[i]["name"]);
+        AllCategories category = AllCategories(
+            id: json.decode(response.body)[i]["id"],
+            name: json.decode(response.body)[i]["name"]);
+        allCategories.add(category);
       }
+      allCategories.sort((a, b) {
+        return a.name[0].toLowerCase().compareTo(b.name[0].toLowerCase());
+      });
       return allCategories;
     }
     return [];
@@ -832,7 +954,7 @@ class MainPageState extends State<MainPage> {
   Future<void> updateTransaction(List<dynamic> params) async {
     var response = await http.post(
       Uri.parse(
-          "$serverUrl/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}"),
+          "$serverUrl/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&paymentMethod=${params[6]}"),
     );
     if (response.statusCode != 200) {
       throw Exception();
@@ -847,10 +969,11 @@ class MainPageState extends State<MainPage> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    var fetchedTransactions = await fetchTransactions(userId);
+    List<TransactionByMonthAndYear> fetchedTransactions =
+        await fetchTransactions(userId);
     if (fetchedTransactions.isNotEmpty) {
       setState(() {
-        for (var transaction in fetchedTransactions) {
+        for (TransactionByMonthAndYear transaction in fetchedTransactions) {
           resultTransactions.add(transaction.convertTransaction());
         }
       });

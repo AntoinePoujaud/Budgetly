@@ -7,7 +7,10 @@
         "autofocus",
         "bouton",
         "budgetly",
+        "categ",
         "Catégorie",
+        "CBCOMMERCES",
+        "cbretrait",
         "connexion",
         "dans",
         "datetime",
@@ -29,6 +32,7 @@
         "Montant",
         "nombre",
         "oublié",
+        "PRELEVEMENT",
         "récapitulatif",
         "réel",
         "Regénérer",
@@ -36,6 +40,7 @@
         "revenu",
         "Sélectionner",
         "suis",
-        "Valider"
+        "Valider",
+        "VIREMENT"
     ]
 }

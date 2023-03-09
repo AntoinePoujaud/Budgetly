@@ -37,7 +37,7 @@ class ForgottenPasswordPageState extends State<ForgottenPassword> {
     _deviceWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 20, 23, 26),
+      backgroundColor: Colors.black,
       body: Center(
         child: SizedBox(
           height: _deviceHeight! * 1,

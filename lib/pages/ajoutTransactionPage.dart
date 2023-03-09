@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:budgetly/Enum/CategorieEnum.dart';
+import 'package:budgetly/Enum/PaymentMethodEnum.dart';
 import 'package:budgetly/models/AllCategories.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/material.dart';
@@ -24,12 +25,15 @@ class AjoutTransaction extends StatefulWidget {
 class AjoutTransactionState extends State<AjoutTransaction> {
   double? _deviceHeight, _deviceWidth;
   String? _groupValue = TransactionEnum.NONE;
+  String? _paymentMethodGroupValue = PaymentMethodEnum.CBRETRAIT;
   final _formKey = GlobalKey<FormState>();
   DateTime date = DateTime.now();
   List<AllCategories>? dropDownItems = [];
   AllCategories? selectedItem;
+  TextEditingController categNameTxt = TextEditingController();
 
   String? transactionType;
+  String? paymentMethod = PaymentMethodEnum.CBRETRAIT;
   double? montant;
   DateTime? currentDate;
   String? description;
@@ -50,7 +54,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     currentDate = date;
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 20, 23, 26),
+      backgroundColor: Colors.black,
       body: showForm(),
     );
   }
@@ -97,11 +101,12 @@ class AjoutTransactionState extends State<AjoutTransaction> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: [
-                selectTransactionWidget(),
+                selectTransactionWidget(0.011, 0.12),
+                selectPaymentMethodWidget(0.009, 0.1),
                 categorieSelectionWidget(),
+                descriptionWidget(),
                 montantWidget(),
                 dateSelectionWidget(),
-                descriptionWidget(),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.all(25.0),
@@ -126,6 +131,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                         description,
                         CategorieEnum()
                             .getIdFromEnum(context, selectedItem!.name),
+                        paymentMethod
                       ]);
 
                       resetAllValues();
@@ -146,26 +152,103 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     );
   }
 
-  Widget selectTransactionWidget() {
+  Widget selectTransactionWidget(double fontSize, double boxWidth) {
     return Row(
       mainAxisSize: MainAxisSize.max,
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         radioButtonLabelledTransactions(
-            'label_depense'.i18n(), TransactionEnum.DEPENSE, _groupValue),
+            'label_depense'.i18n(),
+            TransactionEnum.DEPENSE,
+            _groupValue,
+            fontSize,
+            boxWidth,
+            'transaction'),
         SizedBox(
           width: _deviceWidth! * 0.2,
         ),
         radioButtonLabelledTransactions(
-            'label_revenu'.i18n(), TransactionEnum.REVENU, _groupValue),
+            'label_revenu'.i18n(),
+            TransactionEnum.REVENU,
+            _groupValue,
+            fontSize,
+            boxWidth,
+            'transaction'),
+      ],
+    );
+  }
+
+  Widget selectPaymentMethodWidget(double fontSize, double boxWidth) {
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        radioButtonLabelledTransactions(
+            'label_cbretrait'.i18n(),
+            PaymentMethodEnum.CBRETRAIT,
+            _paymentMethodGroupValue,
+            fontSize,
+            boxWidth,
+            'paymentMethod'),
+        SizedBox(
+          width: _deviceWidth! * 0.02,
+        ),
+        radioButtonLabelledTransactions(
+            'label_cbcommerces'.i18n(),
+            PaymentMethodEnum.CBCOMMERCES,
+            _paymentMethodGroupValue,
+            fontSize,
+            boxWidth,
+            'paymentMethod'),
+        SizedBox(
+          width: _deviceWidth! * 0.02,
+        ),
+        radioButtonLabelledTransactions(
+            'label_cheque'.i18n(),
+            PaymentMethodEnum.CHEQUE,
+            _paymentMethodGroupValue,
+            fontSize,
+            boxWidth,
+            'paymentMethod'),
+        SizedBox(
+          width: _deviceWidth! * 0.02,
+        ),
+        radioButtonLabelledTransactions(
+            'label_virement'.i18n(),
+            PaymentMethodEnum.VIREMENT,
+            _paymentMethodGroupValue,
+            fontSize,
+            boxWidth,
+            'paymentMethod'),
+        SizedBox(
+          width: _deviceWidth! * 0.02,
+        ),
+        radioButtonLabelledTransactions(
+            'label_prelevement'.i18n(),
+            PaymentMethodEnum.PRELEVEMENT,
+            _paymentMethodGroupValue,
+            fontSize,
+            boxWidth,
+            'paymentMethod'),
+        SizedBox(
+          width: _deviceWidth! * 0.02,
+        ),
+        radioButtonLabelledTransactions(
+            'label_paypal'.i18n(),
+            PaymentMethodEnum.PAYPAL,
+            _paymentMethodGroupValue,
+            fontSize,
+            boxWidth,
+            'paymentMethod'),
       ],
     );
   }
 
   Widget descriptionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(),
+      width: customTransactionInputWidth(0.5),
       child: TextFormField(
         keyboardType: TextInputType.text,
         decoration: InputDecoration(
@@ -196,7 +279,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   Widget montantWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(),
+      width: customTransactionInputWidth(0.5),
       child: TextFormField(
         inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter.allow(RegExp(r'[0-9]+[,.]{0,1}[0-9]*')),
@@ -236,7 +319,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   Widget dateSelectionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(),
+      width: customTransactionInputWidth(0.5),
       child: Row(
         children: [
           Text(
@@ -283,62 +366,128 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     );
   }
 
+  AllCategories findCategFromId(String id) {
+    for (AllCategories category in dropDownItems!) {
+      if (category.id.toString() == id) {
+        return category;
+      }
+    }
+    return dropDownItems![0];
+  }
+
   Widget categorieSelectionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(),
-      child: DropdownButton<String>(
-        dropdownColor: const Color.fromARGB(255, 54, 54, 54),
-        value: selectedItem!.name,
-        onChanged: (value) {
-          setState(() {
-            List<AllCategories>? temp = [];
-            selectedItem!.name = value.toString();
-            dropDownItems!.removeWhere((element) => element == selectedItem);
-            temp.add(selectedItem!);
-            //Sort List alphabetically
-            dropDownItems!.sort((a, b) {
-              return a.name[0].toLowerCase().compareTo(b.name[0].toLowerCase());
-            });
-            temp.addAll(dropDownItems!);
-            dropDownItems = temp;
-          });
-        },
-        items: dropDownItems!
-            .map((item) => 
-                  // if (item.type == _groupValue || item.type == "BOTH") {
-                  DropdownMenuItem<String>(
-                    value: item.name,
-                    child: Text(
-                      item.name,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: _deviceWidth! * 0.013,
+      width: customTransactionInputWidth(0.5),
+      child: Row(
+        children: [
+          SizedBox(
+            width: customTransactionInputWidth(0.124),
+            child: DropdownButton<String>(
+              dropdownColor: const Color.fromARGB(255, 54, 54, 54),
+              value: selectedItem!.id.toString(),
+              onChanged: (value) {
+                setState(() {
+                  selectedItem = findCategFromId(value!);
+                });
+              },
+              items: dropDownItems!
+                  .map(
+                    (item) => DropdownMenuItem<String>(
+                      value: item.id.toString(),
+                      child: Text(
+                        item.name,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: _deviceWidth! * 0.013,
+                        ),
                       ),
                     ),
-                  ),
-                  // } else {
-
-                  // }
-                )
-            .toList(),
+                  )
+                  .toList(),
+            ),
+          ),
+          SizedBox(
+            width: customTransactionInputWidth(0.05),
+          ),
+          SizedBox(
+            width: customTransactionInputWidth(0.12),
+            height: _deviceHeight! * 0.035,
+            child: TextFormField(
+              controller: categNameTxt,
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                hintText: 'label_add_categ'.i18n().toUpperCase(),
+                hintStyle: TextStyle(
+                  color: Colors.grey,
+                  fontSize: _deviceWidth! * 0.01,
+                ),
+              ),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: _deviceWidth! * 0.01,
+              ),
+              onChanged: ((value) {
+                setState(() {
+                  description = value;
+                });
+              }),
+            ),
+          ),
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: IconButton(
+              icon: const Icon(
+                Icons.add,
+                color: Color.fromARGB(255, 81, 222, 81),
+              ),
+              onPressed: () async {
+                if (categNameTxt.text == "") {
+                  showToast(context, const Text("Please enter some text"));
+                  return;
+                }
+                try {
+                  addCategory(categNameTxt.text);
+                  showToast(context, const Text("Category added successfully"));
+                } catch (e) {
+                  showToast(context, const Text("Error while adding Category"));
+                }
+                resetAllValues();
+              },
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  Future<void> addCategory(String categName) async {
+    String? userId;
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    var response = await http.post(Uri.parse(
+        "$serverUrl/addCategorie?userId=$userId&name=${categName.toUpperCase()}"));
+    if (response.statusCode != 201) {}
   }
 
   Widget radioButtonLabelledTransactions(
     String title,
     String value,
     String? groupValue,
+    double fontSize,
+    double boxWidth,
+    String groupName,
   ) {
     return ConstrainedBox(
       constraints: BoxConstraints(
-        maxWidth: _deviceWidth! * 0.12,
+        maxWidth: _deviceWidth! * boxWidth,
         maxHeight: _deviceHeight! * 0.8,
       ),
       child: ListTile(
         title: Text(
           title,
-          style: customTextStyle(),
+          style: customTextStyle(fontSize),
         ),
         leading: Radio<String>(
             fillColor: MaterialStateProperty.resolveWith<Color>(
@@ -352,36 +501,49 @@ class AjoutTransactionState extends State<AjoutTransaction> {
             groupValue: groupValue,
             onChanged: (String? value) {
               setState(() {
-                _groupValue = value;
-                transactionType = value;
+                if (groupName == 'paymentMethod') {
+                  _paymentMethodGroupValue = value;
+                  paymentMethod = value;
+                } else {
+                  _groupValue = value;
+                  transactionType = value;
+                }
               });
             }),
       ),
     );
   }
 
-  TextStyle customTextStyle() {
+  TextStyle customTextStyle(double fontSize) {
     return TextStyle(
       color: Colors.white,
-      fontSize: _deviceWidth! * 0.011,
+      fontSize: _deviceWidth! * fontSize,
     );
   }
 
-  double customTransactionInputWidth() {
-    return _deviceWidth! * 0.5;
+  double customTransactionInputWidth(percentage) {
+    return _deviceWidth! * percentage;
   }
 
   Future<List<AllCategories>> getAllCategories() async {
+    String? userId;
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
     List<AllCategories> allCategories = [];
-    var response = await http.get(Uri.parse("$serverUrl/getCategories"));
+    var response =
+        await http.get(Uri.parse("$serverUrl/getCategories?userId=$userId"));
     if (json.decode(response.body) != null) {
       for (var i = 0; i < json.decode(response.body).length; i++) {
         AllCategories category = AllCategories(
-            id: 0,
-            name: json.decode(response.body)[i]["name"],
-            type: json.decode(response.body)[i]["type"]);
+            id: json.decode(response.body)[i]["id"],
+            name: json.decode(response.body)[i]["name"]);
         allCategories.add(category);
       }
+      allCategories.sort((a, b) {
+        return a.name[0].toLowerCase().compareTo(b.name[0].toLowerCase());
+      });
       return allCategories;
     }
     return [];
@@ -395,10 +557,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     }
 
     var response = await http.post(Uri.parse(
-        "$serverUrl/addTransaction?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&userId=$userId"));
-    if (response.statusCode != 201) {
-      // throw Exception();
-    }
+        "$serverUrl/addTransaction?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&userId=$userId&paymentMethod=${params[5]}"));
+    if (response.statusCode != 201) {}
   }
 
   void showToast(BuildContext context, content) {

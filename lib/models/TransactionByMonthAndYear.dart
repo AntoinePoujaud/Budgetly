@@ -5,6 +5,8 @@ class TransactionByMonthAndYear {
   double amount;
   String description;
   int categoryId;
+  String categoryName;
+  String paymentMethod;
 
   TransactionByMonthAndYear({
     required this.id,
@@ -13,6 +15,8 @@ class TransactionByMonthAndYear {
     required this.amount,
     required this.description,
     required this.categoryId,
+    required this.categoryName,
+    required this.paymentMethod,
   });
 
   factory TransactionByMonthAndYear.fromJson(Map<String, dynamic> json) {
@@ -23,6 +27,8 @@ class TransactionByMonthAndYear {
       amount: json['amount'].toDouble(),
       description: json['description'],
       categoryId: json['catId'],
+      categoryName: json['catName'],
+      paymentMethod: json['paymentMethod'],
     );
   }
 
@@ -34,6 +40,8 @@ class TransactionByMonthAndYear {
       "amount": amount.toString(),
       "description": description,
       "catId": categoryId.toString(),
+      "catName": categoryName,
+      "paymentMethod": paymentMethod.toString(),
     };
   }
 }

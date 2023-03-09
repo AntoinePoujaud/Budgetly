@@ -31,7 +31,7 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
     String currentPage = widget.currentPage;
     Locale locale = Localizations.localeOf(context);
     return Drawer(
-      backgroundColor: const Color.fromARGB(51, 225, 232, 237),
+      backgroundColor: Color.fromARGB(51, 32, 32, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -113,7 +113,7 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                   },
                 ),
                 SizedBox(
-                  height: _deviceHeight! * 0.64,
+                  height: _deviceHeight! * 0.6,
                 ),
                 ListTile(
                   title: Text(
