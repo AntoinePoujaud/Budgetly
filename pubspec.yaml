@@ -38,7 +38,7 @@ dependencies:
   # mysql1: ^0.20.0
   mysql_client: ^0.0.27
   get_it: ^7.2.0
-  intl: 
+  intl:
 
   flutter_localizations:
     sdk: flutter
@@ -52,6 +52,7 @@ dependencies:
   fluro: ^2.0.4
   url_strategy: ^0.2.0
   fl_chart: ^0.61.0
+  dart_numerics: ^0.0.6
 
 dev_dependencies:
   flutter_test:

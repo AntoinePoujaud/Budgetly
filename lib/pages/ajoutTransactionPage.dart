@@ -5,6 +5,7 @@ import 'package:budgetly/Enum/CategorieEnum.dart';
 import 'package:budgetly/Enum/PaymentMethodEnum.dart';
 import 'package:budgetly/models/AllCategories.dart';
 import 'package:budgetly/utils/menuLayout.dart';
+import 'package:dart_numerics/dart_numerics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:localization/localization.dart';
@@ -303,11 +304,16 @@ class AjoutTransactionState extends State<AjoutTransaction> {
         ),
         onChanged: ((value) {
           setState(() {
-            if (value.contains(",")) {
+            if (double.parse(value) >= int64MaxValue) {
+              montant = int64MaxValue as double?;
+              showToast(context, const Text("Max value is $int64MaxValue"));
+            } else if (double.parse(value) <= int64MinValue) {
+              montant = int64MinValue as double?;
+              showToast(context, const Text("Min value is $int64MinValue"));
+            } else if (value.contains(",")) {
               value =
                   "${value.substring(0, value.indexOf(","))}.${value.substring(value.indexOf(",") + 1)}";
-            }
-            if (value.trim() != "") {
+            } else if (value.trim() != "") {
               montant = double.parse(value);
             }
           });
