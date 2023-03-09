@@ -123,24 +123,29 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                     ),
                   ),
                   onPressed: () async {
-                    try {
-                      await addTransaction([
-                        currentDate,
-                        transactionType,
-                        double.parse(montant!.toStringAsFixed(2)),
-                        description,
-                        CategorieEnum()
-                            .getIdFromEnum(context, selectedItem!.name),
-                        paymentMethod
-                      ]);
+                    if (transactionType == null) {
+                      showToast(context,
+                          const Text("Please select a transaction type"));
+                    } else {
+                      try {
+                        await addTransaction([
+                          currentDate,
+                          transactionType,
+                          double.parse(montant!.toStringAsFixed(2)),
+                          description,
+                          CategorieEnum()
+                              .getIdFromEnum(context, selectedItem!.name),
+                          paymentMethod
+                        ]);
 
-                      resetAllValues();
-                      // ignore: use_build_context_synchronously
-                      showToast(context,
-                          const Text("Transaction added successfully"));
-                    } catch (e) {
-                      showToast(context,
-                          const Text("Error while adding transaction"));
+                        resetAllValues();
+                        // ignore: use_build_context_synchronously
+                        showToast(context,
+                            const Text("Transaction added successfully"));
+                      } catch (e) {
+                        showToast(context,
+                            const Text("Error while adding transaction"));
+                      }
                     }
                   },
                 )
