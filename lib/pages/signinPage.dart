@@ -25,6 +25,7 @@ class SignInPageState extends State<SignInPage> {
   TextEditingController emailTxt = TextEditingController();
   String serverUrl = 'https://moneytly.herokuapp.com';
   // String serverUrl = 'http://localhost:8081';
+
   bool passwordVisible = false;
 
   @override
@@ -198,6 +199,7 @@ class SignInPageState extends State<SignInPage> {
   }
 
   Future<void> addUserIfNew(String mail, String password) async {
+    print("bjrt");
     if (emailTxt.text == "") {
       showToast(context, const Text("mail can't be empty"));
     } else {

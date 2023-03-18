@@ -1,10 +1,11 @@
 // ignore_for_file: file_names
 
+import 'package:budgetly/utils/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
-
 
 class ForgottenPassword extends StatefulWidget {
   const ForgottenPassword({Key? key, required this.title}) : super(key: key);
@@ -37,36 +38,47 @@ class ForgottenPasswordPageState extends State<ForgottenPassword> {
     _deviceWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: "063545".toColor(),
       body: Center(
-        child: SizedBox(
-          height: _deviceHeight! * 1,
-          width: _deviceWidth! * 0.3,
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  "Mot de passe oublié",
-                  style: TextStyle(color: Colors.white, fontSize: 60),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Mot de passe oublié".toUpperCase(),
+                style: GoogleFonts.roboto(
+                  color: Colors.white,
+                  fontSize: _deviceWidth! > 500
+                      ? _deviceWidth! * 0.04
+                      : _deviceWidth! * 0.09,
+                  fontWeight: FontWeight.w700,
                 ),
-                SizedBox(height: _deviceHeight! * 0.15),
-                TextFormField(
+              ),
+              SizedBox(height: _deviceHeight! * 0.15),
+              SizedBox(
+                width: _deviceWidth! > 500
+                    ? _deviceWidth! * 0.5
+                    : _deviceWidth! * 0.8,
+                child: TextFormField(
                   controller: emailTxt,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: 'Email',
-                    labelStyle: TextStyle(
+                    labelText: 'Email'.toUpperCase(),
+                    labelStyle: GoogleFonts.roboto(
                       color: Colors.grey,
-                      fontSize: _deviceWidth! * 0.015,
+                      fontSize: _deviceWidth! > 500
+                          ? _deviceWidth! * 0.022
+                          : _deviceWidth! * 0.04,
                     ),
                   ),
-                  style: TextStyle(
+                  style: GoogleFonts.roboto(
                     color: Colors.white,
-                    fontSize: _deviceWidth! * 0.015,
+                    fontSize: _deviceWidth! > 500
+                        ? _deviceWidth! * 0.022
+                        : _deviceWidth! * 0.04,
                   ),
                   onChanged: ((value) {
                     setState(() {
@@ -79,48 +91,51 @@ class ForgottenPasswordPageState extends State<ForgottenPassword> {
                     }
                     return null;
                   },
+                  onFieldSubmitted: (value) =>
+                      {sendVerificationCodeToUser(emailTxt.text)},
                 ),
-                SizedBox(height: _deviceHeight! * 0.05),
+              ),
+              SizedBox(height: _deviceHeight! * 0.05),
 // if mail sent and response = 200
-                !mailSentSuccessfully
-                    ? ElevatedButton(
-                        onPressed: () {
-                          sendVerificationCodeToUser(emailTxt.text);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.all(20.0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(40),
-                          ),
-                          backgroundColor:
-                              const Color.fromARGB(255, 29, 161, 242),
+              !mailSentSuccessfully
+                  ? ElevatedButton(
+                      onPressed: () {
+                        sendVerificationCodeToUser(emailTxt.text);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.all(20.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
                         ),
-                        child: Text(
-                          "Envoyer mon code de vérification",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: _deviceWidth! * 0.015,
-                          ),
-                        ),
-                      )
-                    : Container(
-                        child: verifCodeWidget(),
+                        backgroundColor: "EC6463".toColor(),
                       ),
-                SizedBox(height: _deviceHeight! * 0.05),
-                RichText(
-                  text: TextSpan(
-                      text: "Retour",
-                      style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 16,
-                          decoration: TextDecoration.underline),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.of(context).pushNamed("/login");
-                        }),
-                ),
-              ],
-            ),
+                      child: Text(
+                        "Envoyer mon code de vérification".toUpperCase(),
+                        style: GoogleFonts.roboto(
+                            color: Colors.black,
+                            fontSize: _deviceWidth! > 500
+                                ? _deviceWidth! * 0.022
+                                : _deviceWidth! * 0.04,
+                            fontWeight: FontWeight.w700),
+                      ),
+                    )
+                  : Container(
+                      child: verifCodeWidget(),
+                    ),
+              SizedBox(height: _deviceHeight! * 0.05),
+              RichText(
+                text: TextSpan(
+                    text: "Retour".toUpperCase(),
+                    style: GoogleFonts.roboto(
+                        color: Colors.grey.shade600,
+                        fontSize: 16,
+                        decoration: TextDecoration.underline),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.of(context).pushNamed("/login");
+                      }),
+              ),
+            ],
           ),
         ),
       ),
@@ -132,13 +147,17 @@ class ForgottenPasswordPageState extends State<ForgottenPassword> {
         await http.get(Uri.parse("$serverUrl/sendMailPassword?email=$email"));
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
-      showToast(context, const Text("Si votre email est dans notre base de données, un mail vous a été envoyé"));
+      showToast(
+          context, const Text("Nous ne connaissons pas cette adresse mail"));
       setState(() {
         mailSentSuccessfully = false;
       });
     } else {
       // ignore: use_build_context_synchronously
-      showToast(context, const Text("Si votre email est dans notre base de données, un mail vous a été envoyé"));
+      showToast(
+          context,
+          const Text(
+              "Si votre email est dans notre base de données, un mail vous a été envoyé"));
       setState(() {
         mailSentSuccessfully = true;
       });
@@ -152,8 +171,8 @@ class ForgottenPasswordPageState extends State<ForgottenPassword> {
       // ignore: use_build_context_synchronously
       setState(() {
         isVerifCodeCorrect = false;
-        showToast(context,
-                          const Text("Votre code de vérification est incorrect"));
+        showToast(
+            context, const Text("Votre code de vérification est incorrect"));
       });
     } else {
       setState(() {
@@ -174,32 +193,52 @@ class ForgottenPasswordPageState extends State<ForgottenPassword> {
   Widget verifCodeWidget() {
     return Column(
       children: [
-        Text(
-          "Vérifiez votre boîte mail, un code de vérification vous a été envoyé",
-          style:
-              TextStyle(color: Colors.white, fontSize: _deviceWidth! * 0.015),
-        ),
-        TextFormField(
-          inputFormatters: <TextInputFormatter>[
-            FilteringTextInputFormatter.allow(RegExp(r'[0-9]+[,.]{0,1}[0-9]*')),
-          ],
-          decoration: InputDecoration(
-            hintText: "012345",
-            hintStyle: TextStyle(
-              color: Colors.grey,
-              fontSize: _deviceWidth! * 0.015,
+        SizedBox(
+          width:
+              _deviceWidth! > 500 ? _deviceWidth! * 0.5 : _deviceWidth! * 0.8,
+          child: Text(
+            "Vérifiez votre boîte mail, un code de vérification vous a été envoyé"
+                .toUpperCase(),
+            style: GoogleFonts.roboto(
+              color: Colors.white,
+              fontSize: _deviceWidth! > 500
+                  ? _deviceWidth! * 0.022
+                  : _deviceWidth! * 0.03,
+              fontWeight: FontWeight.w700,
             ),
           ),
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: _deviceWidth! * 0.015,
+        ),
+        SizedBox(
+          width:
+              _deviceWidth! > 500 ? _deviceWidth! * 0.5 : _deviceWidth! * 0.8,
+          child: TextFormField(
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(
+                  RegExp(r'[0-9]+[,.]{0,1}[0-9]*')),
+            ],
+            decoration: InputDecoration(
+              hintText: "012345",
+              hintStyle: GoogleFonts.roboto(
+                color: Colors.grey,
+                fontSize: _deviceWidth! > 500
+                    ? _deviceWidth! * 0.022
+                    : _deviceWidth! * 0.04,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            style: GoogleFonts.roboto(
+              color: Colors.white,
+              fontSize: _deviceWidth! > 500
+                  ? _deviceWidth! * 0.022
+                  : _deviceWidth! * 0.04,
+            ),
+            onChanged: (value) {
+              if (value.length == 6) {
+                verifCode = value.toString();
+                checkVerifCode(verifCode!, emailTxt.text);
+              }
+            },
           ),
-          onChanged: (value) {
-            if (value.length == 6) {
-              verifCode = value.toString();
-              checkVerifCode(verifCode!, emailTxt.text);
-            }
-          },
         ),
         SizedBox(height: _deviceHeight! * 0.05),
       ],
