@@ -31,7 +31,7 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
     String currentPage = widget.currentPage;
     Locale locale = Localizations.localeOf(context);
     return Drawer(
-      backgroundColor: Color.fromARGB(51, 32, 32, 32),
+      backgroundColor: const Color.fromARGB(51, 32, 32, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

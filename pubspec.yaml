@@ -52,7 +52,6 @@ dependencies:
   fluro: ^2.0.4
   url_strategy: ^0.2.0
   fl_chart: ^0.61.0
-  dart_numerics: ^0.0.6
 
 dev_dependencies:
   flutter_test:
