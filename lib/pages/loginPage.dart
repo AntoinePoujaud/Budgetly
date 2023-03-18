@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:budgetly/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,7 +41,7 @@ class LoginPageState extends State<LoginPage> {
     _deviceWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: "0A454A".toColor(),
       body: Center(
         child: SizedBox(
           height: _deviceHeight! * 1,
@@ -105,7 +106,7 @@ class LoginPageState extends State<LoginPage> {
                           passwordVisible
                               ? Icons.visibility
                               : Icons.visibility_off,
-                          color: Theme.of(context).primaryColorDark),
+                          color: Colors.grey),
                       onPressed: () {
                         setState(() {
                           passwordVisible = !passwordVisible;
@@ -147,14 +148,13 @@ class LoginPageState extends State<LoginPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(40),
                     ),
-                    backgroundColor: isEnabled
-                        ? const Color.fromARGB(255, 29, 161, 242)
-                        : Colors.grey,
+                    backgroundColor:
+                        isEnabled ? "EC6463".toColor() : Colors.grey,
                   ),
                   child: Text(
-                    "Se connecter",
+                    "Connexion",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontSize: _deviceWidth! * 0.015,
                     ),
                   ),
@@ -167,7 +167,7 @@ class LoginPageState extends State<LoginPage> {
                   children: [
                     RichText(
                       text: TextSpan(
-                          text: "Créer un compte",
+                          text: "S'inscrire",
                           style: TextStyle(
                               color: Colors.grey.shade600,
                               fontSize: 16,

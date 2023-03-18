@@ -1,11 +1,9 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 
-import 'package:budgetly/Enum/CategorieEnum.dart';
 import 'package:budgetly/Enum/FilterGeneralEnum.dart';
 import 'package:budgetly/Enum/TransactionEnum.dart';
 import 'package:budgetly/utils/menuLayout.dart';
-import 'package:dart_numerics/dart_numerics.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:localization/localization.dart';
@@ -655,12 +653,14 @@ class MainPageState extends State<MainPage> {
         ),
         onChanged: ((value) {
           setState(() {
-            if (double.parse(value) >= int64MaxValue) {
-              montant = int64MaxValue as double?;
-              showToast(context, const Text("Max value is $int64MaxValue"));
-            } else if (double.parse(value) <= int64MinValue) {
-              montant = int64MinValue as double?;
-              showToast(context, const Text("Min value is $int64MinValue"));
+            double bmax = BigInt.parse("9223372036854775807") as double;
+            double bmin = BigInt.parse("-9223372036854775807") as double;
+            if (double.parse(value) >= bmax) {
+              montant = bmax;
+              showToast(context, Text("Max value is $bmax"));
+            } else if (double.parse(value) <= bmin) {
+              montant = bmin;
+              showToast(context, Text("Min value is $bmin"));
             } else if (value.contains(",")) {
               value =
                   "${value.substring(0, value.indexOf(","))}.${value.substring(value.indexOf(",") + 1)}";
