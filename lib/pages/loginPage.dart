@@ -2,9 +2,10 @@
 
 import 'dart:convert';
 
-import 'package:budgetly/extensions.dart';
+import 'package:budgetly/utils/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -43,34 +44,47 @@ class LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: "0A454A".toColor(),
       body: Center(
-        child: SizedBox(
-          height: _deviceHeight! * 1,
-          width: _deviceWidth! * 0.3,
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  "Se connecter",
-                  style: TextStyle(color: Colors.white, fontSize: 60),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Se connecter".toUpperCase(),
+                style: GoogleFonts.roboto(
+                  color: Colors.white,
+                  fontSize: _deviceWidth! > 500
+                      ? _deviceWidth! * 0.04
+                      : _deviceWidth! * 0.09,
+                  fontWeight: FontWeight.w700,
                 ),
-                SizedBox(height: _deviceHeight! * 0.15),
-                TextFormField(
+              ),
+              SizedBox(height: _deviceHeight! * 0.15),
+              SizedBox(
+                width: _deviceWidth! > 500
+                    ? _deviceWidth! * 0.5
+                    : _deviceWidth! * 0.8,
+                child: TextFormField(
                   controller: emailTxt,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: 'Email',
-                    labelStyle: TextStyle(
+                    labelText: 'Email'.toUpperCase(),
+                    labelStyle: GoogleFonts.roboto(
                       color: Colors.grey,
-                      fontSize: _deviceWidth! * 0.015,
+                      fontSize: _deviceWidth! > 500
+                          ? _deviceWidth! * 0.022
+                          : _deviceWidth! * 0.04,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
-                  style: TextStyle(
+                  style: GoogleFonts.roboto(
                     color: Colors.white,
-                    fontSize: _deviceWidth! * 0.015,
+                    fontSize: _deviceWidth! > 500
+                        ? _deviceWidth! * 0.022
+                        : _deviceWidth! * 0.04,
+                    fontWeight: FontWeight.w700,
                   ),
                   onChanged: ((value) {
                     setState(() {
@@ -89,17 +103,25 @@ class LoginPageState extends State<LoginPage> {
                         : null
                   },
                 ),
-                SizedBox(height: _deviceHeight! * 0.05),
-                TextFormField(
+              ),
+              SizedBox(height: _deviceHeight! * 0.05),
+              SizedBox(
+                width: _deviceWidth! > 500
+                    ? _deviceWidth! * 0.5
+                    : _deviceWidth! * 0.8,
+                child: TextFormField(
                   controller: passwordTxt,
                   obscureText: !passwordVisible,
                   obscuringCharacter: "*",
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: 'Mot de passe',
-                    labelStyle: TextStyle(
+                    labelText: 'Mot de passe'.toUpperCase(),
+                    labelStyle: GoogleFonts.roboto(
                       color: Colors.grey,
-                      fontSize: _deviceWidth! * 0.015,
+                      fontSize: _deviceWidth! > 500
+                          ? _deviceWidth! * 0.022
+                          : _deviceWidth! * 0.04,
+                      fontWeight: FontWeight.w700,
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -119,9 +141,12 @@ class LoginPageState extends State<LoginPage> {
                         ? login(context, emailTxt.text, passwordTxt.text)
                         : null
                   },
-                  style: TextStyle(
+                  style: GoogleFonts.roboto(
                     color: Colors.white,
-                    fontSize: _deviceWidth! * 0.015,
+                    fontSize: _deviceWidth! > 500
+                        ? _deviceWidth! * 0.022
+                        : _deviceWidth! * 0.04,
+                    fontWeight: FontWeight.w700,
                   ),
                   onChanged: ((value) {
                     setState(() {
@@ -135,65 +160,70 @@ class LoginPageState extends State<LoginPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: _deviceHeight! * 0.05),
-                ElevatedButton(
-                  statesController: submitBtn,
-                  onPressed: () {
-                    isEnabled
-                        ? login(context, emailTxt.text, passwordTxt.text)
-                        : null;
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.all(20.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    backgroundColor:
-                        isEnabled ? "EC6463".toColor() : Colors.grey,
+              ),
+              SizedBox(height: _deviceHeight! * 0.05),
+              ElevatedButton(
+                statesController: submitBtn,
+                onPressed: () {
+                  isEnabled
+                      ? login(context, emailTxt.text, passwordTxt.text)
+                      : null;
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.all(20.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40),
                   ),
-                  child: Text(
-                    "Connexion",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: _deviceWidth! * 0.015,
-                    ),
+                  backgroundColor: isEnabled ? "EC6463".toColor() : Colors.grey,
+                ),
+                child: Text(
+                  "Connexion".toUpperCase(),
+                  style: GoogleFonts.roboto(
+                    color: Colors.black,
+                    fontSize: _deviceWidth! > 500
+                        ? _deviceWidth! * 0.022
+                        : _deviceWidth! * 0.04,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-                SizedBox(height: _deviceHeight! * 0.05),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                          text: "S'inscrire",
-                          style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 16,
-                              decoration: TextDecoration.underline),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              Navigator.of(context).pushNamed("/signIn");
-                            }),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                          text: "Mot de passe oublié",
-                          style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 16,
-                              decoration: TextDecoration.underline),
-                          recognizer: TapGestureRecognizer()
-                            ..onTap = () {
-                              Navigator.of(context)
-                                  .pushNamed("/forgotPassword");
-                            }),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+              SizedBox(height: _deviceHeight! * 0.05),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  RichText(
+                    text: TextSpan(
+                        text: "Créer un compte".toUpperCase(),
+                        style: GoogleFonts.roboto(
+                          color: Colors.grey.shade600,
+                          fontSize: 16,
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.of(context).pushNamed("/signIn");
+                          }),
+                  ),
+                  RichText(
+                    text: TextSpan(
+                        text: "Mot de passe oublié".toUpperCase(),
+                        style: GoogleFonts.roboto(
+                          color: Colors.grey.shade600,
+                          fontSize: 16,
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            Navigator.of(context).pushNamed("/forgotPassword");
+                          }),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

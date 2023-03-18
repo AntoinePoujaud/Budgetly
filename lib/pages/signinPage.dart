@@ -2,8 +2,10 @@
 
 import 'dart:convert';
 
+import 'package:budgetly/utils/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,142 +39,170 @@ class SignInPageState extends State<SignInPage> {
     _deviceWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(
-          child: SizedBox(
-            height: _deviceHeight! * 1,
-            width: _deviceWidth! * 0.3,
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Créer un compte",
-                    style: TextStyle(color: Colors.white, fontSize: 60),
-                  ),
-                  SizedBox(height: _deviceHeight! * 0.15),
-                  TextFormField(
-                    controller: emailTxt,
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      labelStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: _deviceWidth! * 0.015,
-                      ),
-                    ),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: _deviceWidth! * 0.015,
-                    ),
-                    onChanged: ((value) {
-                      setState(() {
-                        mail = value;
-                      });
-                    }),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a valid email';
-                      }
-                      return null;
-                    },
-                    onFieldSubmitted: (value) => {
-                      addUserIfNew(emailTxt.text, passwordTxt.text)
-                    },
-                  ),
-                  SizedBox(height: _deviceHeight! * 0.05),
-                  TextFormField(
-                    obscureText: !passwordVisible,
-                    obscuringCharacter: "*",
-                    controller: passwordTxt,
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      labelText: 'Mot de passe',
-                      labelStyle: TextStyle(
-                        color: Colors.grey,
-                        fontSize: _deviceWidth! * 0.015,
-                      ),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                            passwordVisible
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                            color: Theme.of(context).primaryColorDark),
-                        onPressed: () {
-                          setState(() {
-                            passwordVisible = !passwordVisible;
-                          });
-                        },
-                      ),
-                    ),
-                    onFieldSubmitted: (value) => {
-                      addUserIfNew(emailTxt.text, passwordTxt.text)
-                    },
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: _deviceWidth! * 0.015,
-                    ),
-                    onChanged: ((value) {
-                      setState(() {
-                        password = value;
-                      });
-                    }),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
-                      }
-                      return null;
-                    },
-                  ),
-                  SizedBox(height: _deviceHeight! * 0.05),
-                  ElevatedButton(
-                    onPressed: () {
-                      addUserIfNew(emailTxt.text, passwordTxt.text);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.all(20.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      backgroundColor: const Color.fromARGB(255, 29, 161, 242),
-                    ),
-                    child: Text(
-                      "Créer un compte",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: _deviceWidth! * 0.015,
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: _deviceHeight! * 0.05),
-                  RichText(
-                    text: TextSpan(
-                        text: "Se connecter",
-                        style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 16,
-                            decoration: TextDecoration.underline),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            Navigator.of(context).pushNamed("/login");
-                          }),
-                  ),
-                ],
+      backgroundColor: "063545".toColor(),
+      body: Center(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Créer un compte".toUpperCase(),
+                style: GoogleFonts.roboto(
+                  color: Colors.white,
+                  fontSize: _deviceWidth! > 500
+                      ? _deviceWidth! * 0.04
+                      : _deviceWidth! * 0.09,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
-            ),
+              SizedBox(height: _deviceHeight! * 0.15),
+              SizedBox(
+                width: _deviceWidth! > 500
+                    ? _deviceWidth! * 0.5
+                    : _deviceWidth! * 0.8,
+                child: TextFormField(
+                  controller: emailTxt,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    labelText: 'Email'.toUpperCase(),
+                    labelStyle: GoogleFonts.roboto(
+                      color: Colors.grey,
+                      fontSize: _deviceWidth! > 500
+                          ? _deviceWidth! * 0.022
+                          : _deviceWidth! * 0.04,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  style: GoogleFonts.roboto(
+                    color: Colors.white,
+                    fontSize: _deviceWidth! > 500
+                        ? _deviceWidth! * 0.022
+                        : _deviceWidth! * 0.04,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  onChanged: ((value) {
+                    setState(() {
+                      mail = value;
+                    });
+                  }),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a valid email';
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: (value) =>
+                      {addUserIfNew(emailTxt.text, passwordTxt.text)},
+                ),
+              ),
+              SizedBox(height: _deviceHeight! * 0.05),
+              SizedBox(
+                width: _deviceWidth! > 500
+                    ? _deviceWidth! * 0.5
+                    : _deviceWidth! * 0.8,
+                child: TextFormField(
+                  obscureText: !passwordVisible,
+                  obscuringCharacter: "*",
+                  controller: passwordTxt,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    labelText: 'Mot de passe'.toUpperCase(),
+                    labelStyle: GoogleFonts.roboto(
+                      color: Colors.grey,
+                      fontSize: _deviceWidth! > 500
+                          ? _deviceWidth! * 0.022
+                          : _deviceWidth! * 0.04,
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: Colors.grey,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          passwordVisible = !passwordVisible;
+                        });
+                      },
+                    ),
+                  ),
+                  onFieldSubmitted: (value) =>
+                      {addUserIfNew(emailTxt.text, passwordTxt.text)},
+                  style: GoogleFonts.roboto(
+                    color: Colors.white,
+                    fontSize: _deviceWidth! > 500
+                        ? _deviceWidth! * 0.022
+                        : _deviceWidth! * 0.04,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  onChanged: ((value) {
+                    setState(() {
+                      password = value;
+                    });
+                  }),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(height: _deviceHeight! * 0.05),
+              ElevatedButton(
+                onPressed: () {
+                  addUserIfNew(emailTxt.text, passwordTxt.text);
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.all(20.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(40),
+                  ),
+                  backgroundColor: "EC6463".toColor(),
+                ),
+                child: Text(
+                  "S'inscrire".toUpperCase(),
+                  style: GoogleFonts.roboto(
+                    color: Colors.black,
+                    fontSize: _deviceWidth! > 500
+                        ? _deviceWidth! * 0.022
+                        : _deviceWidth! * 0.04,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              SizedBox(height: _deviceHeight! * 0.05),
+              RichText(
+                text: TextSpan(
+                    text: "Se connecter".toUpperCase(),
+                    style: GoogleFonts.roboto(
+                      color: Colors.grey.shade600,
+                      fontSize: 16,
+                      decoration: TextDecoration.underline,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        Navigator.of(context).pushNamed("/login");
+                      }),
+              ),
+            ],
           ),
         ),
+      ),
     );
   }
 
   Future<void> addUserIfNew(String mail, String password) async {
     if (emailTxt.text == "") {
-      throw Exception("mail can't be empty");
+      showToast(context, const Text("mail can't be empty"));
+    } else {
+      addUser(mail, password);
     }
-    addUser(mail, password);
   }
 
   Future<void> addUser(String mail, String password) async {

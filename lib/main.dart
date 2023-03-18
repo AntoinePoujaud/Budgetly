@@ -60,11 +60,7 @@ class MyAppState extends State<MyApp> {
           LocalJsonLocalization.delegate,
         ],
         title: 'Budgetly',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
         initialRoute: "/login",
-        onGenerateRoute: (Routes.router.generator)
-        );
+        onGenerateRoute: (Routes.router.generator));
   }
 }
