@@ -43,11 +43,12 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
               padding: EdgeInsets.zero,
               children: <Widget>[
                 DrawerHeader(
+                  padding: const EdgeInsets.only(top: 40),
                   child: Text(
                     "Budgetly".toUpperCase(),
                     style: GoogleFonts.roboto(
                         color: Colors.white,
-                        fontSize: 25,
+                        fontSize: 35,
                         fontWeight: FontWeight.w700),
                     textAlign: TextAlign.center,
                   ),
