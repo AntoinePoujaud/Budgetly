@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class Utils {
   static Future<bool> checkIfConnected(context) async {
     final prefs = await SharedPreferences.getInstance();
+      await prefs.setString("userId", "1");
     if (prefs.getString("userId") == null) {
       // ignore: use_build_context_synchronously
       Navigator.popAndPushNamed(context, "/login");

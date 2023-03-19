@@ -160,9 +160,6 @@ class SignInPageState extends State<SignInPage> {
                 },
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.all(20.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40),
-                  ),
                   backgroundColor: "EC6463".toColor(),
                 ),
                 child: Text(

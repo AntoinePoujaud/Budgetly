@@ -4,9 +4,11 @@ import 'dart:convert';
 import 'package:budgetly/Enum/CategorieEnum.dart';
 import 'package:budgetly/Enum/PaymentMethodEnum.dart';
 import 'package:budgetly/models/AllCategories.dart';
+import 'package:budgetly/utils/extensions.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Enum/TransactionEnum.dart';
@@ -54,7 +56,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     currentDate = date;
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: "#CCE4DD".toColor(),
       body: showForm(),
     );
   }
@@ -92,62 +94,114 @@ class AjoutTransactionState extends State<AjoutTransaction> {
             deviceWidth: _deviceWidth,
             deviceHeight: _deviceHeight),
         SizedBox(
-          height: _deviceHeight! * 0.8,
+          height: _deviceHeight! * 1,
           width: _deviceWidth! * 0.85,
           child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.max,
               children: [
-                selectTransactionWidget(0.011, 0.12),
-                selectPaymentMethodWidget(0.009, 0.1),
-                categorieSelectionWidget(),
-                descriptionWidget(),
-                montantWidget(),
-                dateSelectionWidget(),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.all(25.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(40),
-                    ),
-                    backgroundColor: const Color.fromARGB(255, 29, 161, 242),
+                Container(
+                  color: "#0A454A".toColor(),
+                  width: _deviceWidth! * 0.85,
+                  height: _deviceHeight! * 0.2,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.only(
+                    left: _deviceWidth! * 0.05,
+                    right: _deviceWidth! * 0.05,
                   ),
-                  child: Text(
-                    'label_save_transaction'.i18n(),
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: _deviceWidth! * 0.02,
-                    ),
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Remplissez -".toUpperCase(),
+                          style: GoogleFonts.roboto(
+                            color: Colors.white,
+                            fontSize: _deviceWidth! * 0.015,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        selectTransactionWidget(0.012, 0.12),
+                        Container(
+                          color: Colors.white,
+                          height: 1,
+                          width: _deviceWidth! * 0.7,
+                          alignment: Alignment.center,
+                        ),
+                        selectPaymentMethodWidget(0.011, 0.12),
+                      ]),
+                ),
+                Container(
+                  height: _deviceHeight! * 0.55,
+                  width: _deviceWidth! * 0.85,
+                  padding: EdgeInsets.only(
+                    left: _deviceWidth! * 0.05,
+                    right: _deviceWidth! * 0.05,
                   ),
-                  onPressed: () async {
-                    if (transactionType == null) {
-                      showToast(context,
-                          const Text("Please select a transaction type"));
-                    } else {
-                      try {
-                        await addTransaction([
-                          currentDate,
-                          transactionType,
-                          double.parse(montant!.toStringAsFixed(2)),
-                          description,
-                          CategorieEnum()
-                              .getIdFromEnum(context, selectedItem!.name),
-                          paymentMethod
-                        ]);
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        categorieSelectionWidget(),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            descriptionWidget(),
+                            montantWidget(),
+                          ],
+                        ),
+                        dateSelectionWidget(),
+                      ]),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: _deviceHeight! * 0.05),
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.all(25.0),
+                      backgroundColor: "#EC6463".toColor(),
+                    ),
+                    child: Text(
+                      'label_save_transaction'.i18n().toUpperCase(),
+                      style: GoogleFonts.roboto(
+                        color: Colors.black,
+                        fontSize: _deviceWidth! * 0.018,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    onPressed: () async {
+                      if (transactionType == null) {
+                        showToast(context,
+                            const Text("Please select a transaction type"));
+                      } else {
+                        try {
+                          await addTransaction([
+                            currentDate,
+                            transactionType,
+                            double.parse(montant!.toStringAsFixed(2)),
+                            description,
+                            CategorieEnum()
+                                .getIdFromEnum(context, selectedItem!.name),
+                            paymentMethod
+                          ]);
 
-                        resetAllValues();
-                        // ignore: use_build_context_synchronously
-                        showToast(context,
-                            const Text("Transaction added successfully"));
-                      } catch (e) {
-                        showToast(context,
-                            const Text("Error while adding transaction"));
+                          resetAllValues();
+                          // ignore: use_build_context_synchronously
+                          showToast(context,
+                              const Text("Transaction added successfully"));
+                        } catch (e) {
+                          showToast(context,
+                              const Text("Error while adding transaction"));
+                        }
                       }
-                    }
-                  },
+                    },
+                  ),
                 )
               ],
             ),
@@ -158,90 +212,105 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   }
 
   Widget selectTransactionWidget(double fontSize, double boxWidth) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        radioButtonLabelledTransactions(
-            'label_depense'.i18n(),
-            TransactionEnum.DEPENSE,
-            _groupValue,
-            fontSize,
-            boxWidth,
-            'transaction'),
-        SizedBox(
-          width: _deviceWidth! * 0.2,
-        ),
-        radioButtonLabelledTransactions(
-            'label_revenu'.i18n(),
-            TransactionEnum.REVENU,
-            _groupValue,
-            fontSize,
-            boxWidth,
-            'transaction'),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          radioButtonLabelledTransactions(
+              'label_depense'.i18n(),
+              TransactionEnum.DEPENSE,
+              _groupValue,
+              fontSize,
+              boxWidth,
+              'transaction'),
+          SizedBox(
+            width: _deviceWidth! * 0.005,
+          ),
+          radioButtonLabelledTransactions(
+              'label_revenu'.i18n(),
+              TransactionEnum.REVENU,
+              _groupValue,
+              fontSize,
+              boxWidth,
+              'transaction'),
+        ],
+      ),
     );
   }
 
   Widget selectPaymentMethodWidget(double fontSize, double boxWidth) {
     return Row(
       mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         radioButtonLabelledTransactions(
-            'label_cbretrait'.i18n(),
+            _deviceWidth! > 1600
+                ? 'label_cbretrait'.i18n()
+                : 'label_cbretrait_short'.i18n(),
             PaymentMethodEnum.CBRETRAIT,
             _paymentMethodGroupValue,
             fontSize,
             boxWidth,
             'paymentMethod'),
         SizedBox(
-          width: _deviceWidth! * 0.02,
+          width: _deviceWidth! * 0.005,
         ),
         radioButtonLabelledTransactions(
-            'label_cbcommerces'.i18n(),
+            _deviceWidth! > 1600
+                ? 'label_cbcommerces'.i18n()
+                : 'label_cbcommerces_short'.i18n(),
             PaymentMethodEnum.CBCOMMERCES,
             _paymentMethodGroupValue,
             fontSize,
             boxWidth,
             'paymentMethod'),
         SizedBox(
-          width: _deviceWidth! * 0.02,
+          width: _deviceWidth! * 0.005,
         ),
         radioButtonLabelledTransactions(
-            'label_cheque'.i18n(),
+            _deviceWidth! > 1600
+                ? 'label_cheque'.i18n()
+                : 'label_cheque_short'.i18n(),
             PaymentMethodEnum.CHEQUE,
             _paymentMethodGroupValue,
             fontSize,
             boxWidth,
             'paymentMethod'),
         SizedBox(
-          width: _deviceWidth! * 0.02,
+          width: _deviceWidth! * 0.005,
         ),
         radioButtonLabelledTransactions(
-            'label_virement'.i18n(),
+            _deviceWidth! > 1600
+                ? 'label_virement'.i18n()
+                : 'label_virement_short'.i18n(),
             PaymentMethodEnum.VIREMENT,
             _paymentMethodGroupValue,
             fontSize,
             boxWidth,
             'paymentMethod'),
         SizedBox(
-          width: _deviceWidth! * 0.02,
+          width: _deviceWidth! * 0.005,
         ),
         radioButtonLabelledTransactions(
-            'label_prelevement'.i18n(),
+            _deviceWidth! > 1600
+                ? 'label_prelevement'.i18n()
+                : 'label_prelevement_short'.i18n(),
             PaymentMethodEnum.PRELEVEMENT,
             _paymentMethodGroupValue,
             fontSize,
             boxWidth,
             'paymentMethod'),
         SizedBox(
-          width: _deviceWidth! * 0.02,
+          width: _deviceWidth! * 0.005,
         ),
         radioButtonLabelledTransactions(
-            'label_paypal'.i18n(),
+            _deviceWidth! > 1600
+                ? 'label_paypal'.i18n()
+                : 'label_paypal_short'.i18n(),
             PaymentMethodEnum.PAYPAL,
             _paymentMethodGroupValue,
             fontSize,
@@ -253,19 +322,21 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   Widget descriptionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(0.5),
+      width: customTransactionInputWidth(0.4),
       child: TextFormField(
         keyboardType: TextInputType.text,
         decoration: InputDecoration(
           labelText: 'label_enter_desc'.i18n().toUpperCase(),
-          labelStyle: TextStyle(
-            color: Colors.grey,
-            fontSize: _deviceWidth! * 0.015,
+          labelStyle: GoogleFonts.roboto(
+            color: const Color.fromARGB(255, 95, 95, 95),
+            fontSize: _deviceWidth! * 0.018,
+            fontWeight: FontWeight.w700,
           ),
         ),
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: _deviceWidth! * 0.015,
+        style: GoogleFonts.roboto(
+          color: Colors.black,
+          fontSize: _deviceWidth! * 0.018,
+          fontWeight: FontWeight.w700,
         ),
         onChanged: ((value) {
           setState(() {
@@ -284,7 +355,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   Widget montantWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(0.5),
+      width: customTransactionInputWidth(0.4),
       child: TextFormField(
         inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter.allow(RegExp(r'[0-9]+[,.]{0,1}[0-9]*')),
@@ -292,14 +363,16 @@ class AjoutTransactionState extends State<AjoutTransaction> {
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         decoration: InputDecoration(
           labelText: 'label_enter_amount'.i18n().toUpperCase(),
-          labelStyle: TextStyle(
-            color: Colors.grey,
-            fontSize: _deviceWidth! * 0.015,
+          labelStyle: GoogleFonts.roboto(
+            color: const Color.fromARGB(255, 95, 95, 95),
+            fontSize: _deviceWidth! * 0.018,
+            fontWeight: FontWeight.w700,
           ),
         ),
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: _deviceWidth! * 0.015,
+        style: GoogleFonts.roboto(
+          color: Colors.black,
+          fontSize: _deviceWidth! * 0.018,
+          fontWeight: FontWeight.w700,
         ),
         onChanged: ((value) {
           setState(() {
@@ -333,28 +406,42 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     return SizedBox(
       width: customTransactionInputWidth(0.5),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            '${date.day < 10 ? '0${date.day}' : date.day}/${date.month < 10 ? '0${date.month}' : date.month}/${date.year}',
-            style: TextStyle(
-              color: Colors.white,
+            "Sélectionnez - ".toUpperCase(),
+            style: GoogleFonts.roboto(
+              color: Colors.black,
               fontSize: _deviceWidth! * 0.015,
+              fontWeight: FontWeight.w700,
             ),
-          ),
-          SizedBox(
-            width: _deviceWidth! * 0.05,
-            height: _deviceHeight! * 0.01,
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.all(25.0),
+              padding: const EdgeInsets.all(20.0),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(40),
+                borderRadius: BorderRadius.circular(20),
               ),
-              backgroundColor: const Color.fromARGB(255, 29, 161, 242),
+              backgroundColor: Colors.black,
             ),
             onPressed: () async {
               DateTime? newDate = await showDatePicker(
+                builder: (BuildContext context, Widget? child) {
+                  return Theme(
+                    data: ThemeData.dark().copyWith(
+                      colorScheme: ColorScheme.dark(
+                        primary: "#EC6463".toColor(),
+                        onPrimary: Colors.black,
+                        surface: "#0A454A".toColor(),
+                        onSurface: Colors.black,
+                      ),
+                      dialogBackgroundColor: "#CCE4DD".toColor(),
+                    ),
+                    child: child!,
+                  );
+                },
                 context: context,
                 initialDate: date,
                 firstDate: DateTime(2022),
@@ -368,9 +455,12 @@ class AjoutTransactionState extends State<AjoutTransaction> {
               });
             },
             child: Text(
-              'label_select_date_transaction'.i18n(),
-              style: TextStyle(
-                  color: Colors.white, fontSize: _deviceWidth! * 0.012),
+              '${date.day < 10 ? '0${date.day}' : date.day}/${date.month < 10 ? '0${date.month}' : date.month}/${date.year}',
+              style: GoogleFonts.roboto(
+                color: Colors.white,
+                fontSize: _deviceWidth! * 0.018,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
@@ -390,13 +480,21 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   Widget categorieSelectionWidget() {
     return SizedBox(
       width: customTransactionInputWidth(0.5),
-      child: Row(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: customTransactionInputWidth(0.124),
+            width: customTransactionInputWidth(0.17),
             child: DropdownButton<String>(
-              dropdownColor: const Color.fromARGB(255, 54, 54, 54),
+              dropdownColor: "#EC6463".toColor(),
               value: selectedItem!.id.toString(),
+              underline: Container(
+                height: 1,
+                color: Colors.black,
+              ),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.black),
               onChanged: (value) {
                 setState(() {
                   selectedItem = findCategFromId(value!);
@@ -408,9 +506,10 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                       value: item.id.toString(),
                       child: Text(
                         item.name,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: _deviceWidth! * 0.013,
+                        style: GoogleFonts.roboto(
+                          color: Colors.black,
+                          fontSize: _deviceWidth! * 0.018,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -419,53 +518,61 @@ class AjoutTransactionState extends State<AjoutTransaction> {
             ),
           ),
           SizedBox(
-            width: customTransactionInputWidth(0.05),
+            height: _deviceHeight! * 0.01,
           ),
-          SizedBox(
-            width: customTransactionInputWidth(0.12),
-            height: _deviceHeight! * 0.035,
-            child: TextFormField(
-              controller: categNameTxt,
-              keyboardType: TextInputType.text,
-              decoration: InputDecoration(
-                hintText: 'label_add_categ'.i18n().toUpperCase(),
-                hintStyle: TextStyle(
-                  color: Colors.grey,
-                  fontSize: _deviceWidth! * 0.01,
+          Row(
+            children: [
+              SizedBox(
+                width: customTransactionInputWidth(0.12),
+                height: _deviceHeight! * 0.035,
+                child: TextFormField(
+                  controller: categNameTxt,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    hintText: 'label_add_categ'.i18n().toUpperCase(),
+                    hintStyle: TextStyle(
+                      color: const Color.fromARGB(255, 95, 95, 95),
+                      fontSize: _deviceWidth! * 0.01,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: _deviceWidth! * 0.01,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  onChanged: ((value) {
+                    setState(() {
+                      description = value;
+                    });
+                  }),
                 ),
               ),
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: _deviceWidth! * 0.01,
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.add,
+                    color: Color.fromARGB(255, 62, 168, 62),
+                  ),
+                  onPressed: () async {
+                    if (categNameTxt.text == "") {
+                      showToast(context, const Text("Please enter some text"));
+                      return;
+                    }
+                    try {
+                      addCategory(categNameTxt.text);
+                      showToast(
+                          context, const Text("Category added successfully"));
+                    } catch (e) {
+                      showToast(
+                          context, const Text("Error while adding Category"));
+                    }
+                    resetAllValues();
+                  },
+                ),
               ),
-              onChanged: ((value) {
-                setState(() {
-                  description = value;
-                });
-              }),
-            ),
-          ),
-          MouseRegion(
-            cursor: SystemMouseCursors.click,
-            child: IconButton(
-              icon: const Icon(
-                Icons.add,
-                color: Color.fromARGB(255, 81, 222, 81),
-              ),
-              onPressed: () async {
-                if (categNameTxt.text == "") {
-                  showToast(context, const Text("Please enter some text"));
-                  return;
-                }
-                try {
-                  addCategory(categNameTxt.text);
-                  showToast(context, const Text("Category added successfully"));
-                } catch (e) {
-                  showToast(context, const Text("Error while adding Category"));
-                }
-                resetAllValues();
-              },
-            ),
+            ],
           ),
         ],
       ),
@@ -498,8 +605,12 @@ class AjoutTransactionState extends State<AjoutTransaction> {
       ),
       child: ListTile(
         title: Text(
-          title,
-          style: customTextStyle(fontSize),
+          title.toUpperCase(),
+          style: GoogleFonts.roboto(
+            color: Colors.white,
+            fontSize: _deviceWidth! * fontSize,
+            fontWeight: FontWeight.w700,
+          ),
         ),
         leading: Radio<String>(
             fillColor: MaterialStateProperty.resolveWith<Color>(

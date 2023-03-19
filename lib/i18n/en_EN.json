@@ -3,50 +3,42 @@
     "tableau_recap_title": "Summary Table",
     "add_transaction_title": "Add transaction",
     "forgotten_password": "Forgotten password",
-
     "actual_amount": "Actual amount",
     "real_amount": "Real amount",
-
     "label_depense": "Expense",
     "label_revenu": "Income",
     "label_add_categ": "Add category",
-    "label_enter_desc": "Enter description",
-    "label_enter_amount": "Enter amount",
+    "label_enter_desc": "Description",
+    "label_enter_amount": "Amount",
     "label_select_date_transaction": "Select transaction date",
     "label_save_transaction": "Save transaction",
-    
     "enum_categorie_hobby": "Hobby",
     "enum_categorie_rent": "Rent",
     "enum_categorie_shopping": "Shopping",
     "enum_categorie_loan": "Loan",
     "enum_categorie_refund": "Refund",
     "enum_categorie_salary": "Salary",
-
     "enum_label_none": "none",
     "enum_label_depense": "expense",
     "enum_label_revenu": "income",
-
     "label_cbretrait": "Withdrawal",
     "label_cbcommerces": "Credit Card",
     "label_cheque": "Cheque",
     "label_virement": "Bank transfer",
     "label_prelevement": "Bank debits",
     "label_paypal": "Paypal",
-
     "label_cbretrait_short": "WD",
     "label_cbcommerces_short": "CCard",
     "label_cheque_short": "CHQ",
     "label_virement_short": "BT",
     "label_prelevement_short": "DEB",
     "label_paypal_short": "Paypal",
-
     "enum_label_cbretrait": "withdrawal",
     "enum_label_cbcommerces": "creditcard",
     "enum_label_cheque": "cheque",
     "enum_label_virement": "banktransfer",
     "enum_label_prelevement": "bankdebit",
     "enum_label_paypal": "paypal",
-
     "label_month_january": "January",
     "label_month_february": "February",
     "label_month_march": "March",
@@ -59,6 +51,5 @@
     "label_month_october": "October",
     "label_month_november": "November",
     "label_month_december": "December",
-
     "label_disconnect": "Disconnect"
 }

@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 
+import 'package:budgetly/utils/extensions.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:budgetly/widgets/NavDrawer.dart';
 import 'package:flutter/material.dart';
@@ -63,7 +64,7 @@ class TableauRecapState extends State<TableauRecap> {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: "#CCE4DD".toColor(),
       body: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,16 +73,21 @@ class TableauRecapState extends State<TableauRecap> {
               title: widget.title,
               deviceWidth: _deviceWidth,
               deviceHeight: _deviceHeight),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: <Widget>[
-              homeCurrentInformations(
-                  'actual_amount'.i18n(), currentAmount.toStringAsFixed(2)),
-              homeCurrentInformations(
-                  'real_amount'.i18n(), currentRealAmount.toStringAsFixed(2)),
-            ],
+          Container(
+            color: "#0A454A".toColor(),
+            height: _deviceHeight! * 0.1,
+            alignment: Alignment.center,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                homeCurrentInformations(
+                    'actual_amount'.i18n(), currentAmount.toStringAsFixed(2)),
+                homeCurrentInformations(
+                    'real_amount'.i18n(), currentRealAmount.toStringAsFixed(2)),
+              ],
+            ),
           ),
         ],
       ),
@@ -95,7 +101,7 @@ class TableauRecapState extends State<TableauRecap> {
           2, // 2 est le nombre de homeCurrentInformations sur la même ligne
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: [
           Text(
@@ -104,8 +110,11 @@ class TableauRecapState extends State<TableauRecap> {
               color: Colors.white,
             ),
           ),
+          SizedBox(
+            width: _deviceWidth! * 0.010,
+          ),
           Text(
-            value,
+            "$value €",
             style: const TextStyle(
               color: Colors.white,
               fontSize: 32,

@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:budgetly/Enum/FilterGeneralEnum.dart';
 import 'package:budgetly/Enum/TransactionEnum.dart';
+import 'package:budgetly/utils/extensions.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -69,7 +70,7 @@ class MainPageState extends State<MainPage> {
     _deviceWidth = MediaQuery.of(context).size.width;
     return Visibility(
       child: Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: "#CCE4DD".toColor(),
         body: showPage(),
       ),
     );
@@ -99,12 +100,18 @@ class MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            Visibility(
-              visible: false, // on verra plus tard pour les filtres
-              child: Container(
-                margin: const EdgeInsets.only(left: 30.0),
-                child: radioButtonLabelledFilter("LAST TRANSACTIONS",
-                    FilterGeneralEnum.LAST, _groupValue, ""),
+            Container(
+              color: "#0A454A".toColor(),
+              width: _deviceWidth! * 0.85,
+              height: _deviceHeight! * 0.1,
+              alignment: Alignment.center,
+              child: Row(
+                children: <Widget>[
+                  generalCurrentInformations(
+                      'actual_amount'.i18n(), currentAmount.toString()),
+                  generalCurrentInformations(
+                      'real_amount'.i18n(), currentRealAmount.toString()),
+                ],
               ),
             ),
             SizedBox(
@@ -112,14 +119,6 @@ class MainPageState extends State<MainPage> {
               height: _deviceHeight! * 0.9,
               child: Column(
                 children: [
-                  Row(
-                    children: <Widget>[
-                      generalCurrentInformations(
-                          'actual_amount'.i18n(), currentAmount.toString()),
-                      generalCurrentInformations(
-                          'real_amount'.i18n(), currentRealAmount.toString()),
-                    ],
-                  ),
                   selectMonthYearWidget(),
                   resultTransactions.isNotEmpty
                       ? transactionsNotNullWidget()
@@ -157,11 +156,11 @@ class MainPageState extends State<MainPage> {
             },
             icon: const Icon(
               Icons.chevron_left,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
           DropdownButton<String>(
-            dropdownColor: const Color.fromARGB(255, 29, 161, 242),
+            dropdownColor: "#EC6463".toColor(),
             value: currentMonthId.toString(),
             onChanged: (value) {
               setState(() {
@@ -176,7 +175,7 @@ class MainPageState extends State<MainPage> {
                     child: Text(
                       MonthEnum().getStringFromId(item),
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: _deviceWidth! * 0.013,
                       ),
                     ),
@@ -201,7 +200,7 @@ class MainPageState extends State<MainPage> {
             },
             icon: const Icon(
               Icons.chevron_right,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
           IconButton(
@@ -216,11 +215,11 @@ class MainPageState extends State<MainPage> {
             },
             icon: const Icon(
               Icons.chevron_left,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
           DropdownButton<String>(
-            dropdownColor: const Color.fromARGB(255, 29, 161, 242),
+            dropdownColor: "#EC6463".toColor(),
             value: currentYear.toString(),
             onChanged: (value) {
               setState(() {
@@ -235,7 +234,7 @@ class MainPageState extends State<MainPage> {
                     child: Text(
                       item.toString(),
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: _deviceWidth! * 0.013,
                       ),
                     ),
@@ -255,7 +254,7 @@ class MainPageState extends State<MainPage> {
             },
             icon: const Icon(
               Icons.chevron_right,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
         ],
@@ -543,8 +542,11 @@ class MainPageState extends State<MainPage> {
               color: Colors.white,
             ),
           ),
+          SizedBox(
+            width: _deviceWidth! * 0.010,
+          ),
           Text(
-            value,
+            "$value €",
             style: const TextStyle(
               color: Colors.white,
               fontSize: 32,

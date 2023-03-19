@@ -9,11 +9,11 @@
 
     "label_depense": "Dépense",
     "label_revenu": "Revenu",
-    "label_add_categ": "Ajouter une catégorie",
-    "label_enter_desc": "Entrez une description",
-    "label_enter_amount": "Entrez un montant",
+    "label_add_categ": "Ajouter catégorie",
+    "label_enter_desc": "Description",
+    "label_enter_amount": "Montant",
     "label_select_date_transaction": "Sélectionner la date d'apparition de la transaction",
-    "label_save_transaction": "Enregistrer transaction",
+    "label_save_transaction": "Enregistrer",
     
     "enum_categorie_hobby": "Loisirs",
     "enum_categorie_rent": "Loyer",

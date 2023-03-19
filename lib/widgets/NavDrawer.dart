@@ -1,6 +1,8 @@
 // ignore_for_file: file_names
+import 'package:budgetly/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,27 +33,10 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
     String currentPage = widget.currentPage;
     Locale locale = Localizations.localeOf(context);
     return Drawer(
-      backgroundColor: const Color.fromARGB(51, 32, 32, 32),
+      backgroundColor: "#063545".toColor(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Visibility(
-            visible:
-                false, // FR only tant que la feature de changement de langue ne fonctionne pas correctement
-            child: SizedBox(
-              height: _deviceHeight! * 0.03,
-              width: _deviceWidth! * 0.02,
-              child: MaterialButton(
-                onPressed: (() {
-                  changeLanguagePage(context);
-                }),
-                child: Text(
-                  locale.toString() == 'fr_FR' ? "EN" : "FR",
-                  style: const TextStyle(color: Colors.white70),
-                ),
-              ),
-            ),
-          ),
           SizedBox(
             height: _deviceHeight,
             child: ListView(
@@ -59,16 +44,25 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
               children: <Widget>[
                 DrawerHeader(
                   child: Text(
-                    currentPage,
-                    style: const TextStyle(color: Colors.white, fontSize: 25),
+                    "Budgetly".toUpperCase(),
+                    style: GoogleFonts.roboto(
+                        color: Colors.white,
+                        fontSize: 25,
+                        fontWeight: FontWeight.w700),
                     textAlign: TextAlign.center,
                   ),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.home),
+                  leading: Icon(
+                    Icons.home,
+                    color: currentPage == 'tableau_recap_title'.i18n()
+                        ? Colors.grey
+                        : Colors.white,
+                  ),
                   title: Text(
-                    'tableau_recap_title'.i18n(),
-                    style: TextStyle(
+                    'tableau_recap_title'.i18n().toUpperCase(),
+                    style: GoogleFonts.roboto(
+                      fontWeight: FontWeight.w700,
                       color: currentPage == 'tableau_recap_title'.i18n()
                           ? Colors.grey
                           : Colors.white,
@@ -81,10 +75,16 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.add),
+                  leading: Icon(
+                    Icons.add,
+                    color: currentPage == 'add_transaction_title'.i18n()
+                        ? Colors.grey
+                        : Colors.white,
+                  ),
                   title: Text(
-                    'add_transaction_title'.i18n(),
-                    style: TextStyle(
+                    'add_transaction_title'.i18n().toUpperCase(),
+                    style: GoogleFonts.roboto(
+                      fontWeight: FontWeight.w700,
                       color: currentPage == 'add_transaction_title'.i18n()
                           ? Colors.grey
                           : Colors.white,
@@ -97,10 +97,16 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.manage_search),
+                  leading: Icon(
+                    Icons.manage_search,
+                    color: currentPage == 'tableau_general_title'.i18n()
+                        ? Colors.grey
+                        : Colors.white,
+                  ),
                   title: Text(
-                    'tableau_general_title'.i18n(),
-                    style: TextStyle(
+                    'tableau_general_title'.i18n().toUpperCase(),
+                    style: GoogleFonts.roboto(
+                      fontWeight: FontWeight.w700,
                       color: currentPage == 'tableau_general_title'.i18n()
                           ? Colors.grey
                           : Colors.white,
@@ -112,22 +118,24 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                         : "";
                   },
                 ),
-                SizedBox(
-                  height: _deviceHeight! * 0.6,
-                ),
-                ListTile(
-                  title: Text(
-                    'label_disconnect'.i18n(),
-                    style: const TextStyle(
-                      color: Colors.white,
+                Container(
+                  alignment: Alignment.bottomCenter,
+                  height: _deviceHeight! * 0.65,
+                  child: ListTile(
+                    title: Text(
+                      'label_disconnect'.i18n().toUpperCase(),
+                      style: GoogleFonts.roboto(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                      ),
                     ),
+                    onTap: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      prefs.setString("userId", "");
+                      // ignore: use_build_context_synchronously
+                      Navigator.of(context).pushNamed("/login");
+                    },
                   ),
-                  onTap: () async {
-                    final prefs = await SharedPreferences.getInstance();
-                    prefs.setString("userId", "");
-                    // ignore: use_build_context_synchronously
-                    Navigator.of(context).pushNamed("/login");
-                  },
                 ),
               ],
             ),

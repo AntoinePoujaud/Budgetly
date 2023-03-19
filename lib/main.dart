@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:localization/localization.dart';
 import 'package:get/get.dart';
 
@@ -60,7 +61,8 @@ class MyAppState extends State<MyApp> {
           LocalJsonLocalization.delegate,
         ],
         title: 'Budgetly',
-        initialRoute: "/login",
+        initialRoute: "/",
+        theme: ThemeData(fontFamily: GoogleFonts.getFont("Roboto").fontFamily),
         onGenerateRoute: (Routes.router.generator));
   }
 }
