@@ -1,9 +1,12 @@
 // ignore_for_file: file_names
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:budgetly/pages/test.dart';
 import 'package:budgetly/utils/extensions.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:budgetly/widgets/NavDrawer.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:localization/localization.dart';
@@ -70,6 +73,12 @@ class TableauRecapState extends State<TableauRecap> {
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
+
+    final List<FlSpot> dummyData1 = List.generate(8, (index) {
+      return FlSpot(index.toDouble(), index * Random().nextDouble());
+    });
+    print(dummyData1);
+
     return Scaffold(
       backgroundColor: "#CCE4DD".toColor(),
       body: Row(
@@ -106,7 +115,11 @@ class TableauRecapState extends State<TableauRecap> {
                     selectMonthYearWidget(),
                     // resultTransactions.isNotEmpty
                     //     ? transactionsNotNullWidget()
-                    //     : noTransactionWidget()
+                    //     : noTransactionWidget();
+                    SizedBox(
+                        width: _deviceWidth! * 0.62,
+                        height: _deviceHeight! * 0.3,
+                        child: LineChartSample3())
                   ],
                 ),
               ),
