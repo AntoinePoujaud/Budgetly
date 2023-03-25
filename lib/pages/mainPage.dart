@@ -74,10 +74,10 @@ class TableauRecapState extends State<TableauRecap> {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
 
-    final List<FlSpot> dummyData1 = List.generate(8, (index) {
-      return FlSpot(index.toDouble(), index * Random().nextDouble());
-    });
-    print(dummyData1);
+    // final List<FlSpot> dummyData1 = List.generate(8, (index) {
+    //   return FlSpot(index.toDouble(), index * Random().nextDouble());
+    // });
+    // print(dummyData1);
 
     return Scaffold(
       backgroundColor: "#CCE4DD".toColor(),
@@ -116,10 +116,10 @@ class TableauRecapState extends State<TableauRecap> {
                     // resultTransactions.isNotEmpty
                     //     ? transactionsNotNullWidget()
                     //     : noTransactionWidget();
-                    SizedBox(
-                        width: _deviceWidth! * 0.62,
-                        height: _deviceHeight! * 0.3,
-                        child: LineChartSample3())
+                    // SizedBox(
+                    //     width: _deviceWidth! * 0.62,
+                    //     height: _deviceHeight! * 0.3,
+                    //     child: LineChartSample3())
                   ],
                 ),
               ),
@@ -287,17 +287,6 @@ class TableauRecapState extends State<TableauRecap> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget mainMenu(String currentPage) {
-    return Container(
-      height: _deviceHeight! * 1,
-      width: _deviceWidth! * 0.15,
-      color: const Color.fromARGB(50, 225, 232, 237),
-      child: NavDrawer(
-        currentPage: currentPage,
       ),
     );
   }
