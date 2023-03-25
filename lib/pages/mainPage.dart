@@ -1,12 +1,8 @@
 // ignore_for_file: file_names
 import 'dart:convert';
-import 'dart:math';
 
-import 'package:budgetly/pages/chartTest.dart';
 import 'package:budgetly/utils/extensions.dart';
 import 'package:budgetly/utils/menuLayout.dart';
-import 'package:budgetly/widgets/NavDrawer.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:localization/localization.dart';
