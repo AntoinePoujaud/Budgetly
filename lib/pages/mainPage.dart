@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:budgetly/pages/test.dart';
+import 'package:budgetly/pages/chartTest.dart';
 import 'package:budgetly/utils/extensions.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:budgetly/widgets/NavDrawer.dart';
