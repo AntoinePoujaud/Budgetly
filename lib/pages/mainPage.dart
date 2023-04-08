@@ -1,8 +1,11 @@
 // ignore_for_file: file_names
 import 'dart:convert';
+import 'dart:math';
 
+import 'package:budgetly/pages/chartTest.dart';
 import 'package:budgetly/utils/extensions.dart';
 import 'package:budgetly/utils/menuLayout.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:localization/localization.dart';
@@ -11,6 +14,7 @@ import 'package:http/http.dart' as http;
 
 import '../Enum/MonthEnum.dart';
 import '../utils/utils.dart';
+import 'categChart.dart';
 
 class TableauRecap extends StatefulWidget {
   const TableauRecap({Key? key, required this.title}) : super(key: key);
@@ -24,14 +28,17 @@ class TableauRecapState extends State<TableauRecap> {
   double? _deviceHeight, _deviceWidth;
   double currentAmount = 0;
   double currentRealAmount = 0;
+  List<dynamic> dailyStatsValues = [];
   String currentPage = 'Tableau récapitulatif';
   List<int> months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  DateTime now = DateTime.now();
+  List<FlSpot> dailySpots = [];
   int currentMonthId = MonthEnum().getIdFromString(
       DateFormat.MMMM("en").format(DateTime.now()).toLowerCase());
   List<int> years = [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030];
   int currentYear = DateTime.now().year;
-  String serverUrl = 'https://moneytly.herokuapp.com';
-  // String serverUrl = 'http://localhost:8081';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
 
   Future<void> _getMyInformations() async {
     String? userId = "1";
@@ -41,7 +48,8 @@ class TableauRecapState extends State<TableauRecap> {
     }
     var response = await http.get(Uri.parse("$serverUrl/getAmounts/$userId"));
     if (response.statusCode != 200) {
-      throw Exception();
+      // ignore: use_build_context_synchronously
+      showToast(context, const Text("Can't fetch your informations"));
     }
     setState(() {
       currentAmount = double.parse(json
@@ -55,12 +63,39 @@ class TableauRecapState extends State<TableauRecap> {
     });
   }
 
+  Future<void> getDailyStats() async {
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    var response = await http.get(Uri.parse(
+        "$serverUrl/stats/$userId/daily?date=$currentYear-${currentMonthId < 10 ? '0$currentMonthId' : currentMonthId}-01"));
+    if (response.statusCode != 200) {
+      // ignore: use_build_context_synchronously
+      showToast(context, const Text("Can't fetch your daily stats"));
+    } else {
+      setState(() {
+        dailyStatsValues = json.decode(response.body)["amounts"].toList();
+        dailySpots =
+            List.generate(DateTime(now.year, now.month + 1, 0).day, (index) {
+          return FlSpot(index.toDouble() + 1, dailyStatsValues[index]);
+        });
+      });
+    }
+  }
+
+  Future<void> _getStats() async {
+    getDailyStats();
+  }
+
   @override
   void initState() {
     super.initState();
     Utils.checkIfConnected(context).then((value) {
       if (value) {
         _getMyInformations();
+        _getStats();
       }
     });
   }
@@ -69,11 +104,6 @@ class TableauRecapState extends State<TableauRecap> {
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
-
-    // final List<FlSpot> dummyData1 = List.generate(8, (index) {
-    //   return FlSpot(index.toDouble(), index * Random().nextDouble());
-    // });
-    // print(dummyData1);
 
     return Scaffold(
       backgroundColor: "#CCE4DD".toColor(),
@@ -109,13 +139,18 @@ class TableauRecapState extends State<TableauRecap> {
                 child: Column(
                   children: [
                     selectMonthYearWidget(),
-                    // resultTransactions.isNotEmpty
-                    //     ? transactionsNotNullWidget()
-                    //     : noTransactionWidget();
-                    // SizedBox(
-                    //     width: _deviceWidth! * 0.62,
-                    //     height: _deviceHeight! * 0.3,
-                    //     child: LineChartSample3())
+                    SizedBox(
+                        width: _deviceWidth! * 0.62,
+                        height: _deviceHeight! * 0.3,
+                        child: LineChartSample2(
+                          data: dailySpots,
+                          monthDays: DateTime(now.year, now.month + 1, 0).day,
+                        )),
+                    SizedBox(
+                      width: _deviceWidth! * 0.62,
+                      height: _deviceHeight! * 0.3,
+                      child: const PieChartSample3(),
+                    ),
                   ],
                 ),
               ),
@@ -146,7 +181,9 @@ class TableauRecapState extends State<TableauRecap> {
                 currentMonthId = currentMonthId - 1;
               }
               // await getTransactionsForMonthAndYear();
-              setState(() {});
+              setState(() {
+                _getStats();
+              });
             },
             icon: const Icon(
               Icons.chevron_left,
@@ -159,6 +196,7 @@ class TableauRecapState extends State<TableauRecap> {
             onChanged: (value) {
               setState(() {
                 currentMonthId = int.parse(value!);
+                _getStats();
                 // getTransactionsForMonthAndYear();
               });
             },
@@ -190,7 +228,9 @@ class TableauRecapState extends State<TableauRecap> {
                 currentMonthId = currentMonthId + 1;
               }
               // await getTransactionsForMonthAndYear();
-              setState(() {});
+              setState(() {
+                _getStats();
+              });
             },
             icon: const Icon(
               Icons.chevron_right,
@@ -205,7 +245,9 @@ class TableauRecapState extends State<TableauRecap> {
                 currentYear = currentYear - 1;
               }
               // await getTransactionsForMonthAndYear();
-              setState(() {});
+              setState(() {
+                _getStats();
+              });
             },
             icon: const Icon(
               Icons.chevron_left,
@@ -218,6 +260,7 @@ class TableauRecapState extends State<TableauRecap> {
             onChanged: (value) {
               setState(() {
                 currentYear = int.parse(value!);
+                _getStats();
                 // getTransactionsForMonthAndYear();
               });
             },
@@ -285,5 +328,10 @@ class TableauRecapState extends State<TableauRecap> {
         ],
       ),
     );
+  }
+
+  void showToast(BuildContext context, content) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(SnackBar(content: content));
   }
 }

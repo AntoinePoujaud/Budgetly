@@ -289,7 +289,7 @@ class MainPageState extends State<MainPage> {
           children: [
             Text(
               "Vous n'avez pas encore de transaction pour le mois de ${MonthEnum().getStringFromId(currentMonthId)} $currentYear",
-              style: const TextStyle(color: Colors.white, fontSize: 45),
+              style: const TextStyle(color: Colors.black, fontSize: 45),
               textAlign: TextAlign.center,
             ),
             RichText(
@@ -444,7 +444,7 @@ class MainPageState extends State<MainPage> {
                     child: Text(
                       'label_save_transaction'.i18n(),
                       style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: _deviceWidth! * 0.015,
                       ),
                     ),
@@ -512,7 +512,7 @@ class MainPageState extends State<MainPage> {
                 if (states.contains(MaterialState.disabled)) {
                   return Colors.orange.withOpacity(.32);
                 }
-                return Colors.white;
+                return Colors.black;
               }),
               value: value,
               groupValue: groupValue,
@@ -559,7 +559,7 @@ class MainPageState extends State<MainPage> {
 
   TextStyle customTextStyle(double fontSize) {
     return TextStyle(
-      color: Colors.white,
+      color: Colors.black,
       fontSize: _deviceWidth! * fontSize,
     );
   }
@@ -613,12 +613,12 @@ class MainPageState extends State<MainPage> {
         decoration: InputDecoration(
           labelText: 'label_enter_desc'.i18n().toUpperCase(),
           labelStyle: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontSize: _deviceWidth! * 0.015,
           ),
         ),
         style: TextStyle(
-          color: Colors.white,
+          color: Colors.black,
           fontSize: _deviceWidth! * 0.015,
         ),
         onChanged: ((value) {
@@ -645,18 +645,18 @@ class MainPageState extends State<MainPage> {
         decoration: InputDecoration(
           labelText: 'label_enter_amount'.i18n().toUpperCase(),
           labelStyle: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontSize: _deviceWidth! * 0.015,
           ),
         ),
         style: TextStyle(
-          color: Colors.white,
+          color: Colors.black,
           fontSize: _deviceWidth! * 0.015,
         ),
         onChanged: ((value) {
           setState(() {
-            double bmax = BigInt.parse("9223372036854775807") as double;
-            double bmin = BigInt.parse("-9223372036854775807") as double;
+            double bmax = BigInt.parse("9223372036854775807").toDouble();
+            double bmin = BigInt.parse("-9223372036854775807").toDouble();
             if (double.parse(value) >= bmax) {
               montant = bmax;
               showToast(context, Text("Max value is $bmax"));
@@ -690,7 +690,7 @@ class MainPageState extends State<MainPage> {
           Text(
             '${date.day < 10 ? '0${date.day}' : date.day}/${date.month < 10 ? '0${date.month}' : date.month}/${date.year}',
             style: TextStyle(
-              color: Colors.white,
+              color: Colors.black,
               fontSize: _deviceWidth! * 0.015,
             ),
           ),
@@ -723,7 +723,7 @@ class MainPageState extends State<MainPage> {
             child: Text(
               'label_select_date_transaction'.i18n(),
               style: TextStyle(
-                  color: Colors.white, fontSize: _deviceWidth! * 0.007),
+                  color: Colors.black, fontSize: _deviceWidth! * 0.007),
             ),
           ),
         ],
@@ -749,7 +749,7 @@ class MainPageState extends State<MainPage> {
                 child: Text(
                   item.name,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Colors.black,
                     fontSize: _deviceWidth! * 0.013,
                   ),
                 ),
@@ -859,7 +859,7 @@ class MainPageState extends State<MainPage> {
               if (states.contains(MaterialState.disabled)) {
                 return Colors.orange.withOpacity(.32);
               }
-              return Colors.white;
+              return Colors.black;
             }),
             value: value,
             groupValue: groupValue,
@@ -869,7 +869,7 @@ class MainPageState extends State<MainPage> {
                   _groupValuePaymentMethod = value;
                   paymentMethod = value;
                 } else {
-                  _groupValue = value;
+                  _groupValueTransaction = value;
                   transactionType = value;
                 }
               });

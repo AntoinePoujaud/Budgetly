@@ -119,24 +119,23 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                         : "";
                   },
                 ),
-                Container(
-                  alignment: Alignment.bottomCenter,
-                  height: _deviceHeight! * 0.65,
-                  child: ListTile(
-                    title: Text(
-                      'label_disconnect'.i18n().toUpperCase(),
-                      style: GoogleFonts.roboto(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                      ),
+                SizedBox(
+                  height: _deviceHeight! * 0.05,
+                ),
+                ListTile(
+                  title: Text(
+                    'label_disconnect'.i18n().toUpperCase(),
+                    style: GoogleFonts.roboto(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
                     ),
-                    onTap: () async {
-                      final prefs = await SharedPreferences.getInstance();
-                      prefs.setString("userId", "");
-                      // ignore: use_build_context_synchronously
-                      Navigator.of(context).pushNamed("/login");
-                    },
                   ),
+                  onTap: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    prefs.setString("userId", "");
+                    // ignore: use_build_context_synchronously
+                    Navigator.of(context).pushNamed("/login");
+                  },
                 ),
               ],
             ),

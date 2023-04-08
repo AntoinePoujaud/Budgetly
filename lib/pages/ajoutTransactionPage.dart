@@ -376,8 +376,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
         ),
         onChanged: ((value) {
           setState(() {
-            double bmax = BigInt.parse("9223372036854775807") as double;
-            double bmin = BigInt.parse("-9223372036854775807") as double;
+            double bmax = BigInt.parse("9223372036854775807").toDouble();
+            double bmin = BigInt.parse("-9223372036854775807").toDouble();
             if (double.parse(value) >= bmax) {
               montant = bmax;
               showToast(context, Text("Max value is $bmax"));
