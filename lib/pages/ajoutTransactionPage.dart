@@ -186,8 +186,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                             transactionType,
                             double.parse(montant!.toStringAsFixed(2)),
                             description,
-                            CategorieEnum()
-                                .getIdFromEnum(context, selectedItem!.name),
+                            selectedItem!.id,
                             paymentMethod
                           ]);
 
@@ -486,7 +485,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
-            width: customTransactionInputWidth(0.17),
+            width: customTransactionInputWidth(0.19),
             child: DropdownButton<String>(
               dropdownColor: "#EC6463".toColor(),
               value: selectedItem!.id.toString(),
@@ -504,13 +503,44 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                   .map(
                     (item) => DropdownMenuItem<String>(
                       value: item.id.toString(),
-                      child: Text(
-                        item.name,
-                        style: GoogleFonts.roboto(
-                          color: Colors.black,
-                          fontSize: _deviceWidth! * 0.018,
-                          fontWeight: FontWeight.w700,
-                        ),
+                      child: Row(
+                        children: [
+                          Text(
+                            item.name,
+                            style: GoogleFonts.roboto(
+                              color: Colors.black,
+                              fontSize: _deviceWidth! * 0.018,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          SizedBox(
+                            width: _deviceWidth! * 0.015,
+                          ),
+                          item.id > 6
+                              ? MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  child: IconButton(
+                                    icon: Icon(Icons.cancel,
+                                        color: Colors.grey.shade900),
+                                    onPressed: () async {
+                                      try {
+                                        deleteCateg(item.id);
+                                        showToast(
+                                            context,
+                                            const Text(
+                                                "Category deleted successfully"));
+                                          resetAllValues();
+                                      } catch (e) {
+                                        showToast(
+                                            context,
+                                            const Text(
+                                                "Error while deleting Category"));
+                                      }
+                                    },
+                                  ),
+                                )
+                              : const Text("")
+                        ],
                       ),
                     ),
                   )
@@ -564,11 +594,11 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                       addCategory(categNameTxt.text);
                       showToast(
                           context, const Text("Category added successfully"));
+                      resetAllValues();
                     } catch (e) {
                       showToast(
                           context, const Text("Error while adding Category"));
                     }
-                    resetAllValues();
                   },
                 ),
               ),
@@ -691,5 +721,11 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   void resetAllValues() {
     Navigator.popAndPushNamed(context, "/addTransaction");
+  }
+
+  Future<void> deleteCateg(int catId) async {
+    var response = await http.post(
+        Uri.parse("$serverUrl/deleteCategorie?catId=${catId.toString()}"));
+    if (response.statusCode != 200) {}
   }
 }

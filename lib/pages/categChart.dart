@@ -3,13 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:budgetly/pages/app_colors.dart';
 
 class PieChartSample3 extends StatefulWidget {
-  const PieChartSample3({super.key});
+  const PieChartSample3(
+      {Key? key,
+      required this.percentages,
+      required this.names,
+      required this.totals})
+      : super(key: key);
+  final List<dynamic> percentages;
+  final List<dynamic> totals;
+  final List<dynamic> names;
 
   @override
   State<StatefulWidget> createState() => PieChartSample3State();
 }
 
-class PieChartSample3State extends State {
+class PieChartSample3State extends State<PieChartSample3> {
   int touchedIndex = 0;
 
   @override
@@ -47,136 +55,65 @@ class PieChartSample3State extends State {
   }
 
   List<PieChartSectionData> showingSections() {
-    return List.generate(4, (i) {
-      final isTouched = i == touchedIndex;
-      final fontSize = isTouched ? 20.0 : 16.0;
-      final radius = isTouched ? 110.0 : 100.0;
-      final widgetSize = isTouched ? 55.0 : 40.0;
-      const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
+    if (widget.totals.isNotEmpty) {
+      return List.generate(widget.totals.length, (i) {
+        final isTouched = i == touchedIndex;
+        final fontSize = isTouched ? 20.0 : 16.0;
+        final radius = isTouched ? 180.0 : 170.0;
+        final widgetSize = isTouched ? 155.0 : 140.0;
+        final text =
+            isTouched ? "${widget.totals[i]} €" : "${widget.percentages[i]} %";
+        const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
 
-      switch (i) {
-        case 0:
-          return PieChartSectionData(
-            color: AppColors.contentColorBlue,
-            value: 40,
-            title: '40%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
-              shadows: shadows,
-            ),
-            badgeWidget: _Badge(
-              'assets/icons/ophthalmology-svgrepo-com.svg',
-              size: widgetSize,
-              borderColor: AppColors.contentColorBlack,
-            ),
-            badgePositionPercentageOffset: .98,
-          );
-        case 1:
-          return PieChartSectionData(
-            color: AppColors.contentColorYellow,
-            value: 30,
-            title: '30%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
-              shadows: shadows,
-            ),
-            badgeWidget: _Badge(
-              'assets/icons/librarian-svgrepo-com.svg',
-              size: widgetSize,
-              borderColor: AppColors.contentColorBlack,
-            ),
-            badgePositionPercentageOffset: .98,
-          );
-        case 2:
-          return PieChartSectionData(
-            color: AppColors.contentColorPurple,
-            value: 16,
-            title: '16%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
-              shadows: shadows,
-            ),
-            badgeWidget: _Badge(
-              'assets/icons/fitness-svgrepo-com.svg',
-              size: widgetSize,
-              borderColor: AppColors.contentColorBlack,
-            ),
-            badgePositionPercentageOffset: .98,
-          );
-        case 3:
-          return PieChartSectionData(
-            color: AppColors.contentColorGreen,
-            value: 15,
-            title: '15%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xffffffff),
-              shadows: shadows,
-            ),
-            badgeWidget: _Badge(
-              'assets/icons/worker-svgrepo-com.svg',
-              size: widgetSize,
-              borderColor: AppColors.contentColorBlack,
-            ),
-            badgePositionPercentageOffset: .98,
-          );
-        default:
-          throw Exception('Oh no');
-      }
-    });
+        return PieChartSectionData(
+          color: AppColors.contentColorBlue,
+          value: widget.totals[i],
+          title: text,
+          radius: radius,
+          titleStyle: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+            color: const Color(0xffffffff),
+            shadows: shadows,
+          ),
+          badgeWidget: _Badge(
+            'assets/icons/ophthalmology-svgrepo-com.svg',
+            size: widgetSize,
+            borderColor: AppColors.contentColorBlack,
+            text: widget.names[i],
+          ),
+          badgePositionPercentageOffset: .78,
+          titlePositionPercentageOffset: .30,
+        );
+      });
+    } else {
+      return [
+        PieChartSectionData(
+          color: AppColors.contentColorBlue,
+          value: 100,
+          title: "Pas de données disponibles ce mois",
+          titleStyle: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+          titlePositionPercentageOffset: .30,
+        ),
+      ];
+    }
   }
 }
 
 class _Badge extends StatelessWidget {
-  const _Badge(
-    this.svgAsset, {
-    required this.size,
-    required this.borderColor,
-  });
+  const _Badge(this.svgAsset,
+      {required this.size, required this.borderColor, required this.text});
   final String svgAsset;
   final double size;
   final Color borderColor;
+  final String text;
 
   @override
   Widget build(BuildContext context) {
-    return const Text("sqdljkjfhqlskdjfh");
-    //   return AnimatedContainer(
-    //     duration: PieChart.defaultDuration,
-    //     width: size,
-    //     height: size,
-    //     decoration: BoxDecoration(
-    //       color: Colors.white,
-    //       shape: BoxShape.circle,
-    //       border: Border.all(
-    //         color: borderColor,
-    //         width: 2,
-    //       ),
-    //       boxShadow: <BoxShadow>[
-    //         BoxShadow(
-    //           color: Colors.black.withOpacity(.5),
-    //           offset: const Offset(3, 3),
-    //           blurRadius: 3,
-    //         ),
-    //       ],
-    //     ),
-    //     padding: EdgeInsets.all(size * .15),
-    //     child: Center(child: const Text("kjqsldhgflkqshdfglkqshdgfklqsdhg"),)
-    //     // child: Center(
-    //     //   child: SvgPicture.asset(
-    //     //     svgAsset,
-    //     //   ),
-    //     // ),
-    //   );
+    return Text(text);
   }
 }

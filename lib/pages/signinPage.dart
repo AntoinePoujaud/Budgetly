@@ -196,7 +196,6 @@ class SignInPageState extends State<SignInPage> {
   }
 
   Future<void> addUserIfNew(String mail, String password) async {
-    print("bjrt");
     if (emailTxt.text == "") {
       showToast(context, const Text("mail can't be empty"));
     } else {

@@ -7,6 +7,7 @@ import 'package:budgetly/utils/extensions.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Enum/MonthEnum.dart';
@@ -48,12 +49,16 @@ class MainPageState extends State<MainPage> {
 
   TextEditingController descriptionTxt = TextEditingController();
   TextEditingController montantTxt = TextEditingController();
+  TextEditingController categNameTxt = TextEditingController();
 
   List<int> months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   int currentMonthId = MonthEnum().getIdFromString(
       DateFormat.MMMM("en").format(DateTime.now()).toLowerCase());
   List<int> years = [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030];
   int currentYear = DateTime.now().year;
+  int? initialYear;
+  int? initialMonth;
+  List<String> filterMonthYears = [];
 
   String serverUrl = 'https://moneytly.herokuapp.com';
   // String serverUrl = 'http://localhost:8081';
@@ -62,6 +67,16 @@ class MainPageState extends State<MainPage> {
     super.initState();
     Utils.checkIfConnected(context);
     getTransactionsForMonthAndYear();
+    years = [currentYear - 1, currentYear, currentYear + 1];
+    initialMonth = currentMonthId;
+    initialYear = currentYear;
+    for (int i = currentYear - 1; i <= currentYear + 1; i++) {
+      for (int j = (i > currentYear - 1 ? 1 : currentMonthId);
+          j <= (i == currentYear + 1 ? currentMonthId : months.length);
+          j++) {
+        filterMonthYears.add("$j $i");
+      }
+    }
   }
 
   @override
@@ -139,41 +154,44 @@ class MainPageState extends State<MainPage> {
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
-          IconButton(
-            onPressed: () async {
-              if (currentMonthId == 1) {
-                currentMonthId = 12;
-                if (currentYear == 2022) {
-                  currentYear = years[years.length - 1];
-                } else {
+          Visibility(
+            visible: (currentMonthId == initialMonth &&
+                    currentYear == initialYear! - 1)
+                ? false
+                : true,
+            child: IconButton(
+              onPressed: () async {
+                if (currentMonthId == 1) {
+                  currentMonthId = 12;
                   currentYear = currentYear - 1;
+                } else {
+                  currentMonthId = currentMonthId - 1;
                 }
-              } else {
-                currentMonthId = currentMonthId - 1;
-              }
-              await getTransactionsForMonthAndYear();
-              setState(() {});
-            },
-            icon: const Icon(
-              Icons.chevron_left,
-              color: Colors.black,
+                await getTransactionsForMonthAndYear();
+                setState(() {});
+              },
+              icon: const Icon(
+                Icons.chevron_left,
+                color: Colors.black,
+              ),
             ),
           ),
           DropdownButton<String>(
             dropdownColor: "#EC6463".toColor(),
-            value: currentMonthId.toString(),
+            value: "${currentMonthId.toString()} ${currentYear.toString()}",
             onChanged: (value) {
               setState(() {
-                currentMonthId = int.parse(value!);
+                currentMonthId = int.parse(value!.split(" ")[0]);
+                currentYear = int.parse(value.split(" ")[1]);
                 getTransactionsForMonthAndYear();
               });
             },
-            items: months
+            items: filterMonthYears
                 .map(
                   (item) => DropdownMenuItem<String>(
                     value: item.toString(),
                     child: Text(
-                      MonthEnum().getStringFromId(item),
+                      "${MonthEnum().getStringFromId(int.parse(item.split(" ")[0]))} ${int.parse(item.split(" ")[1])}",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: _deviceWidth! * 0.013,
@@ -187,67 +205,9 @@ class MainPageState extends State<MainPage> {
             onPressed: () async {
               if (currentMonthId == 12) {
                 currentMonthId = 1;
-                if (currentYear == 2030) {
-                  currentYear = years[0];
-                } else {
-                  currentYear = currentYear + 1;
-                }
+                currentYear = currentYear + 1;
               } else {
                 currentMonthId = currentMonthId + 1;
-              }
-              await getTransactionsForMonthAndYear();
-              setState(() {});
-            },
-            icon: const Icon(
-              Icons.chevron_right,
-              color: Colors.black,
-            ),
-          ),
-          IconButton(
-            onPressed: () async {
-              if (currentYear == 2022) {
-                currentYear = years[years.length - 1];
-              } else {
-                currentYear = currentYear - 1;
-              }
-              await getTransactionsForMonthAndYear();
-              setState(() {});
-            },
-            icon: const Icon(
-              Icons.chevron_left,
-              color: Colors.black,
-            ),
-          ),
-          DropdownButton<String>(
-            dropdownColor: "#EC6463".toColor(),
-            value: currentYear.toString(),
-            onChanged: (value) {
-              setState(() {
-                currentYear = int.parse(value!);
-                getTransactionsForMonthAndYear();
-              });
-            },
-            items: years
-                .map(
-                  (item) => DropdownMenuItem<String>(
-                    value: item.toString(),
-                    child: Text(
-                      item.toString(),
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: _deviceWidth! * 0.013,
-                      ),
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-          IconButton(
-            onPressed: () async {
-              if (currentYear == 2030) {
-                currentYear = years[0];
-              } else {
-                currentYear = currentYear + 1;
               }
               await getTransactionsForMonthAndYear();
               setState(() {});
@@ -435,11 +395,8 @@ class MainPageState extends State<MainPage> {
                       )),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.all(20.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40),
-                      ),
-                      backgroundColor: const Color.fromARGB(255, 29, 161, 242),
+                      padding: const EdgeInsets.all(25.0),
+                      backgroundColor: "#EC6463".toColor(),
                     ),
                     child: Text(
                       'label_save_transaction'.i18n(),
@@ -564,8 +521,8 @@ class MainPageState extends State<MainPage> {
     );
   }
 
-  double customTransactionInputWidth() {
-    return _deviceWidth! * 0.3;
+  double customTransactionInputWidth(percentage) {
+    return _deviceWidth! * percentage;
   }
 
   Widget selectTransactionWidget(double fontSize, double boxWidth) {
@@ -606,7 +563,7 @@ class MainPageState extends State<MainPage> {
 
   Widget descriptionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(),
+      width: customTransactionInputWidth(0.3),
       child: TextFormField(
         controller: descriptionTxt,
         keyboardType: TextInputType.text,
@@ -638,7 +595,7 @@ class MainPageState extends State<MainPage> {
 
   Widget montantWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(),
+      width: customTransactionInputWidth(0.3),
       child: TextFormField(
         controller: montantTxt,
         keyboardType: TextInputType.number,
@@ -684,30 +641,36 @@ class MainPageState extends State<MainPage> {
 
   Widget dateSelectionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(),
+      width: customTransactionInputWidth(0.3),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            '${date.day < 10 ? '0${date.day}' : date.day}/${date.month < 10 ? '0${date.month}' : date.month}/${date.year}',
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: _deviceWidth! * 0.015,
-            ),
-          ),
-          SizedBox(
-            width: _deviceWidth! * 0.025,
-            height: _deviceHeight! * 0.01,
-          ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.all(20.0),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(40),
+                borderRadius: BorderRadius.circular(20),
               ),
-              backgroundColor: const Color.fromARGB(255, 29, 161, 242),
+              backgroundColor: Colors.black,
             ),
             onPressed: () async {
               DateTime? newDate = await showDatePicker(
+                builder: (BuildContext context, Widget? child) {
+                  return Theme(
+                    data: ThemeData.dark().copyWith(
+                      colorScheme: ColorScheme.dark(
+                        primary: "#EC6463".toColor(),
+                        onPrimary: Colors.black,
+                        surface: "#0A454A".toColor(),
+                        onSurface: Colors.black,
+                      ),
+                      dialogBackgroundColor: "#CCE4DD".toColor(),
+                    ),
+                    child: child!,
+                  );
+                },
                 context: context,
                 initialDate: date,
                 firstDate: DateTime(2022),
@@ -721,9 +684,12 @@ class MainPageState extends State<MainPage> {
               });
             },
             child: Text(
-              'label_select_date_transaction'.i18n(),
-              style: TextStyle(
-                  color: Colors.black, fontSize: _deviceWidth! * 0.007),
+              '${date.day < 10 ? '0${date.day}' : date.day}/${date.month < 10 ? '0${date.month}' : date.month}/${date.year}',
+              style: GoogleFonts.roboto(
+                color: Colors.white,
+                fontSize: _deviceWidth! * 0.018,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
         ],
@@ -733,31 +699,138 @@ class MainPageState extends State<MainPage> {
 
   Widget categorieSelectionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(),
-      child: DropdownButton<String>(
-        dropdownColor: const Color.fromARGB(255, 54, 54, 54),
-        value: selectedItem!.id.toString(),
-        onChanged: (value) {
-          setState(() {
-            selectedItem = findCategFromId(value!);
-          });
-        },
-        items: dropDownItems!
-            .map(
-              (item) => DropdownMenuItem<String>(
-                value: item.id.toString(),
-                child: Text(
-                  item.name,
+      width: customTransactionInputWidth(0.3),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: customTransactionInputWidth(0.17),
+            child: DropdownButton<String>(
+              dropdownColor: "#EC6463".toColor(),
+              value: selectedItem!.id.toString(),
+              underline: Container(
+                height: 1,
+                color: Colors.black,
+              ),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.black),
+              onChanged: (value) {
+                setState(() {
+                  selectedItem = findCategFromId(value!);
+                });
+              },
+              items: dropDownItems!
+                  .map(
+                    (item) => DropdownMenuItem<String>(
+                      value: item.id.toString(),
+                      child: Row(
+                        children: [
+                          Text(
+                            item.name,
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: _deviceWidth! * 0.013,
+                            ),
+                          ),
+                          SizedBox(
+                            width: _deviceWidth! * 0.015,
+                          ),
+                          item.id > 6
+                              ? MouseRegion(
+                                  cursor: SystemMouseCursors.click,
+                                  child: IconButton(
+                                    icon: Icon(Icons.cancel,
+                                        color: Colors.grey.shade900),
+                                    onPressed: () async {
+                                      try {
+                                        deleteCateg(item.id);
+                                        showToast(
+                                            context,
+                                            const Text(
+                                                "Category deleted successfully"));
+                                        resetAllValues();
+                                      } catch (e) {
+                                        showToast(
+                                            context,
+                                            const Text(
+                                                "Error while deleting Category"));
+                                      }
+                                    },
+                                  ),
+                                )
+                              : const Text("")
+                        ],
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+          SizedBox(
+            height: _deviceHeight! * 0.01,
+          ),
+          Row(
+            children: [
+              SizedBox(
+                width: customTransactionInputWidth(0.12),
+                height: _deviceHeight! * 0.035,
+                child: TextFormField(
+                  controller: categNameTxt,
+                  keyboardType: TextInputType.text,
+                  decoration: InputDecoration(
+                    hintText: 'label_add_categ'.i18n().toUpperCase(),
+                    hintStyle: TextStyle(
+                      color: const Color.fromARGB(255, 95, 95, 95),
+                      fontSize: _deviceWidth! * 0.01,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   style: TextStyle(
                     color: Colors.black,
-                    fontSize: _deviceWidth! * 0.013,
+                    fontSize: _deviceWidth! * 0.01,
+                    fontWeight: FontWeight.w700,
                   ),
+                  onChanged: ((value) {
+                    setState(() {
+                      description = value;
+                    });
+                  }),
                 ),
               ),
-            )
-            .toList(),
+              MouseRegion(
+                cursor: SystemMouseCursors.click,
+                child: IconButton(
+                  icon: const Icon(
+                    Icons.add,
+                    color: Color.fromARGB(255, 62, 168, 62),
+                  ),
+                  onPressed: () async {
+                    if (categNameTxt.text == "") {
+                      showToast(context, const Text("Please enter some text"));
+                      return;
+                    }
+                    try {
+                      addCategory(categNameTxt.text);
+                      showToast(
+                          context, const Text("Category added successfully"));
+                      resetAllValues();
+                    } catch (e) {
+                      showToast(
+                          context, const Text("Error while adding Category"));
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
+  }
+
+  void resetAllValues() {
+    Navigator.popAndPushNamed(context, "/transactions");
   }
 
   Widget selectPaymentMethodWidget(double fontSize, double boxWidth) {
@@ -905,6 +978,11 @@ class MainPageState extends State<MainPage> {
     }
   }
 
+  Future<void> deleteCateg(int catId) async {
+    var response = await http.post(
+        Uri.parse("$serverUrl/deleteCategorie?catId=${catId.toString()}"));
+  }
+
   Future<List<AllCategories>> getAllCategories() async {
     String? userId;
     final prefs = await SharedPreferences.getInstance();
@@ -1001,5 +1079,16 @@ class MainPageState extends State<MainPage> {
             .map((e) => TransactionByMonthAndYear.fromJson(e))
             .toList()
         : [];
+  }
+
+  Future<void> addCategory(String categName) async {
+    String? userId;
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    var response = await http.post(Uri.parse(
+        "$serverUrl/addCategorie?userId=$userId&name=${categName.toUpperCase()}"));
+    if (response.statusCode != 201) {}
   }
 }

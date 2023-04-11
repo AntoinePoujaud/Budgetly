@@ -4,10 +4,17 @@ import 'package:flutter/material.dart';
 
 class LineChartSample2 extends StatefulWidget {
   const LineChartSample2(
-      {Key? key, required this.data, required this.monthDays})
+      {Key? key,
+      required this.data,
+      required this.monthDays,
+      required this.max,
+      required this.min
+      })
       : super(key: key);
   final List<FlSpot> data;
   final int monthDays;
+  final int min;
+  final int max;
 
   @override
   State<LineChartSample2> createState() => _LineChartSample2State();
@@ -105,7 +112,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
             showTitles: true,
-            interval: 1000,
+            interval: 2500,
             getTitlesWidget: leftTitleWidgets,
             reservedSize: 42,
           ),
@@ -117,8 +124,8 @@ class _LineChartSample2State extends State<LineChartSample2> {
       ),
       minX: 1,
       maxX: widget.monthDays.toDouble(),
-      minY: -1000,
-      maxY: 1000,
+      minY: -2500,
+      maxY: 2500,
       lineBarsData: [
         LineChartBarData(
           spots: widget.data,
