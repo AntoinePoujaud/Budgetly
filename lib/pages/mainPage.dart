@@ -47,8 +47,8 @@ class TableauRecapState extends State<TableauRecap> {
   int? initialYear;
   int? initialMonth;
   List<String> filterMonthYears = [];
-  // String serverUrl = 'https://moneytly.herokuapp.com';
-  String serverUrl = 'http://localhost:8081';
+  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'http://localhost:8081';
 
   Future<void> _getMyInformations() async {
     String? userId = "1";

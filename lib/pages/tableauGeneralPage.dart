@@ -60,8 +60,8 @@ class MainPageState extends State<MainPage> {
   int? initialMonth;
   List<String> filterMonthYears = [];
 
-  // String serverUrl = 'https://moneytly.herokuapp.com';
-  String serverUrl = 'http://localhost:8081';
+  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'http://localhost:8081';
   @override
   void initState() {
     super.initState();
