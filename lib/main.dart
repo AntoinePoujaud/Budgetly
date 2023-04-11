@@ -61,7 +61,7 @@ class MyAppState extends State<MyApp> {
           LocalJsonLocalization.delegate,
         ],
         title: 'Budgetly',
-        initialRoute: "/login",
+        initialRoute: "/",
         theme: ThemeData(fontFamily: GoogleFonts.getFont("Roboto").fontFamily),
         onGenerateRoute: (Routes.router.generator));
   }
