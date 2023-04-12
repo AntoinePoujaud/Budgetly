@@ -1,6 +1,7 @@
 {
     "tableau_general_title": "Tableau Général",
     "tableau_recap_title": "Tableau Récapitulatif",
+    "settings_title": "Paramètres",
     "add_transaction_title": "Ajouter une transaction",
     "forgotten_password": "Mot de passe oublié",
 
@@ -60,5 +61,7 @@
     "label_month_november": "Novembre",
     "label_month_december": "Décembre",
 
-    "label_disconnect": "Se déconnecter"
+    "label_disconnect": "Se déconnecter",
+    "label_settings": "Paramètres",
+    "label_update_starting_amount": "Mettre à jour le montant initial du compte"
 }

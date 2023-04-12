@@ -1,3 +1,4 @@
+import 'package:budgetly/pages/settingsPage.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:localization/localization.dart';
@@ -29,13 +30,17 @@ class Routes {
   static var homeHandler = Handler(handlerFunc: ((context, parameters) {
     return TableauRecap(title: 'tableau_recap_title'.i18n());
   }));
+  static var settingsHandler = Handler(handlerFunc: ((context, parameters) {
+    return SettingsPage(title: 'settings_title'.i18n());
+  }));
   static var forgotPasswordHandler =
       Handler(handlerFunc: ((context, parameters) {
     return const ForgottenPassword(title: "Mdp oublie");
   }));
   static var regeneratePasswordHandler =
       Handler(handlerFunc: ((context, parameters) {
-    final args = (ModalRoute.of(context!)?.settings.arguments ?? <String, dynamic>{}) as Map;
+    final args = (ModalRoute.of(context!)?.settings.arguments ??
+        <String, dynamic>{}) as Map;
     return RegeneratePassword(title: "Nouveau mdp", argsEmail: args["email"]);
   }));
 
@@ -55,5 +60,7 @@ class Routes {
     router.define("/forgotPassword/newPassword",
         handler: regeneratePasswordHandler,
         transitionType: TransitionType.none);
+    router.define("/settings",
+        handler: settingsHandler, transitionType: TransitionType.none);
   }
 }

@@ -123,6 +123,29 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                   height: _deviceHeight! * 0.05,
                 ),
                 ListTile(
+                  leading: Icon(
+                    Icons.settings,
+                    color: currentPage == 'settings_title'.i18n()
+                        ? Colors.grey
+                        : Colors.white,
+                  ),
+                  title: Text(
+                    'label_settings'.i18n().toUpperCase(),
+                    style: GoogleFonts.roboto(
+                      color: currentPage == 'settings_title'.i18n()
+                        ? Colors.grey
+                        : Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  onTap: () {
+                    // ignore: use_build_context_synchronously
+                    currentPage != 'settings_title'.i18n()
+                        ? Navigator.of(context).pushNamed("/settings")
+                        : "";
+                  },
+                ),
+                ListTile(
                   title: Text(
                     'label_disconnect'.i18n().toUpperCase(),
                     style: GoogleFonts.roboto(

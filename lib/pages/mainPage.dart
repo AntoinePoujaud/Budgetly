@@ -25,8 +25,8 @@ class TableauRecap extends StatefulWidget {
 }
 
 class TableauRecapState extends State<TableauRecap> {
-  int maxValue = 0;
-  int minValue = 0;
+  // int maxValue = 0;
+  // int minValue = 0;
   double totalDepense = 0;
   double totalRevenu = 0;
   double? _deviceHeight, _deviceWidth;
@@ -51,7 +51,7 @@ class TableauRecapState extends State<TableauRecap> {
   // String serverUrl = 'http://localhost:8081';
 
   Future<void> _getMyInformations() async {
-    String? userId = "1";
+    String? userId = "";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
@@ -74,7 +74,7 @@ class TableauRecapState extends State<TableauRecap> {
   }
 
   Future<void> getDailyStats() async {
-    String? userId = "1";
+    String? userId = "";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
@@ -87,8 +87,8 @@ class TableauRecapState extends State<TableauRecap> {
     } else {
       setState(() {
         dailyStatsValues = json.decode(response.body)["amounts"].toList();
-        maxValue = json.decode(response.body)["max"];
-        minValue = json.decode(response.body)["min"];
+        // maxValue = json.decode(response.body)["max"];
+        // minValue = json.decode(response.body)["min"];
         dailySpots = List.generate(
             DateUtils.getDaysInMonth(currentYear, currentMonthId), (index) {
           return FlSpot(index.toDouble() + 1, dailyStatsValues[index]);
@@ -98,7 +98,7 @@ class TableauRecapState extends State<TableauRecap> {
   }
 
   Future<void> getCategStats() async {
-    String? userId = "1";
+    String? userId = "";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
@@ -127,7 +127,7 @@ class TableauRecapState extends State<TableauRecap> {
   }
 
   Future<void> getTotalStats() async {
-    String? userId = "1";
+    String? userId = "";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
@@ -219,8 +219,8 @@ class TableauRecapState extends State<TableauRecap> {
                           data: dailySpots,
                           monthDays: DateUtils.getDaysInMonth(
                               currentYear, currentMonthId),
-                          min: minValue,
-                          max: maxValue,
+                          // min: minValue,
+                          // max: maxValue,
                         )),
                     SizedBox(
                       height: _deviceHeight! * 0.05,

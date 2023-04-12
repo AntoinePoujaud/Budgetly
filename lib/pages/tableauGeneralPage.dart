@@ -1018,7 +1018,7 @@ class MainPageState extends State<MainPage> {
   }
 
   Future<void> _getMyInformations() async {
-    String? userId = "1";
+    String? userId = "";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
@@ -1049,7 +1049,7 @@ class MainPageState extends State<MainPage> {
   }
 
   Future<void> updateTransaction(List<dynamic> params) async {
-    String? userId = "1";
+    String? userId = "";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
@@ -1066,7 +1066,7 @@ class MainPageState extends State<MainPage> {
   Future<void> getTransactionsForMonthAndYear() async {
     resultTransactions = [];
     selectedTileId = null;
-    String? userId = "1";
+    String? userId = "";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
@@ -1089,7 +1089,6 @@ class MainPageState extends State<MainPage> {
       String? userId) async {
     var response = await http.get(Uri.parse(
         "$serverUrl/getTransactionsForMonthAndYear?userId=$userId&selectedMonthId=$currentMonthId&selectedYear=$currentYear"));
-    print(json.decode(response.body));
     return json.decode(response.body) != null
         ? (json.decode(response.body) as List)
             .map((e) => TransactionByMonthAndYear.fromJson(e))

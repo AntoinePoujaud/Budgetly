@@ -7,14 +7,14 @@ class LineChartSample2 extends StatefulWidget {
       {Key? key,
       required this.data,
       required this.monthDays,
-      required this.max,
-      required this.min
+      // required this.max,
+      // required this.min
       })
       : super(key: key);
   final List<FlSpot> data;
   final int monthDays;
-  final int min;
-  final int max;
+  // final int min;
+  // final int max;
 
   @override
   State<LineChartSample2> createState() => _LineChartSample2State();
