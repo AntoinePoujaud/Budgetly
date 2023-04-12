@@ -484,14 +484,18 @@ class AjoutTransactionState extends State<AjoutTransaction> {
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
+          Container(
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Colors.black, width: 1),
+              ),
+            ),
             width: customTransactionInputWidth(0.19),
             child: DropdownButton<String>(
               dropdownColor: "#EC6463".toColor(),
               value: selectedItem!.id.toString(),
               underline: Container(
-                height: 1,
-                color: Colors.black,
+                height: 0,
               ),
               icon: const Icon(Icons.arrow_drop_down, color: Colors.black),
               onChanged: (value) {
@@ -529,7 +533,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                                             context,
                                             const Text(
                                                 "Category deleted successfully"));
-                                          resetAllValues();
+                                        resetAllValues();
                                       } catch (e) {
                                         showToast(
                                             context,

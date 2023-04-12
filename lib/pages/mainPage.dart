@@ -188,15 +188,16 @@ class TableauRecapState extends State<TableauRecap> {
               deviceWidth: _deviceWidth,
               deviceHeight: _deviceHeight),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
             children: [
               Container(
                 color: "#0A454A".toColor(),
+                width: _deviceWidth! * 0.85,
                 height: _deviceHeight! * 0.1,
                 alignment: Alignment.center,
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
                     homeCurrentInformations('actual_amount'.i18n(),
                         currentAmount.toStringAsFixed(2)),
@@ -216,7 +217,8 @@ class TableauRecapState extends State<TableauRecap> {
                         height: _deviceHeight! * 0.3,
                         child: LineChartSample2(
                           data: dailySpots,
-                          monthDays: DateUtils.getDaysInMonth(currentYear, currentMonthId),
+                          monthDays: DateUtils.getDaysInMonth(
+                              currentYear, currentMonthId),
                           min: minValue,
                           max: maxValue,
                         )),
@@ -228,14 +230,19 @@ class TableauRecapState extends State<TableauRecap> {
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SizedBox(
-                          width: _deviceWidth! * 0.4,
-                          height: _deviceHeight! * 0.4,
-                          child: PieChartSample3(
-                            names: categStatsNames,
-                            percentages: categStatsPercentages,
-                            totals: categStatsTotals,
-                          ),
+                        Column(
+                          children: [
+                            SizedBox(
+                              width: _deviceWidth! * 0.4,
+                              height: _deviceHeight! * 0.4,
+                              child: PieChartSample3(
+                                names: categStatsNames,
+                                percentages: categStatsPercentages,
+                                totals: categStatsTotals,
+                              ),
+                            ),
+                            Text("Dépenses par catégories")
+                          ],
                         ),
                         SizedBox(
                           height: _deviceHeight! * 0.4,

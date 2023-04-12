@@ -29,8 +29,8 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> {
   double? _deviceHeight, _deviceWidth;
-  double? currentAmount;
-  double? currentRealAmount;
+  double currentAmount = 0;
+  double currentRealAmount = 0;
   String? _groupValue = FilterGeneralEnum.LAST;
   List<Map<String, String?>> resultTransactions = [];
   DateTime date = DateTime.now();
@@ -123,9 +123,9 @@ class MainPageState extends State<MainPage> {
               child: Row(
                 children: <Widget>[
                   generalCurrentInformations(
-                      'actual_amount'.i18n(), currentAmount.toString()),
-                  generalCurrentInformations(
-                      'real_amount'.i18n(), currentRealAmount.toString()),
+                      'actual_amount'.i18n(), currentAmount.toStringAsFixed(2)),
+                  generalCurrentInformations('real_amount'.i18n(),
+                      currentRealAmount.toStringAsFixed(2)),
                 ],
               ),
             ),
@@ -201,20 +201,26 @@ class MainPageState extends State<MainPage> {
                 )
                 .toList(),
           ),
-          IconButton(
-            onPressed: () async {
-              if (currentMonthId == 12) {
-                currentMonthId = 1;
-                currentYear = currentYear + 1;
-              } else {
-                currentMonthId = currentMonthId + 1;
-              }
-              await getTransactionsForMonthAndYear();
-              setState(() {});
-            },
-            icon: const Icon(
-              Icons.chevron_right,
-              color: Colors.black,
+          Visibility(
+            visible: (currentMonthId == initialMonth &&
+                    currentYear == initialYear! + 1)
+                ? false
+                : true,
+            child: IconButton(
+              onPressed: () async {
+                if (currentMonthId == 12) {
+                  currentMonthId = 1;
+                  currentYear = currentYear + 1;
+                } else {
+                  currentMonthId = currentMonthId + 1;
+                }
+                await getTransactionsForMonthAndYear();
+                setState(() {});
+              },
+              icon: const Icon(
+                Icons.chevron_right,
+                color: Colors.black,
+              ),
             ),
           ),
         ],
@@ -305,7 +311,7 @@ class MainPageState extends State<MainPage> {
             title: Text(resultTransactions[index]["description"]!),
             subtitle: Text(newDate!),
             trailing: SizedBox(
-              width: _deviceWidth! * 0.15,
+              width: _deviceWidth! * 0.2,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -319,7 +325,7 @@ class MainPageState extends State<MainPage> {
                     ),
                   ),
                   SizedBox(
-                    width: _deviceWidth! * 0.03,
+                    width: _deviceWidth! * 0.06,
                     child: Text(
                       resultTransactions[index]['amount']!,
                       style: const TextStyle(fontSize: 18),
@@ -486,11 +492,11 @@ class MainPageState extends State<MainPage> {
   Widget generalCurrentInformations(String label, String value) {
     return SizedBox(
       width: _deviceWidth! *
-          0.8 /
-          4, // 2 est le nombre de homeCurrentInformations sur la même ligne
+          0.85 /
+          2, // 2 est le nombre de homeCurrentInformations sur la même ligne
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
         children: [
           Text(
@@ -705,14 +711,18 @@ class MainPageState extends State<MainPage> {
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: customTransactionInputWidth(0.17),
+          Container(
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Colors.black, width: 1),
+              ),
+            ),
+            width: customTransactionInputWidth(0.16),
             child: DropdownButton<String>(
               dropdownColor: "#EC6463".toColor(),
               value: selectedItem!.id.toString(),
               underline: Container(
-                height: 1,
-                color: Colors.black,
+                height: 0,
               ),
               icon: const Icon(Icons.arrow_drop_down, color: Colors.black),
               onChanged: (value) {
@@ -1039,9 +1049,14 @@ class MainPageState extends State<MainPage> {
   }
 
   Future<void> updateTransaction(List<dynamic> params) async {
+    String? userId = "1";
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
     var response = await http.post(
       Uri.parse(
-          "$serverUrl/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&paymentMethod=${params[6]}"),
+          "$serverUrl/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&paymentMethod=${params[6]}&userId=$userId"),
     );
     if (response.statusCode != 200) {
       throw Exception();
@@ -1074,6 +1089,7 @@ class MainPageState extends State<MainPage> {
       String? userId) async {
     var response = await http.get(Uri.parse(
         "$serverUrl/getTransactionsForMonthAndYear?userId=$userId&selectedMonthId=$currentMonthId&selectedYear=$currentYear"));
+    print(json.decode(response.body));
     return json.decode(response.body) != null
         ? (json.decode(response.body) as List)
             .map((e) => TransactionByMonthAndYear.fromJson(e))

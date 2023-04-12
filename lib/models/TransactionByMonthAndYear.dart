@@ -33,6 +33,9 @@ class TransactionByMonthAndYear {
   }
 
   Map<String, String?> convertTransaction() {
+    if (description == "null") {
+      description = "";
+    }
     return {
       "id": id.toString(),
       "date": date,
