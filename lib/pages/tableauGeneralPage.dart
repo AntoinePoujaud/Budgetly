@@ -60,8 +60,8 @@ class MainPageState extends State<MainPage> {
   int? initialMonth;
   List<String> filterMonthYears = [];
 
-  String serverUrl = 'https://moneytly.herokuapp.com';
-  // String serverUrl = 'http://localhost:8081';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
   @override
   void initState() {
     super.initState();
@@ -1025,7 +1025,9 @@ class MainPageState extends State<MainPage> {
     }
     var response = await http.get(Uri.parse("$serverUrl/getAmounts/$userId"));
     if (response.statusCode != 200) {
-      throw Exception();
+      // ignore: use_build_context_synchronously
+      showToast(context,
+                                const Text("Error while getting informations"));
     }
     setState(() {
       currentAmount = double.parse(json
@@ -1043,7 +1045,9 @@ class MainPageState extends State<MainPage> {
     var response =
         await http.post(Uri.parse("$serverUrl/deleteTransaction/$id"));
     if (response.statusCode != 204) {
-      throw Exception();
+      // ignore: use_build_context_synchronously
+      showToast(context,
+                                const Text("Error while deleting transaction"));
     }
     await getTransactionsForMonthAndYear();
   }
@@ -1059,7 +1063,9 @@ class MainPageState extends State<MainPage> {
           "$serverUrl/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&paymentMethod=${params[6]}&userId=$userId"),
     );
     if (response.statusCode != 200) {
-      throw Exception();
+      // ignore: use_build_context_synchronously
+      showToast(context,
+                                const Text("Error while updating transaction"));
     }
   }
 

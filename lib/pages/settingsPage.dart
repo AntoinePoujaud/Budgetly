@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import 'package:budgetly/utils/extensions.dart';
 import 'package:budgetly/utils/menuLayout.dart';
+import 'package:budgetly/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:localization/localization.dart';
@@ -22,12 +23,31 @@ class SettingsPageState extends State<SettingsPage> {
   double? _deviceHeight, _deviceWidth;
   double startingAmountAccount = 0;
   String currentPage = 'Paramètres';
-  String serverUrl = 'https://moneytly.herokuapp.com';
-  // String serverUrl = 'http://localhost:8081';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
+
+  Future<double> _getStartingAmountForUser() async {
+    String? userId;
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.getString("userId") != null) {
+      userId = prefs.getString("userId");
+    }
+    var response =
+        await http.get(Uri.parse("$serverUrl/getInitialAmount/$userId"));
+    if (response.statusCode != 200) {
+      // ignore: use_build_context_synchronously
+      showToast(context, const Text("Can't fetch your initial amount"));
+    }
+
+    return json.decode(response.body)["initialAmount"];
+  }
 
   @override
   void initState() {
     super.initState();
+    _getStartingAmountForUser().then((value) => setState(() {
+          startingAmountAccount = value;
+        }));
   }
 
   @override
@@ -57,7 +77,12 @@ class SettingsPageState extends State<SettingsPage> {
                   children: [
                     const Text("Définir le montant initial du compte : "),
                     TextFormField(
-                      keyboardType: TextInputType.text,
+                      // inputFormatters: <TextInputFormatter>[
+                      //   FilteringTextInputFormatter.allow(
+                      //       RegExp(r'[0-9]+[,.]{0,1}[0-9]*')),
+                      // ],
+                      keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true, signed: true),
                       initialValue: startingAmountAccount.toString(),
                       style: GoogleFonts.roboto(
                         color: Colors.black,
@@ -66,7 +91,23 @@ class SettingsPageState extends State<SettingsPage> {
                       ),
                       onChanged: ((value) {
                         setState(() {
-                          startingAmountAccount = double.parse(value).toDouble();
+                          double bmax =
+                              BigInt.parse("9223372036854775807").toDouble();
+                          double bmin =
+                              BigInt.parse("-9223372036854775807").toDouble();
+                          if (double.parse(value) >= bmax) {
+                            startingAmountAccount = bmax;
+                            showToast(context, Text("Max value is $bmax"));
+                          } else if (double.parse(value) <= bmin) {
+                            startingAmountAccount = bmin;
+                            showToast(context, Text("Min value is $bmin"));
+                          } else if (value.contains(",")) {
+                            value =
+                                "${value.substring(0, value.indexOf(","))}.${value.substring(value.indexOf(",") + 1)}";
+                          } else if (value.trim() != "") {
+                            startingAmountAccount =
+                                double.parse(value).toDouble();
+                          }
                         });
                       }),
                       validator: (value) {
@@ -128,24 +169,6 @@ class SettingsPageState extends State<SettingsPage> {
     }
     var response = await http.post(
         Uri.parse("$serverUrl/updateInitialAmount/$userId?amount=$amount"));
-  }
-
-  Future<void> getStartingAmountForUser() async {
-    String? userId;
-    final prefs = await SharedPreferences.getInstance();
-    if (prefs.getString("userId") != null) {
-      userId = prefs.getString("userId");
-    }
-    var response =
-        await http.get(Uri.parse("$serverUrl/getInitialAmount/$userId"));
-    if (response.statusCode != 200) {
-      // ignore: use_build_context_synchronously
-      showToast(context, const Text("Can't fetch your initial amount"));
-    } else {
-      setState(() {
-        startingAmountAccount = json.decode(response.body)["amount"];
-      });
-    }
   }
 
   void showToast(BuildContext context, content) {
