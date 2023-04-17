@@ -23,8 +23,8 @@ class SettingsPageState extends State<SettingsPage> {
   double? _deviceHeight, _deviceWidth;
   double startingAmountAccount = 0;
   String currentPage = 'Paramètres';
-  // String serverUrl = 'https://moneytly.herokuapp.com';
-  String serverUrl = 'http://localhost:8081';
+  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'http://localhost:8081';
 
   Future<double> _getStartingAmountForUser() async {
     String? userId;
