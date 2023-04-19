@@ -214,7 +214,7 @@ class SignInPageState extends State<SignInPage> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("userId", userId);
       // ignore: use_build_context_synchronously
-      Navigator.of(context).pushNamed("/");
+      Navigator.of(context).pushNamed("/settings");
     }
   }
 

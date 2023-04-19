@@ -1,16 +1,25 @@
 import 'package:budgetly/pages/app_colors.dart';
 import 'package:budgetly/pages/color_extensions.dart';
+import 'package:budgetly/utils/extensions.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
 class _BarChart extends StatelessWidget {
-  const _BarChart({required this.totalDepense, required this.totalRevenu});
+  const _BarChart({
+    required this.totalDepense,
+    required this.totalRevenu,
+    required this.color,
+    required this.deviceWidth,
+  });
   final double totalDepense;
   final double totalRevenu;
+  final String color;
+  final double deviceWidth;
 
   @override
   Widget build(BuildContext context) {
+    bool test = false;
     return BarChart(
       BarChartData(
         barTouchData: barTouchData,
@@ -18,7 +27,8 @@ class _BarChart extends StatelessWidget {
         borderData: borderData,
         barGroups: barGroups,
         gridData: FlGridData(show: false),
-        alignment: BarChartAlignment.spaceEvenly,
+        alignment: BarChartAlignment.center,
+        groupsSpace: 70,
         maxY: max(totalDepense, totalRevenu),
       ),
     );
@@ -36,10 +46,15 @@ class _BarChart extends StatelessWidget {
             BarChartRodData rod,
             int rodIndex,
           ) {
+            String color = "#dc6c68";
+            if (groupIndex == 1) {
+              color = "#133543";
+            }
             return BarTooltipItem(
-              rod.toY.round().toString(),
-              const TextStyle(
-                color: AppColors.contentColorCyan,
+              "${rod.toY.toStringAsFixed(2)} €",
+              TextStyle(
+                color: color.toColor(),
+                fontSize: deviceWidth * 0.012,
                 fontWeight: FontWeight.bold,
               ),
             );
@@ -48,20 +63,23 @@ class _BarChart extends StatelessWidget {
       );
 
   Widget getTitles(double value, TitleMeta meta) {
-    final style = TextStyle(
-      color: AppColors.contentColorBlue.darken(20),
-      fontWeight: FontWeight.bold,
-      fontSize: 14,
-    );
+    String color = "";
     String text = "";
     switch (value.toInt()) {
       case 0:
-        text = 'Dépenses';
+        text = 'Depenses'.toUpperCase();
+        color = "#dc6c68";
         break;
       case 1:
-        text = 'Revenus';
+        text = 'Revenus'.toUpperCase();
+        color = "#133543";
         break;
     }
+    final style = TextStyle(
+      color: color.toColor(),
+      fontWeight: FontWeight.bold,
+      fontSize: deviceWidth * 0.012,
+    );
     return SideTitleWidget(
       axisSide: meta.axisSide,
       space: 4,
@@ -108,11 +126,9 @@ class _BarChart extends StatelessWidget {
           barRods: [
             BarChartRodData(
                 toY: totalDepense,
-                color: Colors.red,
-                width: 30,
-                borderRadius: BorderRadius.zero
-                // gradient: _barsGradient,
-                )
+                color: "#dc6c68".toColor(),
+                width: 75,
+                borderRadius: BorderRadius.zero)
           ],
           showingTooltipIndicators: [0],
         ),
@@ -121,11 +137,9 @@ class _BarChart extends StatelessWidget {
           barRods: [
             BarChartRodData(
                 toY: totalRevenu,
-                color: Colors.green,
-                width: 30,
-                borderRadius: BorderRadius.zero
-                // gradient: _barsGradient,
-                )
+                color: "#133543".toColor(),
+                width: 75,
+                borderRadius: BorderRadius.zero)
           ],
           showingTooltipIndicators: [0],
         ),
@@ -134,23 +148,32 @@ class _BarChart extends StatelessWidget {
 
 class BarChartSample3 extends StatefulWidget {
   const BarChartSample3(
-      {Key? key, required this.totalDepense, required this.totalRevenu})
+      {Key? key,
+      required this.totalDepense,
+      required this.totalRevenu,
+      required this.deviceWidth})
       : super(key: key);
 
   final double totalDepense;
   final double totalRevenu;
+  final double deviceWidth;
 
   @override
   State<StatefulWidget> createState() => BarChartSample3State();
 }
 
 class BarChartSample3State extends State<BarChartSample3> {
+  String color = "";
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1.106,
       child: _BarChart(
-          totalDepense: widget.totalDepense, totalRevenu: widget.totalRevenu),
+        totalDepense: widget.totalDepense,
+        totalRevenu: widget.totalRevenu,
+        color: color,
+        deviceWidth: widget.deviceWidth,
+      ),
     );
   }
 }

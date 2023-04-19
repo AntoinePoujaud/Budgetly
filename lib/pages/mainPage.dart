@@ -15,6 +15,7 @@ import '../Enum/MonthEnum.dart';
 import '../utils/utils.dart';
 import 'barChart.dart';
 import 'categChart.dart';
+import 'dart:math';
 
 class TableauRecap extends StatefulWidget {
   const TableauRecap({Key? key, required this.title}) : super(key: key);
@@ -25,8 +26,8 @@ class TableauRecap extends StatefulWidget {
 }
 
 class TableauRecapState extends State<TableauRecap> {
-  // int maxValue = 0;
-  // int minValue = 0;
+  int maxValue = 0;
+  int minValue = 0;
   double totalDepense = 0;
   double totalRevenu = 0;
   double? _deviceHeight, _deviceWidth;
@@ -47,6 +48,7 @@ class TableauRecapState extends State<TableauRecap> {
   int? initialYear;
   int? initialMonth;
   List<String> filterMonthYears = [];
+  List<String> colors = ["#466563", "#15646f", "#8d8d8d", "#184449"];
   String serverUrl = 'https://moneytly.herokuapp.com';
   // String serverUrl = 'http://localhost:8081';
 
@@ -87,11 +89,12 @@ class TableauRecapState extends State<TableauRecap> {
     } else {
       setState(() {
         dailyStatsValues = json.decode(response.body)["amounts"].toList();
-        // maxValue = json.decode(response.body)["max"];
-        // minValue = json.decode(response.body)["min"];
+        maxValue = json.decode(response.body)["max"];
+        minValue = json.decode(response.body)["min"];
         dailySpots = List.generate(
             DateUtils.getDaysInMonth(currentYear, currentMonthId), (index) {
-          return FlSpot(index.toDouble() + 1, dailyStatsValues[index]);
+          return FlSpot(index.toDouble() + 1,
+              double.parse(dailyStatsValues[index].toStringAsFixed(2)));
         });
       });
     }
@@ -199,9 +202,10 @@ class TableauRecapState extends State<TableauRecap> {
                 alignment: Alignment.center,
                 child: Row(
                   children: <Widget>[
-                    homeCurrentInformations('actual_amount'.i18n(),
+                    homeCurrentInformations(
+                        'actual_amount'.i18n().toUpperCase(),
                         currentAmount.toStringAsFixed(2)),
-                    homeCurrentInformations('real_amount'.i18n(),
+                    homeCurrentInformations('real_amount'.i18n().toUpperCase(),
                         currentRealAmount.toStringAsFixed(2)),
                   ],
                 ),
@@ -210,46 +214,79 @@ class TableauRecapState extends State<TableauRecap> {
                 width: _deviceWidth! * 0.82,
                 height: _deviceHeight! * 0.9,
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     selectMonthYearWidget(),
                     SizedBox(
-                        width: _deviceWidth! * 0.62,
-                        height: _deviceHeight! * 0.3,
-                        child: LineChartSample2(
-                          data: dailySpots,
-                          monthDays: DateUtils.getDaysInMonth(
-                              currentYear, currentMonthId),
-                          // min: minValue,
-                          // max: maxValue,
-                        )),
-                    SizedBox(
-                      height: _deviceHeight! * 0.05,
+                      width: _deviceWidth! * 0.72,
+                      height: _deviceHeight! * 0.25,
+                      child: LineChartSample2(
+                        data: dailySpots,
+                        monthDays: DateUtils.getDaysInMonth(
+                            currentYear, currentMonthId),
+                        min: minValue,
+                        max: maxValue,
+                      ),
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisSize: MainAxisSize.max,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             SizedBox(
                               width: _deviceWidth! * 0.4,
-                              height: _deviceHeight! * 0.4,
+                              height: _deviceHeight! * 0.45,
                               child: PieChartSample3(
                                 names: categStatsNames,
                                 percentages: categStatsPercentages,
                                 totals: categStatsTotals,
+                                colors: colors,
                               ),
                             ),
-                            Text("Dépenses par catégories")
+                            SizedBox(
+                              width: _deviceWidth! * 0.4,
+                              height: _deviceHeight! * 0.1,
+                              child: Wrap(
+                                direction: Axis.vertical,
+                                spacing: 20,
+                                runSpacing: 20,
+                                runAlignment: WrapAlignment.center,
+                                children: List.generate(categStatsNames.length,
+                                    (index) {
+                                  String color = "";
+
+                                  if (colors.asMap().containsKey(index)) {
+                                    color = colors[index];
+                                  } else {
+                                    if (index - colors.length >=
+                                        colors.length) {
+                                      color = colors[colors.length - 1];
+                                    } else {
+                                      color = colors[index - colors.length];
+                                    }
+                                  }
+                                  return categLegend(
+                                      color, categStatsNames[index]);
+                                }),
+                              ),
+                            ),
                           ],
                         ),
                         SizedBox(
-                          height: _deviceHeight! * 0.4,
-                          width: _deviceWidth! * 0.3,
+                          height: _deviceHeight! * 0.45,
+                          width: _deviceWidth! * 0.2,
                           child: BarChartSample3(
-                              totalDepense: totalDepense,
-                              totalRevenu: totalRevenu),
+                            totalDepense: totalDepense,
+                            totalRevenu: totalRevenu,
+                            deviceWidth: _deviceWidth!,
+                          ),
                         ),
                       ],
                     ),
@@ -260,6 +297,24 @@ class TableauRecapState extends State<TableauRecap> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget categLegend(String boxColor, String categName) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.square,
+          color: boxColor.toColor(),
+        ),
+        Text(
+          categName,
+          style: TextStyle(color: "#133543".toColor()),
+        ),
+      ],
     );
   }
 
@@ -308,7 +363,8 @@ class TableauRecapState extends State<TableauRecap> {
                   (item) => DropdownMenuItem<String>(
                     value: item.toString(),
                     child: Text(
-                      "${MonthEnum().getStringFromId(int.parse(item.split(" ")[0]))} ${int.parse(item.split(" ")[1])}",
+                      "${MonthEnum().getStringFromId(int.parse(item.split(" ")[0]))} ${int.parse(item.split(" ")[1])}"
+                          .toUpperCase(),
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: _deviceWidth! * 0.013,

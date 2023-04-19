@@ -5,8 +5,8 @@
     "add_transaction_title": "Ajouter une transaction",
     "forgotten_password": "Mot de passe oublié",
 
-    "actual_amount": "Montant actuel sur le compte",
-    "real_amount": "Montant réel disponible",
+    "actual_amount": "Montant sur le compte",
+    "real_amount": "Montant prévisionnel sur ce mois",
 
     "label_depense": "Dépense",
     "label_revenu": "Revenu",
@@ -15,6 +15,7 @@
     "label_enter_amount": "Montant",
     "label_select_date_transaction": "Sélectionner la date d'apparition de la transaction",
     "label_save_transaction": "Enregistrer",
+    "label_delete_transaction": "Supprimer",
     
     "enum_categorie_hobby": "Loisirs",
     "enum_categorie_rent": "Loyer",
@@ -63,5 +64,5 @@
 
     "label_disconnect": "Se déconnecter",
     "label_settings": "Paramètres",
-    "label_update_starting_amount": "Mettre à jour le montant initial du compte"
+    "label_update_starting_amount": "Mettre à jour"
 }

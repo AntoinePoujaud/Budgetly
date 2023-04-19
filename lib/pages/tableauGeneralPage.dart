@@ -123,8 +123,9 @@ class MainPageState extends State<MainPage> {
               child: Row(
                 children: <Widget>[
                   generalCurrentInformations(
-                      'actual_amount'.i18n(), currentAmount.toStringAsFixed(2)),
-                  generalCurrentInformations('real_amount'.i18n(),
+                      'actual_amount'.i18n().toUpperCase(),
+                      currentAmount.toStringAsFixed(2)),
+                  generalCurrentInformations('real_amount'.i18n().toUpperCase(),
                       currentRealAmount.toStringAsFixed(2)),
                 ],
               ),
@@ -191,7 +192,8 @@ class MainPageState extends State<MainPage> {
                   (item) => DropdownMenuItem<String>(
                     value: item.toString(),
                     child: Text(
-                      "${MonthEnum().getStringFromId(int.parse(item.split(" ")[0]))} ${int.parse(item.split(" ")[1])}",
+                      "${MonthEnum().getStringFromId(int.parse(item.split(" ")[0]))} ${int.parse(item.split(" ")[1])}"
+                          .toUpperCase(),
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: _deviceWidth! * 0.013,
@@ -281,75 +283,99 @@ class MainPageState extends State<MainPage> {
       margin: const EdgeInsets.only(left: 40.0, top: 20.0),
       width: _deviceWidth! * 0.40,
       height: _deviceHeight! * 0.78,
-      child: ListView.builder(
-        itemCount: resultTransactions.length,
-        itemBuilder: (BuildContext context, int index) {
-          String? newDate = formatDate(resultTransactions[index]["date"]!);
-          return ListTile(
-            onTap: () {
-              setState(() {
-                selectedTileId = resultTransactions[index]["id"];
-                description = resultTransactions[index]["description"]!;
-                descriptionTxt.text = resultTransactions[index]["description"]!;
-                montant = double.parse(resultTransactions[index]["amount"]!);
-                montantTxt.text = resultTransactions[index]["amount"]!;
-                transactionType = resultTransactions[index]["type"];
-                _groupValueTransaction = resultTransactions[index]["type"];
-                paymentMethod = resultTransactions[index]["paymentMethod"];
-                _groupValuePaymentMethod =
-                    resultTransactions[index]["paymentMethod"];
-                date = DateTime.parse(resultTransactions[index]["date"]!);
-                selectedItem =
-                    findCategFromId(resultTransactions[index]["catId"]!);
-              });
-            },
-            tileColor:
-                resultTransactions[index]["type"] == TransactionEnum.REVENU
-                    ? Colors.green
-                    : Colors.red,
-            leading: const Icon(Icons.list),
-            title: Text(resultTransactions[index]["description"]!),
-            subtitle: Text(newDate!),
-            trailing: SizedBox(
-              width: _deviceWidth! * 0.2,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SizedBox(
-                    width: _deviceWidth! * 0.03,
-                    child: Text(
-                      PaymentMethodEnum().getShortLabel(
-                          resultTransactions[index]['paymentMethod']!),
-                      style: const TextStyle(fontSize: 18),
-                      textAlign: TextAlign.end,
-                    ),
-                  ),
-                  SizedBox(
-                    width: _deviceWidth! * 0.06,
-                    child: Text(
-                      resultTransactions[index]['amount']!,
-                      style: const TextStyle(fontSize: 18),
-                      textAlign: TextAlign.end,
-                    ),
-                  ),
-                  SizedBox(
-                    width: _deviceHeight! * 0.03,
-                  ),
-                  SizedBox(
-                    width: _deviceWidth! * 0.07,
-                    child: Text(
-                      resultTransactions[index]['catName']!,
-                      style: const TextStyle(
-                        fontSize: 14,
-                      ),
-                      textAlign: TextAlign.end,
-                    ),
-                  ),
-                ],
+      child: Material(
+        color: "#d0e3de".toColor(),
+        child: ListView.builder(
+          itemCount: resultTransactions.length,
+          itemBuilder: (BuildContext context, int index) {
+            String? newDate = formatDate(resultTransactions[index]["date"]!);
+            return ListTile(
+              onTap: () {
+                setState(() {
+                  selectedTileId = resultTransactions[index]["id"];
+                  description = resultTransactions[index]["description"]!;
+                  descriptionTxt.text =
+                      resultTransactions[index]["description"]!;
+                  montant = double.parse(resultTransactions[index]["amount"]!);
+                  montantTxt.text = resultTransactions[index]["amount"]!;
+                  transactionType = resultTransactions[index]["type"];
+                  _groupValueTransaction = resultTransactions[index]["type"];
+                  paymentMethod = resultTransactions[index]["paymentMethod"];
+                  _groupValuePaymentMethod =
+                      resultTransactions[index]["paymentMethod"];
+                  date = DateTime.parse(resultTransactions[index]["date"]!);
+                  selectedItem =
+                      findCategFromId(resultTransactions[index]["catId"]!);
+                });
+              },
+              tileColor:
+                  resultTransactions[index]["type"] == TransactionEnum.REVENU
+                      ? "#133543".toColor()
+                      : "#dc6c68".toColor(),
+              leading: const Icon(
+                Icons.list,
+                color: Colors.white,
               ),
-            ),
-          );
-        },
+              title: Text(
+                resultTransactions[index]["description"]!.toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              subtitle: Text(
+                newDate!,
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
+              ),
+              trailing: SizedBox(
+                width: _deviceWidth! * 0.2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: _deviceWidth! * 0.03,
+                      child: Text(
+                        PaymentMethodEnum().getShortLabel(
+                            resultTransactions[index]['paymentMethod']!),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.end,
+                      ),
+                    ),
+                    SizedBox(
+                      width: _deviceWidth! * 0.06,
+                      child: Text(
+                        resultTransactions[index]['amount']!,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.end,
+                      ),
+                    ),
+                    SizedBox(
+                      width: _deviceHeight! * 0.03,
+                    ),
+                    SizedBox(
+                      width: _deviceWidth! * 0.07,
+                      child: Text(
+                        resultTransactions[index]['catName']!,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                        ),
+                        textAlign: TextAlign.end,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -359,11 +385,14 @@ class MainPageState extends State<MainPage> {
       visible: selectedTileId == null ? false : true,
       child: Container(
         margin: const EdgeInsets.only(left: 20.0, top: 20.0),
+        padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
         width: _deviceWidth! * 0.38,
         height: _deviceHeight! * 0.78,
         decoration: BoxDecoration(
-            color: const Color.fromARGB(51, 94, 93, 93),
-            borderRadius: BorderRadius.circular(40)),
+          color: transactionType == TransactionEnum.DEPENSE
+              ? "#dc6c68".toColor()
+              : "#133543".toColor(),
+        ),
         child: Form(
           key: _formKey,
           child: Column(
@@ -372,7 +401,7 @@ class MainPageState extends State<MainPage> {
             mainAxisSize: MainAxisSize.max,
             children: [
               selectTransactionWidget(0.01, 0.12),
-              selectPaymentMethodWidget(0.008, 0.1),
+              selectPaymentMethodWidget(0.008, 0.09),
               categorieSelectionWidget(),
               descriptionWidget(),
               montantWidget(),
@@ -381,32 +410,57 @@ class MainPageState extends State<MainPage> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 mainAxisSize: MainAxisSize.max,
                 children: [
-                  MouseRegion(
-                      cursor: SystemMouseCursors.click,
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.delete,
-                          color: Colors.red.shade800,
-                        ),
-                        onPressed: () async {
-                          try {
-                            deleteTransaction(selectedTileId!);
-                            showToast(context,
-                                const Text("Transaction deleted successfully"));
-                          } catch (e) {
-                            showToast(context,
-                                const Text("Error while deleting transaction"));
-                          }
-                        },
-                      )),
                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.all(25.0),
-                      backgroundColor: "#EC6463".toColor(),
+                    style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.hovered)) {
+                            return "#dc6c68".toColor(); //<-- SEE HERE
+                          }
+                          return null; // Defer to the widget's default.
+                        },
+                      ),
+                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                          const EdgeInsets.all(25.0)),
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
-                      'label_save_transaction'.i18n(),
-                      style: TextStyle(
+                      'label_delete_transaction'.i18n().toUpperCase(),
+                      style: GoogleFonts.roboto(
+                        color: Colors.black,
+                        fontSize: _deviceWidth! * 0.015,
+                      ),
+                    ),
+                    onPressed: () async {
+                      try {
+                        deleteTransaction(selectedTileId!);
+                        showToast(context,
+                            const Text("Transaction deleted successfully"));
+                      } catch (e) {
+                        showToast(context,
+                            const Text("Error while deleting transaction"));
+                      }
+                    },
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.hovered)) {
+                            return "#dc6c68".toColor(); //<-- SEE HERE
+                          }
+                          return null; // Defer to the widget's default.
+                        },
+                      ),
+                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                          const EdgeInsets.all(25.0)),
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
+                    ),
+                    child: Text(
+                      'label_save_transaction'.i18n().toUpperCase(),
+                      style: GoogleFonts.roboto(
                         color: Colors.black,
                         fontSize: _deviceWidth! * 0.015,
                       ),
@@ -475,7 +529,7 @@ class MainPageState extends State<MainPage> {
                 if (states.contains(MaterialState.disabled)) {
                   return Colors.orange.withOpacity(.32);
                 }
-                return Colors.black;
+                return Colors.white;
               }),
               value: value,
               groupValue: groupValue,
@@ -522,7 +576,7 @@ class MainPageState extends State<MainPage> {
 
   TextStyle customTextStyle(double fontSize) {
     return TextStyle(
-      color: Colors.black,
+      color: Colors.white,
       fontSize: _deviceWidth! * fontSize,
     );
   }
@@ -537,23 +591,57 @@ class MainPageState extends State<MainPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        radioButtonLabelledTransactions(
-            'label_depense'.i18n(),
-            TransactionEnum.DEPENSE,
-            _groupValueTransaction,
-            fontSize,
-            boxWidth,
-            'transactionType'),
-        SizedBox(
-          width: _deviceWidth! * 0.05,
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              transactionType = TransactionEnum.DEPENSE;
+            });
+          },
+          style: ElevatedButton.styleFrom(
+            padding:
+                const EdgeInsets.only(top: 20, bottom: 20, left: 55, right: 55),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+            ),
+            backgroundColor: transactionType == TransactionEnum.DEPENSE
+                ? Colors.grey
+                : "#dc6c68".toColor(),
+          ),
+          child: Text(
+            "dépenses".toUpperCase(),
+            style: GoogleFonts.roboto(
+                color: Colors.white,
+                fontSize: _deviceWidth! * 0.015,
+                fontWeight: FontWeight.bold),
+          ),
         ),
-        radioButtonLabelledTransactions(
-            'label_revenu'.i18n(),
-            TransactionEnum.REVENU,
-            _groupValueTransaction,
-            fontSize,
-            boxWidth,
-            'transactionType'),
+        const SizedBox(
+          width: 40,
+        ),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              transactionType = TransactionEnum.REVENU;
+            });
+          },
+          style: ElevatedButton.styleFrom(
+            padding:
+                const EdgeInsets.only(top: 20, bottom: 20, left: 55, right: 55),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(0),
+            ),
+            backgroundColor: transactionType == TransactionEnum.REVENU
+                ? Colors.grey
+                : "#133543".toColor(),
+          ),
+          child: Text(
+            "revenus".toUpperCase(),
+            style: GoogleFonts.roboto(
+                color: Colors.white,
+                fontSize: _deviceWidth! * 0.015,
+                fontWeight: FontWeight.bold),
+          ),
+        ),
       ],
     );
   }
@@ -576,12 +664,12 @@ class MainPageState extends State<MainPage> {
         decoration: InputDecoration(
           labelText: 'label_enter_desc'.i18n().toUpperCase(),
           labelStyle: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontSize: _deviceWidth! * 0.015,
           ),
         ),
         style: TextStyle(
-          color: Colors.black,
+          color: Colors.white,
           fontSize: _deviceWidth! * 0.015,
         ),
         onChanged: ((value) {
@@ -608,12 +696,12 @@ class MainPageState extends State<MainPage> {
         decoration: InputDecoration(
           labelText: 'label_enter_amount'.i18n().toUpperCase(),
           labelStyle: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontSize: _deviceWidth! * 0.015,
           ),
         ),
         style: TextStyle(
-          color: Colors.black,
+          color: Colors.white,
           fontSize: _deviceWidth! * 0.015,
         ),
         onChanged: ((value) {
@@ -714,7 +802,7 @@ class MainPageState extends State<MainPage> {
           Container(
             decoration: const BoxDecoration(
               border: Border(
-                bottom: BorderSide(color: Colors.black, width: 1),
+                bottom: BorderSide(color: Colors.white, width: 1),
               ),
             ),
             width: customTransactionInputWidth(0.16),
@@ -724,7 +812,7 @@ class MainPageState extends State<MainPage> {
               underline: Container(
                 height: 0,
               ),
-              icon: const Icon(Icons.arrow_drop_down, color: Colors.black),
+              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
               onChanged: (value) {
                 setState(() {
                   selectedItem = findCategFromId(value!);
@@ -739,7 +827,7 @@ class MainPageState extends State<MainPage> {
                           Text(
                             item.name,
                             style: TextStyle(
-                              color: Colors.black,
+                              color: Colors.white,
                               fontSize: _deviceWidth! * 0.013,
                             ),
                           ),
@@ -797,7 +885,7 @@ class MainPageState extends State<MainPage> {
                     ),
                   ),
                   style: TextStyle(
-                    color: Colors.black,
+                    color: Colors.white,
                     fontSize: _deviceWidth! * 0.01,
                     fontWeight: FontWeight.w700,
                   ),
@@ -813,7 +901,7 @@ class MainPageState extends State<MainPage> {
                 child: IconButton(
                   icon: const Icon(
                     Icons.add,
-                    color: Color.fromARGB(255, 62, 168, 62),
+                    color: Color.fromARGB(255, 95, 95, 95),
                   ),
                   onPressed: () async {
                     if (categNameTxt.text == "") {
@@ -858,8 +946,8 @@ class MainPageState extends State<MainPage> {
                 fontSize,
                 boxWidth,
                 'paymentMethod'),
-            SizedBox(
-              width: _deviceWidth! * 0.005,
+            const SizedBox(
+              width: 10,
             ),
             radioButtonLabelledTransactions(
                 'label_cbcommerces'.i18n(),
@@ -868,8 +956,8 @@ class MainPageState extends State<MainPage> {
                 fontSize,
                 boxWidth,
                 'paymentMethod'),
-            SizedBox(
-              width: _deviceWidth! * 0.005,
+            const SizedBox(
+              width: 10,
             ),
             radioButtonLabelledTransactions(
                 'label_cheque'.i18n(),
@@ -892,8 +980,8 @@ class MainPageState extends State<MainPage> {
                 fontSize,
                 boxWidth,
                 'paymentMethod'),
-            SizedBox(
-              width: _deviceWidth! * 0.005,
+            const SizedBox(
+              width: 10,
             ),
             radioButtonLabelledTransactions(
                 'label_prelevement'.i18n(),
@@ -902,8 +990,8 @@ class MainPageState extends State<MainPage> {
                 fontSize,
                 boxWidth,
                 'paymentMethod'),
-            SizedBox(
-              width: _deviceWidth! * 0.005,
+            const SizedBox(
+              width: 10,
             ),
             radioButtonLabelledTransactions(
                 'label_paypal'.i18n(),
@@ -942,7 +1030,7 @@ class MainPageState extends State<MainPage> {
               if (states.contains(MaterialState.disabled)) {
                 return Colors.orange.withOpacity(.32);
               }
-              return Colors.black;
+              return Colors.white;
             }),
             value: value,
             groupValue: groupValue,
@@ -1026,8 +1114,7 @@ class MainPageState extends State<MainPage> {
     var response = await http.get(Uri.parse("$serverUrl/getAmounts/$userId"));
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
-      showToast(context,
-                                const Text("Error while getting informations"));
+      showToast(context, const Text("Error while getting informations"));
     }
     setState(() {
       currentAmount = double.parse(json
@@ -1046,8 +1133,7 @@ class MainPageState extends State<MainPage> {
         await http.post(Uri.parse("$serverUrl/deleteTransaction/$id"));
     if (response.statusCode != 204) {
       // ignore: use_build_context_synchronously
-      showToast(context,
-                                const Text("Error while deleting transaction"));
+      showToast(context, const Text("Error while deleting transaction"));
     }
     await getTransactionsForMonthAndYear();
   }
@@ -1064,8 +1150,7 @@ class MainPageState extends State<MainPage> {
     );
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
-      showToast(context,
-                                const Text("Error while updating transaction"));
+      showToast(context, const Text("Error while updating transaction"));
     }
   }
 

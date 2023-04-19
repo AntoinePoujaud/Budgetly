@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:budgetly/Enum/CategorieEnum.dart';
+import 'package:budgetly/Enum/MonthEnum.dart';
 import 'package:budgetly/Enum/PaymentMethodEnum.dart';
 import 'package:budgetly/models/AllCategories.dart';
 import 'package:budgetly/utils/extensions.dart';
@@ -9,6 +10,7 @@ import 'package:budgetly/utils/menuLayout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Enum/TransactionEnum.dart';
@@ -33,6 +35,14 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   List<AllCategories>? dropDownItems = [];
   AllCategories? selectedItem;
   TextEditingController categNameTxt = TextEditingController();
+  List<int> years = [];
+  int currentYear = DateTime.now().year;
+  int? initialYear;
+  int? initialMonth;
+  List<String> filterMonthYears = [];
+  List<int> months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  int currentMonthId = MonthEnum().getIdFromString(
+      DateFormat.MMMM("en").format(DateTime.now()).toLowerCase());
 
   String? transactionType;
   String? paymentMethod = PaymentMethodEnum.CBRETRAIT;
@@ -47,6 +57,16 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   void initState() {
     super.initState();
     Utils.checkIfConnected(context);
+    years = [currentYear - 1, currentYear, currentYear + 1];
+    initialMonth = currentMonthId;
+    initialYear = currentYear;
+    for (int i = currentYear - 1; i <= currentYear + 1; i++) {
+      for (int j = (i > currentYear - 1 ? 1 : currentMonthId);
+          j <= (i == currentYear + 1 ? currentMonthId : months.length);
+          j++) {
+        filterMonthYears.add("$j $i");
+      }
+    }
   }
 
   @override
@@ -118,7 +138,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Remplissez -".toUpperCase(),
+                          "Remplissez".toUpperCase(),
                           style: GoogleFonts.roboto(
                             color: Colors.white,
                             fontSize: _deviceWidth! * 0.015,
@@ -127,9 +147,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                         ),
                         selectTransactionWidget(0.012, 0.12),
                         Container(
-                          color: Colors.white,
+                          // color: Colors.white,
                           height: 1,
-                          width: _deviceWidth! * 0.7,
+                          // width: _deviceWidth! * 0.7,
                           alignment: Alignment.center,
                         ),
                         selectPaymentMethodWidget(0.011, 0.12),
@@ -163,9 +183,19 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                 Container(
                   margin: EdgeInsets.only(bottom: _deviceHeight! * 0.05),
                   child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.all(25.0),
-                      backgroundColor: "#EC6463".toColor(),
+                    style: ButtonStyle(
+                      overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                        (Set<MaterialState> states) {
+                          if (states.contains(MaterialState.hovered)) {
+                            return "#dc6c68".toColor(); //<-- SEE HERE
+                          }
+                          return null; // Defer to the widget's default.
+                        },
+                      ),
+                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                          const EdgeInsets.all(25.0)),
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.white),
                     ),
                     child: Text(
                       'label_save_transaction'.i18n().toUpperCase(),
@@ -218,25 +248,83 @@ class AjoutTransactionState extends State<AjoutTransaction> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          radioButtonLabelledTransactions(
-              'label_depense'.i18n(),
-              TransactionEnum.DEPENSE,
-              _groupValue,
-              fontSize,
-              boxWidth,
-              'transaction'),
-          SizedBox(
-            width: _deviceWidth! * 0.005,
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                transactionType = TransactionEnum.DEPENSE;
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.only(
+                  top: 20, bottom: 20, left: 55, right: 55),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+              backgroundColor: transactionType == TransactionEnum.DEPENSE
+                  ? Colors.grey
+                  : "#dc6c68".toColor(),
+            ),
+            child: Text(
+              "dépenses".toUpperCase(),
+              style: GoogleFonts.roboto(
+                  color: Colors.white,
+                  fontSize: _deviceWidth! * 0.015,
+                  fontWeight: FontWeight.bold),
+            ),
           ),
-          radioButtonLabelledTransactions(
-              'label_revenu'.i18n(),
-              TransactionEnum.REVENU,
-              _groupValue,
-              fontSize,
-              boxWidth,
-              'transaction'),
+          const SizedBox(
+            width: 40,
+          ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() {
+                transactionType = TransactionEnum.REVENU;
+              });
+            },
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.only(
+                  top: 20, bottom: 20, left: 55, right: 55),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(0),
+              ),
+              backgroundColor: transactionType == TransactionEnum.REVENU
+                  ? Colors.grey
+                  : "#133543".toColor(),
+            ),
+            child: Text(
+              "revenus".toUpperCase(),
+              style: GoogleFonts.roboto(
+                  color: Colors.white,
+                  fontSize: _deviceWidth! * 0.015,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
         ],
       ),
+      // child: Row(
+      //   mainAxisSize: MainAxisSize.max,
+      //   mainAxisAlignment: MainAxisAlignment.start,
+      //   crossAxisAlignment: CrossAxisAlignment.center,
+      //   children: [
+      // radioButtonLabelledTransactions(
+      //         'label_depense'.i18n(),
+      //         TransactionEnum.DEPENSE,
+      //         _groupValue,
+      //         fontSize,
+      //         boxWidth,
+      //         'transaction'),
+      //     SizedBox(
+      //       width: _deviceWidth! * 0.005,
+      //     ),
+      //     radioButtonLabelledTransactions(
+      //         'label_revenu'.i18n(),
+      //         TransactionEnum.REVENU,
+      //         _groupValue,
+      //         fontSize,
+      //         boxWidth,
+      //         'transaction'),
+      //   ],
+      // ),
     );
   }
 
@@ -321,13 +409,14 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   Widget descriptionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(0.4),
+      width: customTransactionInputWidth(0.25),
       child: TextFormField(
         keyboardType: TextInputType.text,
         decoration: InputDecoration(
           labelText: 'label_enter_desc'.i18n().toUpperCase(),
           labelStyle: GoogleFonts.roboto(
-            color: const Color.fromARGB(255, 95, 95, 95),
+            // color: const Color.fromARGB(255, 95, 95, 95),
+            color: Colors.black,
             fontSize: _deviceWidth! * 0.018,
             fontWeight: FontWeight.w700,
           ),
@@ -354,7 +443,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   Widget montantWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(0.4),
+      width: customTransactionInputWidth(0.25),
       child: TextFormField(
         inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter.allow(RegExp(r'[0-9]+[,.]{0,1}[0-9]*')),
@@ -363,7 +452,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
         decoration: InputDecoration(
           labelText: 'label_enter_amount'.i18n().toUpperCase(),
           labelStyle: GoogleFonts.roboto(
-            color: const Color.fromARGB(255, 95, 95, 95),
+            // color: const Color.fromARGB(255, 95, 95, 95),
+            color: Colors.black,
             fontSize: _deviceWidth! * 0.018,
             fontWeight: FontWeight.w700,
           ),
@@ -403,20 +493,20 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   Widget dateSelectionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(0.5),
+      width: customTransactionInputWidth(0.25),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
-            "Sélectionnez - ".toUpperCase(),
-            style: GoogleFonts.roboto(
-              color: Colors.black,
-              fontSize: _deviceWidth! * 0.015,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
+          // Text(
+          //   "Sélectionnez - ".toUpperCase(),
+          //   style: GoogleFonts.roboto(
+          //     color: Colors.black,
+          //     fontSize: _deviceWidth! * 0.015,
+          //     fontWeight: FontWeight.w700,
+          //   ),
+          // ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.all(20.0),
@@ -441,10 +531,11 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                     child: child!,
                   );
                 },
+                initialEntryMode: DatePickerEntryMode.calendarOnly,
                 context: context,
                 initialDate: date,
-                firstDate: DateTime(2022),
-                lastDate: DateTime(2030),
+                firstDate: DateTime(initialYear! - 1, initialMonth!),
+                lastDate: DateTime(initialYear! + 1, initialMonth!),
               );
 
               if (newDate == null) return;
@@ -587,7 +678,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                 child: IconButton(
                   icon: const Icon(
                     Icons.add,
-                    color: Color.fromARGB(255, 62, 168, 62),
+                    // color: Color.fromARGB(255, 62, 168, 62),
+                    color: Color.fromARGB(255, 95, 95, 95),
                   ),
                   onPressed: () async {
                     if (categNameTxt.text == "") {

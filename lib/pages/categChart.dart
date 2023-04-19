@@ -1,29 +1,32 @@
+import 'package:budgetly/utils/extensions.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:budgetly/pages/app_colors.dart';
 
 class PieChartSample3 extends StatefulWidget {
-  const PieChartSample3(
-      {Key? key,
-      required this.percentages,
-      required this.names,
-      required this.totals})
-      : super(key: key);
+  const PieChartSample3({
+    Key? key,
+    required this.percentages,
+    required this.names,
+    required this.totals,
+    required this.colors,
+  }) : super(key: key);
   final List<dynamic> percentages;
   final List<dynamic> totals;
   final List<dynamic> names;
+  final List<String> colors;
 
   @override
   State<StatefulWidget> createState() => PieChartSample3State();
 }
 
 class PieChartSample3State extends State<PieChartSample3> {
-  int touchedIndex = 0;
+  int touchedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 1.3,
+      aspectRatio: 1,
       child: AspectRatio(
         aspectRatio: 1,
         child: PieChart(
@@ -45,7 +48,7 @@ class PieChartSample3State extends State<PieChartSample3> {
             borderData: FlBorderData(
               show: false,
             ),
-            sectionsSpace: 0,
+            sectionsSpace: 1,
             centerSpaceRadius: 0,
             sections: showingSections(),
           ),
@@ -57,16 +60,30 @@ class PieChartSample3State extends State<PieChartSample3> {
   List<PieChartSectionData> showingSections() {
     if (widget.totals.isNotEmpty) {
       return List.generate(widget.totals.length, (i) {
+        String color = "";
         final isTouched = i == touchedIndex;
-        final fontSize = isTouched ? 20.0 : 16.0;
-        final radius = isTouched ? 180.0 : 170.0;
+        double fontSize = isTouched ? 24.0 : 20.0;
+        if (widget.percentages[i] <= 5) {
+          fontSize = isTouched ? 14.0 : 10.0;
+        }
+        final radius = isTouched ? 205.0 : 195.0;
         final widgetSize = isTouched ? 155.0 : 140.0;
         final text =
             isTouched ? "${widget.totals[i]} €" : "${widget.percentages[i]} %";
         const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
 
+        if (widget.colors.asMap().containsKey(i)) {
+          color = widget.colors[i];
+        } else {
+          if (i - widget.colors.length >= widget.colors.length) {
+            color = widget.colors[widget.colors.length - 1];
+          } else {
+            color = widget.colors[i - widget.colors.length];
+          }
+        }
+
         return PieChartSectionData(
-          color: AppColors.contentColorBlue,
+          color: color.toColor(),
           value: widget.totals[i],
           title: text,
           radius: radius,
@@ -74,16 +91,16 @@ class PieChartSample3State extends State<PieChartSample3> {
             fontSize: fontSize,
             fontWeight: FontWeight.bold,
             color: const Color(0xffffffff),
-            shadows: shadows,
+            // shadows: shadows,
           ),
-          badgeWidget: _Badge(
-            'assets/icons/ophthalmology-svgrepo-com.svg',
-            size: widgetSize,
-            borderColor: AppColors.contentColorBlack,
-            text: widget.names[i],
-          ),
-          badgePositionPercentageOffset: .78,
-          titlePositionPercentageOffset: .30,
+          // badgeWidget: _Badge(
+          //   'assets/icons/ophthalmology-svgrepo-com.svg',
+          //   size: widgetSize,
+          //   borderColor: AppColors.contentColorBlack,
+          // text: widget.names[i],
+          // ),
+          // badgePositionPercentageOffset: .78,
+          titlePositionPercentageOffset: .60,
         );
       });
     } else {

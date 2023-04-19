@@ -133,8 +133,8 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                     'label_settings'.i18n().toUpperCase(),
                     style: GoogleFonts.roboto(
                       color: currentPage == 'settings_title'.i18n()
-                        ? Colors.grey
-                        : Colors.white,
+                          ? Colors.grey
+                          : Colors.white,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -146,6 +146,12 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                   },
                 ),
                 ListTile(
+                  leading: Icon(
+                    Icons.logout,
+                    color: currentPage == 'settings_title'.i18n()
+                        ? Colors.grey
+                        : Colors.white,
+                  ),
                   title: Text(
                     'label_disconnect'.i18n().toUpperCase(),
                     style: GoogleFonts.roboto(

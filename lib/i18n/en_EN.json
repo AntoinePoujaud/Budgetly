@@ -13,6 +13,7 @@
     "label_enter_amount": "Amount",
     "label_select_date_transaction": "Select transaction date",
     "label_save_transaction": "Save transaction",
+    "label_delete_transaction": "Delete",
     "enum_categorie_hobby": "Hobby",
     "enum_categorie_rent": "Rent",
     "enum_categorie_shopping": "Shopping",
@@ -54,5 +55,5 @@
     "label_month_december": "December",
     "label_disconnect": "Disconnect",
     "label_settings": "Settings",
-    "label_update_starting_amount": "Update initial amount"
+    "label_update_starting_amount": "Update amount"
 }
