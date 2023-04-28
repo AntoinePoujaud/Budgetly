@@ -50,6 +50,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   DateTime? currentDate;
   String? description;
   String? categorie = CategorieEnum.LOISIRS;
+  bool isMobile = false;
+  bool isDesktop = false;
   String serverUrl = 'https://moneytly.herokuapp.com';
   // String serverUrl = 'http://localhost:8081';
 
@@ -73,6 +75,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
+    isMobile = _deviceWidth! < 768;
+    isDesktop = _deviceWidth! > 1024;
     currentDate = date;
 
     return Scaffold(
@@ -109,13 +113,15 @@ class AjoutTransactionState extends State<AjoutTransaction> {
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.max,
       children: [
-        MenuLayout(
-            title: widget.title,
-            deviceWidth: _deviceWidth,
-            deviceHeight: _deviceHeight),
+        isMobile
+            ? const Text("")
+            : MenuLayout(
+                title: widget.title,
+                deviceWidth: _deviceWidth,
+                deviceHeight: _deviceHeight),
         SizedBox(
           height: _deviceHeight! * 1,
-          width: _deviceWidth! * 0.85,
+          width: isMobile ? _deviceWidth : _deviceWidth! * 0.85,
           child: Form(
             key: _formKey,
             child: Column(
@@ -125,8 +131,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
               children: [
                 Container(
                   color: "#0A454A".toColor(),
-                  width: _deviceWidth! * 0.85,
-                  height: _deviceHeight! * 0.2,
+                  width: isMobile ? _deviceWidth : _deviceWidth! * 0.85,
+                  height: _deviceHeight! * 0.25,
                   alignment: Alignment.center,
                   padding: EdgeInsets.only(
                     left: _deviceWidth! * 0.05,
@@ -137,27 +143,47 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Remplissez".toUpperCase(),
-                          style: GoogleFonts.roboto(
-                            color: Colors.white,
-                            fontSize: _deviceWidth! * 0.015,
-                            fontWeight: FontWeight.w700,
-                          ),
+                        Row(
+                          mainAxisAlignment: isMobile
+                              ? MainAxisAlignment.spaceBetween
+                              : MainAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.max,
+                          children: [
+                            isMobile
+                                ? mobileMenu()
+                                : const SizedBox(
+                                    height: 0,
+                                    width: 0,
+                                  ),
+                            Text(
+                              "Ajouter une transaction".toUpperCase(),
+                              textAlign: TextAlign.start,
+                              style: GoogleFonts.roboto(
+                                color: Colors.white,
+                                fontSize: isMobile
+                                    ? _deviceWidth! * 0.055
+                                    : _deviceWidth! * 0.015,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
                         ),
-                        selectTransactionWidget(0.012, 0.12),
+                        isMobile
+                            ? selectTransactionWidget(0.035, 0.2)
+                            : selectTransactionWidget(0.012, 0.12),
                         Container(
                           // color: Colors.white,
                           height: 1,
                           // width: _deviceWidth! * 0.7,
-                          alignment: Alignment.center,
                         ),
-                        selectPaymentMethodWidget(0.011, 0.12),
+                        isMobile
+                            ? selectPaymentMethodWidget(0.03, 0.12)
+                            : selectPaymentMethodWidget(0.009, 0.1),
                       ]),
                 ),
                 Container(
                   height: _deviceHeight! * 0.55,
-                  width: _deviceWidth! * 0.85,
+                  width: isMobile ? _deviceWidth : _deviceWidth! * 0.85,
                   padding: EdgeInsets.only(
                     left: _deviceWidth! * 0.05,
                     right: _deviceWidth! * 0.05,
@@ -201,7 +227,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                       'label_save_transaction'.i18n().toUpperCase(),
                       style: GoogleFonts.roboto(
                         color: Colors.black,
-                        fontSize: _deviceWidth! * 0.018,
+                        fontSize: isMobile
+                            ? _deviceWidth! * 0.06
+                            : _deviceWidth! * 0.018,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
@@ -240,12 +268,151 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     );
   }
 
+  Widget mobileMenu() {
+    return PopupMenuButton(
+      color: "#133543".toColor(),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 0,
+          child: Row(children: [
+            Icon(
+              Icons.home,
+              color: widget.title == 'tableau_recap_title'.i18n()
+                  ? Colors.grey
+                  : Colors.white,
+            ),
+            Text(
+              'tableau_recap_title'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: widget.title == 'tableau_recap_title'.i18n()
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed("/");
+            widget.title != 'tableau_recap_title'.i18n()
+                ? Navigator.of(context).pushNamed("/")
+                : "";
+          },
+        ),
+        PopupMenuItem(
+          value: 1,
+          child: Row(children: [
+            Icon(
+              Icons.add,
+              color: widget.title == 'add_transaction_title'.i18n()
+                  ? Colors.grey
+                  : Colors.white,
+            ),
+            Text(
+              'add_transaction_title'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: widget.title == 'add_transaction_title'.i18n()
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed("/addTransaction");
+            widget.title != 'add_transaction_title'.i18n()
+                ? Navigator.of(context).pushNamed("/addTransaction")
+                : "";
+          },
+        ),
+        PopupMenuItem(
+          value: 2,
+          child: Row(children: [
+            Icon(
+              Icons.manage_search,
+              color: widget.title == 'tableau_general_title'.i18n()
+                  ? Colors.grey
+                  : Colors.white,
+            ),
+            Text(
+              'tableau_general_title'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: widget.title == 'tableau_general_title'.i18n()
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed("/transactions");
+            widget.title != 'tableau_general_title'.i18n()
+                ? Navigator.of(context).pushNamed("/transactions")
+                : "";
+          },
+        ),
+        PopupMenuItem(
+          value: 3,
+          child: Row(children: [
+            Icon(
+              Icons.settings,
+              color: widget.title == 'settings_title'.i18n()
+                  ? Colors.grey
+                  : Colors.white,
+            ),
+            Text(
+              'settings_title'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: widget.title == 'settings_title'.i18n()
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed("/settings");
+            widget.title != 'settings_title'.i18n()
+                ? Navigator.of(context).pushNamed("/settings")
+                : "";
+          },
+        ),
+        PopupMenuItem(
+          value: 4,
+          child: Row(children: [
+            const Icon(
+              Icons.logout,
+              color: Colors.white,
+            ),
+            Text(
+              'label_disconnect'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () async {
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setString("userId", "");
+            // ignore: use_build_context_synchronously
+            Navigator.of(context).pushNamed("/login");
+          },
+        ),
+      ],
+      icon: const Icon(
+        Icons.menu,
+        color: Colors.white,
+      ),
+    );
+  }
+
   Widget selectTransactionWidget(double fontSize, double boxWidth) {
     return Padding(
       padding: const EdgeInsets.only(top: 20),
       child: Row(
         mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment:
+            isMobile ? MainAxisAlignment.center : MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ElevatedButton(
@@ -256,7 +423,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
             },
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.only(
-                  top: 20, bottom: 20, left: 55, right: 55),
+                  top: 20, bottom: 20, left: 45, right: 45),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(0),
               ),
@@ -268,12 +435,12 @@ class AjoutTransactionState extends State<AjoutTransaction> {
               "dépenses".toUpperCase(),
               style: GoogleFonts.roboto(
                   color: Colors.white,
-                  fontSize: _deviceWidth! * 0.015,
+                  fontSize: _deviceWidth! * fontSize,
                   fontWeight: FontWeight.bold),
             ),
           ),
           const SizedBox(
-            width: 40,
+            width: 20,
           ),
           ElevatedButton(
             onPressed: () {
@@ -295,7 +462,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
               "revenus".toUpperCase(),
               style: GoogleFonts.roboto(
                   color: Colors.white,
-                  fontSize: _deviceWidth! * 0.015,
+                  fontSize: _deviceWidth! * fontSize,
                   fontWeight: FontWeight.bold),
             ),
           ),
@@ -329,13 +496,14 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   }
 
   Widget selectPaymentMethodWidget(double fontSize, double boxWidth) {
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Wrap(
+      spacing: 0,
+      alignment: WrapAlignment.start,
+      crossAxisAlignment:
+          isMobile ? WrapCrossAlignment.center : WrapCrossAlignment.start,
       children: [
         radioButtonLabelledTransactions(
-            _deviceWidth! > 1600
+            isDesktop
                 ? 'label_cbretrait'.i18n()
                 : 'label_cbretrait_short'.i18n(),
             PaymentMethodEnum.CBRETRAIT,
@@ -347,7 +515,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
           width: _deviceWidth! * 0.005,
         ),
         radioButtonLabelledTransactions(
-            _deviceWidth! > 1600
+            isDesktop
                 ? 'label_cbcommerces'.i18n()
                 : 'label_cbcommerces_short'.i18n(),
             PaymentMethodEnum.CBCOMMERCES,
@@ -359,9 +527,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
           width: _deviceWidth! * 0.005,
         ),
         radioButtonLabelledTransactions(
-            _deviceWidth! > 1600
-                ? 'label_cheque'.i18n()
-                : 'label_cheque_short'.i18n(),
+            isDesktop ? 'label_cheque'.i18n() : 'label_cheque_short'.i18n(),
             PaymentMethodEnum.CHEQUE,
             _paymentMethodGroupValue,
             fontSize,
@@ -371,9 +537,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
           width: _deviceWidth! * 0.005,
         ),
         radioButtonLabelledTransactions(
-            _deviceWidth! > 1600
-                ? 'label_virement'.i18n()
-                : 'label_virement_short'.i18n(),
+            isDesktop ? 'label_virement'.i18n() : 'label_virement_short'.i18n(),
             PaymentMethodEnum.VIREMENT,
             _paymentMethodGroupValue,
             fontSize,
@@ -383,7 +547,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
           width: _deviceWidth! * 0.005,
         ),
         radioButtonLabelledTransactions(
-            _deviceWidth! > 1600
+            isDesktop
                 ? 'label_prelevement'.i18n()
                 : 'label_prelevement_short'.i18n(),
             PaymentMethodEnum.PRELEVEMENT,
@@ -395,9 +559,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
           width: _deviceWidth! * 0.005,
         ),
         radioButtonLabelledTransactions(
-            _deviceWidth! > 1600
-                ? 'label_paypal'.i18n()
-                : 'label_paypal_short'.i18n(),
+            isDesktop ? 'label_paypal'.i18n() : 'label_paypal_short'.i18n(),
             PaymentMethodEnum.PAYPAL,
             _paymentMethodGroupValue,
             fontSize,
@@ -409,7 +571,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   Widget descriptionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(0.25),
+      width: isMobile
+          ? customTransactionInputWidth(1)
+          : customTransactionInputWidth(0.25),
       child: TextFormField(
         keyboardType: TextInputType.text,
         decoration: InputDecoration(
@@ -417,13 +581,13 @@ class AjoutTransactionState extends State<AjoutTransaction> {
           labelStyle: GoogleFonts.roboto(
             // color: const Color.fromARGB(255, 95, 95, 95),
             color: Colors.black,
-            fontSize: _deviceWidth! * 0.018,
+            fontSize: isMobile ? _deviceWidth! * 0.06 : _deviceWidth! * 0.018,
             fontWeight: FontWeight.w700,
           ),
         ),
         style: GoogleFonts.roboto(
           color: Colors.black,
-          fontSize: _deviceWidth! * 0.018,
+          fontSize: isMobile ? _deviceWidth! * 0.06 : _deviceWidth! * 0.018,
           fontWeight: FontWeight.w700,
         ),
         onChanged: ((value) {
@@ -443,7 +607,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   Widget montantWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(0.25),
+      width: isMobile
+          ? customTransactionInputWidth(1)
+          : customTransactionInputWidth(0.25),
       child: TextFormField(
         inputFormatters: <TextInputFormatter>[
           FilteringTextInputFormatter.allow(RegExp(r'[0-9]+[,.]{0,1}[0-9]*')),
@@ -454,28 +620,28 @@ class AjoutTransactionState extends State<AjoutTransaction> {
           labelStyle: GoogleFonts.roboto(
             // color: const Color.fromARGB(255, 95, 95, 95),
             color: Colors.black,
-            fontSize: _deviceWidth! * 0.018,
+            fontSize: isMobile ? _deviceWidth! * 0.06 : _deviceWidth! * 0.018,
             fontWeight: FontWeight.w700,
           ),
         ),
         style: GoogleFonts.roboto(
           color: Colors.black,
-          fontSize: _deviceWidth! * 0.018,
+          fontSize: isMobile ? _deviceWidth! * 0.06 : _deviceWidth! * 0.018,
           fontWeight: FontWeight.w700,
         ),
         onChanged: ((value) {
           setState(() {
             double bmax = BigInt.parse("9223372036854775807").toDouble();
             double bmin = BigInt.parse("-9223372036854775807").toDouble();
-            if (double.parse(value) >= bmax) {
+            if (value.contains(",")) {
+              montant = double.parse(
+                  "${value.substring(0, value.indexOf(","))}.${value.substring(value.indexOf(",") + 1)}");
+            } else if (double.parse(value) >= bmax) {
               montant = bmax;
               showToast(context, Text("Max value is $bmax"));
             } else if (double.parse(value) <= bmin) {
               montant = bmin;
               showToast(context, Text("Min value is $bmin"));
-            } else if (value.contains(",")) {
-              value =
-                  "${value.substring(0, value.indexOf(","))}.${value.substring(value.indexOf(",") + 1)}";
             } else if (value.trim() != "") {
               montant = double.parse(value);
             }
@@ -493,7 +659,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   Widget dateSelectionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(0.25),
+      width: isMobile
+          ? customTransactionInputWidth(1)
+          : customTransactionInputWidth(0.25),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
@@ -511,7 +679,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.all(20.0),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: isMobile
+                    ? BorderRadius.circular(10)
+                    : BorderRadius.circular(20),
               ),
               backgroundColor: Colors.black,
             ),
@@ -548,7 +718,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
               '${date.day < 10 ? '0${date.day}' : date.day}/${date.month < 10 ? '0${date.month}' : date.month}/${date.year}',
               style: GoogleFonts.roboto(
                 color: Colors.white,
-                fontSize: _deviceWidth! * 0.018,
+                fontSize:
+                    isMobile ? _deviceWidth! * 0.06 : _deviceWidth! * 0.018,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -569,7 +740,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
 
   Widget categorieSelectionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(0.5),
+      width: isMobile
+          ? customTransactionInputWidth(1)
+          : customTransactionInputWidth(0.5),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
@@ -581,7 +754,10 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                 bottom: BorderSide(color: Colors.black, width: 1),
               ),
             ),
-            width: customTransactionInputWidth(0.19),
+            width: isMobile
+                ? customTransactionInputWidth(1)
+                : customTransactionInputWidth(0.19),
+            height: isMobile ? 30 : 50,
             child: DropdownButton<String>(
               dropdownColor: "#EC6463".toColor(),
               value: selectedItem!.id.toString(),
@@ -599,12 +775,17 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                     (item) => DropdownMenuItem<String>(
                       value: item.id.toString(),
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.max,
                         children: [
                           Text(
                             item.name,
                             style: GoogleFonts.roboto(
                               color: Colors.black,
-                              fontSize: _deviceWidth! * 0.018,
+                              fontSize: isMobile
+                                  ? _deviceWidth! * 0.06
+                                  : _deviceWidth! * 0.018,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
@@ -615,6 +796,8 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                               ? MouseRegion(
                                   cursor: SystemMouseCursors.click,
                                   child: IconButton(
+                                    padding: const EdgeInsets.all(0),
+                                    iconSize: 20,
                                     icon: Icon(Icons.cancel,
                                         color: Colors.grey.shade900),
                                     onPressed: () async {
@@ -648,7 +831,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
           Row(
             children: [
               SizedBox(
-                width: customTransactionInputWidth(0.12),
+                width: isMobile
+                    ? customTransactionInputWidth(0.55)
+                    : customTransactionInputWidth(0.12),
                 height: _deviceHeight! * 0.035,
                 child: TextFormField(
                   controller: categNameTxt,
@@ -657,7 +842,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                     hintText: 'label_add_categ'.i18n().toUpperCase(),
                     hintStyle: TextStyle(
                       color: const Color.fromARGB(255, 95, 95, 95),
-                      fontSize: _deviceWidth! * 0.01,
+                      fontSize: isMobile
+                          ? _deviceWidth! * 0.04
+                          : _deviceWidth! * 0.01,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -724,11 +911,13 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     double boxWidth,
     String groupName,
   ) {
-    return ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: _deviceWidth! * boxWidth,
-        maxHeight: _deviceHeight! * 0.8,
-      ),
+    return SizedBox(
+      width: isMobile ? _deviceWidth! / 3.5 : _deviceWidth! / 6,
+      height: 50,
+      // constraints: BoxConstraints(
+      //   maxWidth: _deviceWidth! * boxWidth,
+      //   maxHeight: _deviceHeight! * 0.8,
+      // ),
       child: ListTile(
         title: Text(
           title.toUpperCase(),
@@ -738,6 +927,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
             fontWeight: FontWeight.w700,
           ),
         ),
+        contentPadding: const EdgeInsets.all(5),
         leading: Radio<String>(
             fillColor: MaterialStateProperty.resolveWith<Color>(
                 (Set<MaterialState> states) {

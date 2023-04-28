@@ -146,11 +146,8 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                   },
                 ),
                 ListTile(
-                  leading: Icon(
+                  leading: const Icon(
                     Icons.logout,
-                    color: currentPage == 'settings_title'.i18n()
-                        ? Colors.grey
-                        : Colors.white,
                   ),
                   title: Text(
                     'label_disconnect'.i18n().toUpperCase(),

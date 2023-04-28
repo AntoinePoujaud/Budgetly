@@ -47,6 +47,9 @@ class MainPageState extends State<MainPage> {
   String? _groupValuePaymentMethod;
   String? selectedTileId;
 
+  bool isMobile = false;
+  bool isDesktop = false;
+
   TextEditingController descriptionTxt = TextEditingController();
   TextEditingController montantTxt = TextEditingController();
   TextEditingController categNameTxt = TextEditingController();
@@ -83,6 +86,8 @@ class MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
+    isMobile = _deviceWidth! < 768;
+    isDesktop = _deviceWidth! > 1024;
     return Visibility(
       child: Scaffold(
         backgroundColor: "#CCE4DD".toColor(),
@@ -106,38 +111,62 @@ class MainPageState extends State<MainPage> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        MenuLayout(
-            title: widget.title,
-            deviceWidth: _deviceWidth,
-            deviceHeight: _deviceHeight),
+        isMobile
+            ? const Text("")
+            : MenuLayout(
+                title: widget.title,
+                deviceWidth: _deviceWidth,
+                deviceHeight: _deviceHeight),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
+            // isMobile
+            //     ? mobileMenu()
+            //     : const SizedBox(
+            //         height: 0,
+            //         width: 0,
+            //       ),
             Container(
               color: "#0A454A".toColor(),
-              width: _deviceWidth! * 0.85,
+              width: isMobile ? _deviceWidth : _deviceWidth! * 0.85,
               height: _deviceHeight! * 0.1,
               alignment: Alignment.center,
               child: Row(
                 children: <Widget>[
+                  isMobile
+                      ? mobileMenu()
+                      : const SizedBox(
+                          height: 0,
+                          width: 0,
+                        ),
                   generalCurrentInformations(
-                      'actual_amount'.i18n().toUpperCase(),
+                      isMobile
+                          ? "Compte :".toUpperCase()
+                          : 'actual_amount'.i18n().toUpperCase(),
                       currentAmount.toStringAsFixed(2)),
-                  generalCurrentInformations('real_amount'.i18n().toUpperCase(),
+                  generalCurrentInformations(
+                      isMobile
+                          ? "Réel :".toUpperCase()
+                          : 'real_amount'.i18n().toUpperCase(),
                       currentRealAmount.toStringAsFixed(2)),
                 ],
               ),
             ),
             SizedBox(
-              width: _deviceWidth! * 0.82,
+              width: isMobile ? _deviceWidth! : _deviceWidth! * 0.82,
               height: _deviceHeight! * 0.9,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   selectMonthYearWidget(),
                   resultTransactions.isNotEmpty
-                      ? transactionsNotNullWidget()
+                      ? (isMobile
+                          ? transactionsNotNullWidgetMobile()
+                          : transactionsNotNullWidget())
                       : noTransactionWidget()
                 ],
               ),
@@ -148,11 +177,162 @@ class MainPageState extends State<MainPage> {
     );
   }
 
+  Widget transactionsNotNullWidgetMobile() {
+    return Column(
+      children: [
+        Visibility(
+          visible: selectedTileId == null ? true : false,
+          child: transactionListWidget(),
+        ),
+        showForm(),
+      ],
+    );
+  }
+
+  Widget mobileMenu() {
+    return PopupMenuButton(
+      color: "#133543".toColor(),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 0,
+          child: Row(children: [
+            Icon(
+              Icons.home,
+              color: widget.title == 'tableau_recap_title'.i18n()
+                  ? Colors.grey
+                  : Colors.white,
+            ),
+            Text(
+              'tableau_recap_title'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: widget.title == 'tableau_recap_title'.i18n()
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed("/");
+            widget.title != 'tableau_recap_title'.i18n()
+                ? Navigator.of(context).pushNamed("/")
+                : "";
+          },
+        ),
+        PopupMenuItem(
+          value: 1,
+          child: Row(children: [
+            Icon(
+              Icons.add,
+              color: widget.title == 'add_transaction_title'.i18n()
+                  ? Colors.grey
+                  : Colors.white,
+            ),
+            Text(
+              'add_transaction_title'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: widget.title == 'add_transaction_title'.i18n()
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed("/addTransaction");
+            widget.title != 'add_transaction_title'.i18n()
+                ? Navigator.of(context).pushNamed("/addTransaction")
+                : "";
+          },
+        ),
+        PopupMenuItem(
+          value: 2,
+          child: Row(children: [
+            Icon(
+              Icons.manage_search,
+              color: widget.title == 'tableau_general_title'.i18n()
+                  ? Colors.grey
+                  : Colors.white,
+            ),
+            Text(
+              'tableau_general_title'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: widget.title == 'tableau_general_title'.i18n()
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed("/transactions");
+            widget.title != 'tableau_general_title'.i18n()
+                ? Navigator.of(context).pushNamed("/transactions")
+                : "";
+          },
+        ),
+        PopupMenuItem(
+          value: 3,
+          child: Row(children: [
+            Icon(
+              Icons.settings,
+              color: widget.title == 'settings_title'.i18n()
+                  ? Colors.grey
+                  : Colors.white,
+            ),
+            Text(
+              'settings_title'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: widget.title == 'settings_title'.i18n()
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed("/settings");
+            widget.title != 'settings_title'.i18n()
+                ? Navigator.of(context).pushNamed("/settings")
+                : "";
+          },
+        ),
+        PopupMenuItem(
+          value: 4,
+          child: Row(children: [
+            const Icon(
+              Icons.logout,
+              color: Colors.white,
+            ),
+            Text(
+              'label_disconnect'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () async {
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setString("userId", "");
+            // ignore: use_build_context_synchronously
+            Navigator.of(context).pushNamed("/login");
+          },
+        ),
+      ],
+      icon: const Icon(
+        Icons.menu,
+        color: Colors.white,
+      ),
+    );
+  }
+
   Widget selectMonthYearWidget() {
     return SizedBox(
       width: _deviceWidth! * 0.79,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment:
+            isMobile ? MainAxisAlignment.center : MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
           Visibility(
@@ -196,7 +376,9 @@ class MainPageState extends State<MainPage> {
                           .toUpperCase(),
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: _deviceWidth! * 0.013,
+                        fontSize: isMobile
+                            ? _deviceWidth! * 0.05
+                            : _deviceWidth! * 0.013,
                       ),
                     ),
                   ),
@@ -247,7 +429,7 @@ class MainPageState extends State<MainPage> {
 
   Widget noTransactionWidget() {
     return SizedBox(
-      width: _deviceWidth! * 0.75,
+      width: isMobile ? _deviceWidth! : _deviceWidth! * 0.75,
       height: _deviceHeight! * 0.8,
       child: Center(
         child: Column(
@@ -280,8 +462,10 @@ class MainPageState extends State<MainPage> {
 
   Widget transactionListWidget() {
     return Container(
-      margin: const EdgeInsets.only(left: 40.0, top: 20.0),
-      width: _deviceWidth! * 0.40,
+      margin: isMobile
+          ? const EdgeInsets.only(left: 5.0, top: 5.0, right: 5.0)
+          : const EdgeInsets.only(left: 40.0, top: 20.0),
+      width: isMobile ? _deviceWidth! * 0.97 : _deviceWidth! * 0.40,
       height: _deviceHeight! * 0.78,
       child: Material(
         color: "#d0e3de".toColor(),
@@ -318,53 +502,68 @@ class MainPageState extends State<MainPage> {
               ),
               title: Text(
                 resultTransactions[index]["description"]!.toUpperCase(),
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
+                  fontSize: isMobile ? 13 : 17,
                 ),
               ),
               subtitle: Text(
                 newDate!,
-                style: const TextStyle(
+                style: TextStyle(
                   color: Colors.white,
+                  fontSize: isMobile ? 11 : 15,
                 ),
               ),
               trailing: SizedBox(
-                width: _deviceWidth! * 0.2,
+                width: isMobile ? _deviceWidth! * 0.4 : _deviceWidth! * 0.2,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     SizedBox(
-                      width: _deviceWidth! * 0.03,
+                      width: isMobile
+                          ? _deviceWidth! * 0.09
+                          : _deviceWidth! * 0.03,
                       child: Text(
                         PaymentMethodEnum().getShortLabel(
                             resultTransactions[index]['paymentMethod']!),
-                        style: const TextStyle(
-                          fontSize: 18,
+                        style: TextStyle(
+                          fontSize: isMobile ? 10 : 18,
                           color: Colors.white,
                         ),
                         textAlign: TextAlign.end,
                       ),
                     ),
                     SizedBox(
-                      width: _deviceWidth! * 0.06,
+                      width: isMobile
+                          ? _deviceHeight! * 0.02
+                          : _deviceHeight! * 0.03,
+                    ),
+                    SizedBox(
+                      width: isMobile
+                          ? _deviceWidth! * 0.095
+                          : _deviceWidth! * 0.06,
                       child: Text(
                         resultTransactions[index]['amount']!,
-                        style: const TextStyle(
-                          fontSize: 18,
+                        style: TextStyle(
+                          fontSize: isMobile ? 10 : 18,
                           color: Colors.white,
                         ),
                         textAlign: TextAlign.end,
                       ),
                     ),
                     SizedBox(
-                      width: _deviceHeight! * 0.03,
+                      width: isMobile
+                          ? _deviceHeight! * 0.01
+                          : _deviceHeight! * 0.03,
                     ),
                     SizedBox(
-                      width: _deviceWidth! * 0.07,
+                      width: isMobile
+                          ? _deviceWidth! * 0.15
+                          : _deviceWidth! * 0.07,
                       child: Text(
                         resultTransactions[index]['catName']!,
-                        style: const TextStyle(
-                          fontSize: 14,
+                        style: TextStyle(
+                          fontSize: isMobile ? 9 : 14,
                           color: Colors.white,
                         ),
                         textAlign: TextAlign.end,
@@ -384,9 +583,13 @@ class MainPageState extends State<MainPage> {
     return Visibility(
       visible: selectedTileId == null ? false : true,
       child: Container(
-        margin: const EdgeInsets.only(left: 20.0, top: 20.0),
-        padding: const EdgeInsets.only(top: 20.0, bottom: 20.0),
-        width: _deviceWidth! * 0.38,
+        margin: isMobile
+            ? const EdgeInsets.only(left: 0.0, top: 0.0)
+            : const EdgeInsets.only(left: 20.0, top: 20.0),
+        padding: isMobile
+            ? const EdgeInsets.only(top: 0.0, bottom: 0.0)
+            : const EdgeInsets.only(top: 20.0, bottom: 20.0),
+        width: isMobile ? _deviceWidth! : _deviceWidth! * 0.38,
         height: _deviceHeight! * 0.78,
         decoration: BoxDecoration(
           color: transactionType == TransactionEnum.DEPENSE
@@ -400,8 +603,11 @@ class MainPageState extends State<MainPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
+              isMobile ? closeFormWidget() : const Text(""),
               selectTransactionWidget(0.01, 0.12),
-              selectPaymentMethodWidget(0.008, 0.09),
+              isMobile
+                  ? selectPaymentMethodWidget(0.03, 0.3)
+                  : selectPaymentMethodWidget(0.008, 0.09),
               categorieSelectionWidget(),
               descriptionWidget(),
               montantWidget(),
@@ -429,7 +635,9 @@ class MainPageState extends State<MainPage> {
                       'label_delete_transaction'.i18n().toUpperCase(),
                       style: GoogleFonts.roboto(
                         color: Colors.black,
-                        fontSize: _deviceWidth! * 0.015,
+                        fontSize: isMobile
+                            ? _deviceWidth! * 0.05
+                            : _deviceWidth! * 0.015,
                       ),
                     ),
                     onPressed: () async {
@@ -462,7 +670,9 @@ class MainPageState extends State<MainPage> {
                       'label_save_transaction'.i18n().toUpperCase(),
                       style: GoogleFonts.roboto(
                         color: Colors.black,
-                        fontSize: _deviceWidth! * 0.015,
+                        fontSize: isMobile
+                            ? _deviceWidth! * 0.05
+                            : _deviceWidth! * 0.015,
                       ),
                     ),
                     onPressed: () async {
@@ -502,6 +712,29 @@ class MainPageState extends State<MainPage> {
     DateTime convertedDate = dateFormat.parse(date);
     dateFormat = DateFormat("dd-MM-yyyy");
     return dateFormat.format(convertedDate);
+  }
+
+  Widget closeFormWidget() {
+    return Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: IconButton(
+              iconSize: 20,
+              icon: const Icon(Icons.cancel, color: Colors.white),
+              onPressed: () {
+                selectedTileId = null;
+                setState(() {});
+              },
+            ),
+          ),
+        ]);
+  }
+
+  Future<void> switchSectionVisibility(String? value) async {
+    selectedTileId = value;
   }
 
   Widget radioButtonLabelledFilter(
@@ -545,9 +778,11 @@ class MainPageState extends State<MainPage> {
 
   Widget generalCurrentInformations(String label, String value) {
     return SizedBox(
-      width: _deviceWidth! *
-          0.85 /
-          2, // 2 est le nombre de homeCurrentInformations sur la même ligne
+      width: isMobile
+          ? _deviceWidth! / 3
+          : _deviceWidth! *
+              0.85 /
+              2, // 2 est le nombre de homeCurrentInformations sur la même ligne
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -564,9 +799,9 @@ class MainPageState extends State<MainPage> {
           ),
           Text(
             "$value €",
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
-              fontSize: 32,
+              fontSize: isMobile ? _deviceWidth! * 0.04 : 32,
             ),
           ),
         ],
@@ -611,7 +846,8 @@ class MainPageState extends State<MainPage> {
             "dépenses".toUpperCase(),
             style: GoogleFonts.roboto(
                 color: Colors.white,
-                fontSize: _deviceWidth! * 0.015,
+                fontSize:
+                    isMobile ? _deviceWidth! * 0.03 : _deviceWidth! * 0.015,
                 fontWeight: FontWeight.bold),
           ),
         ),
@@ -638,7 +874,8 @@ class MainPageState extends State<MainPage> {
             "revenus".toUpperCase(),
             style: GoogleFonts.roboto(
                 color: Colors.white,
-                fontSize: _deviceWidth! * 0.015,
+                fontSize:
+                    isMobile ? _deviceWidth! * 0.03 : _deviceWidth! * 0.015,
                 fontWeight: FontWeight.bold),
           ),
         ),
@@ -657,7 +894,7 @@ class MainPageState extends State<MainPage> {
 
   Widget descriptionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(0.3),
+      width: isMobile ? _deviceWidth! * 0.8 : _deviceWidth! * 0.3,
       child: TextFormField(
         controller: descriptionTxt,
         keyboardType: TextInputType.text,
@@ -665,12 +902,12 @@ class MainPageState extends State<MainPage> {
           labelText: 'label_enter_desc'.i18n().toUpperCase(),
           labelStyle: TextStyle(
             color: Colors.white,
-            fontSize: _deviceWidth! * 0.015,
+            fontSize: isMobile ? _deviceWidth! * 0.04 : _deviceWidth! * 0.015,
           ),
         ),
         style: TextStyle(
           color: Colors.white,
-          fontSize: _deviceWidth! * 0.015,
+          fontSize: isMobile ? _deviceWidth! * 0.04 : _deviceWidth! * 0.015,
         ),
         onChanged: ((value) {
           setState(() {
@@ -689,7 +926,7 @@ class MainPageState extends State<MainPage> {
 
   Widget montantWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(0.3),
+      width: isMobile ? _deviceWidth! * 0.8 : _deviceWidth! * 0.3,
       child: TextFormField(
         controller: montantTxt,
         keyboardType: TextInputType.number,
@@ -697,28 +934,27 @@ class MainPageState extends State<MainPage> {
           labelText: 'label_enter_amount'.i18n().toUpperCase(),
           labelStyle: TextStyle(
             color: Colors.white,
-            fontSize: _deviceWidth! * 0.015,
+            fontSize: isMobile ? _deviceWidth! * 0.04 : _deviceWidth! * 0.015,
           ),
         ),
         style: TextStyle(
           color: Colors.white,
-          fontSize: _deviceWidth! * 0.015,
+          fontSize: isMobile ? _deviceWidth! * 0.04 : _deviceWidth! * 0.015,
         ),
         onChanged: ((value) {
           setState(() {
             double bmax = BigInt.parse("9223372036854775807").toDouble();
             double bmin = BigInt.parse("-9223372036854775807").toDouble();
-            if (double.parse(value) >= bmax) {
+            if (value.contains(",")) {
+              montant = double.parse(
+                  "${value.substring(0, value.indexOf(","))}.${value.substring(value.indexOf(",") + 1)}");
+            } else if (double.parse(value) >= bmax) {
               montant = bmax;
               showToast(context, Text("Max value is $bmax"));
             } else if (double.parse(value) <= bmin) {
               montant = bmin;
               showToast(context, Text("Min value is $bmin"));
-            } else if (value.contains(",")) {
-              value =
-                  "${value.substring(0, value.indexOf(","))}.${value.substring(value.indexOf(",") + 1)}";
-            }
-            if (value.trim() != "") {
+            } else if (value.trim() != "") {
               montant = double.parse(value);
             }
           });
@@ -735,7 +971,7 @@ class MainPageState extends State<MainPage> {
 
   Widget dateSelectionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(0.3),
+      width: isMobile ? _deviceWidth! * 0.8 : _deviceWidth! * 0.3,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
@@ -745,7 +981,9 @@ class MainPageState extends State<MainPage> {
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.all(20.0),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: isMobile
+                    ? BorderRadius.circular(10)
+                    : BorderRadius.circular(20),
               ),
               backgroundColor: Colors.black,
             ),
@@ -765,10 +1003,11 @@ class MainPageState extends State<MainPage> {
                     child: child!,
                   );
                 },
+                initialEntryMode: DatePickerEntryMode.calendarOnly,
                 context: context,
                 initialDate: date,
-                firstDate: DateTime(2022),
-                lastDate: DateTime(2030),
+                firstDate: DateTime(initialYear! - 1, initialMonth!),
+                lastDate: DateTime(initialYear! + 1, initialMonth!),
               );
 
               if (newDate == null) return;
@@ -781,7 +1020,8 @@ class MainPageState extends State<MainPage> {
               '${date.day < 10 ? '0${date.day}' : date.day}/${date.month < 10 ? '0${date.month}' : date.month}/${date.year}',
               style: GoogleFonts.roboto(
                 color: Colors.white,
-                fontSize: _deviceWidth! * 0.018,
+                fontSize:
+                    isMobile ? _deviceWidth! * 0.06 : _deviceWidth! * 0.018,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -793,7 +1033,7 @@ class MainPageState extends State<MainPage> {
 
   Widget categorieSelectionWidget() {
     return SizedBox(
-      width: customTransactionInputWidth(0.3),
+      width: isMobile ? _deviceWidth! * 0.8 : _deviceWidth! * 0.3,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.max,
@@ -805,7 +1045,7 @@ class MainPageState extends State<MainPage> {
                 bottom: BorderSide(color: Colors.white, width: 1),
               ),
             ),
-            width: customTransactionInputWidth(0.16),
+            width: isMobile ? _deviceWidth! * 0.47 : _deviceWidth! * 0.16,
             child: DropdownButton<String>(
               dropdownColor: "#EC6463".toColor(),
               value: selectedItem!.id.toString(),
@@ -828,7 +1068,9 @@ class MainPageState extends State<MainPage> {
                             item.name,
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: _deviceWidth! * 0.013,
+                              fontSize: isMobile
+                                  ? _deviceWidth! * 0.04
+                                  : _deviceWidth! * 0.013,
                             ),
                           ),
                           SizedBox(
@@ -871,7 +1113,7 @@ class MainPageState extends State<MainPage> {
           Row(
             children: [
               SizedBox(
-                width: customTransactionInputWidth(0.12),
+                width: isMobile ? _deviceWidth! * 0.47 : _deviceWidth! * 0.12,
                 height: _deviceHeight! * 0.035,
                 child: TextFormField(
                   controller: categNameTxt,
@@ -880,13 +1122,16 @@ class MainPageState extends State<MainPage> {
                     hintText: 'label_add_categ'.i18n().toUpperCase(),
                     hintStyle: TextStyle(
                       color: const Color.fromARGB(255, 95, 95, 95),
-                      fontSize: _deviceWidth! * 0.01,
+                      fontSize: isMobile
+                          ? _deviceWidth! * 0.04
+                          : _deviceWidth! * 0.01,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: _deviceWidth! * 0.01,
+                    fontSize:
+                        isMobile ? _deviceWidth! * 0.04 : _deviceWidth! * 0.01,
                     fontWeight: FontWeight.w700,
                   ),
                   onChanged: ((value) {
@@ -940,7 +1185,9 @@ class MainPageState extends State<MainPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             radioButtonLabelledTransactions(
-                'label_cbretrait'.i18n(),
+                isMobile
+                    ? 'label_cbretrait_short'.i18n()
+                    : 'label_cbretrait'.i18n(),
                 PaymentMethodEnum.CBRETRAIT,
                 _groupValuePaymentMethod,
                 fontSize,
@@ -950,7 +1197,9 @@ class MainPageState extends State<MainPage> {
               width: 10,
             ),
             radioButtonLabelledTransactions(
-                'label_cbcommerces'.i18n(),
+                isMobile
+                    ? 'label_cbcommerces_short'.i18n()
+                    : 'label_cbcommerces'.i18n(),
                 PaymentMethodEnum.CBCOMMERCES,
                 _groupValuePaymentMethod,
                 fontSize,
@@ -960,7 +1209,7 @@ class MainPageState extends State<MainPage> {
               width: 10,
             ),
             radioButtonLabelledTransactions(
-                'label_cheque'.i18n(),
+                isMobile ? 'label_cheque_short'.i18n() : 'label_cheque'.i18n(),
                 PaymentMethodEnum.CHEQUE,
                 _groupValuePaymentMethod,
                 fontSize,
@@ -974,7 +1223,9 @@ class MainPageState extends State<MainPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             radioButtonLabelledTransactions(
-                'label_virement'.i18n(),
+                isMobile
+                    ? 'label_virement_short'.i18n()
+                    : 'label_virement'.i18n(),
                 PaymentMethodEnum.VIREMENT,
                 _groupValuePaymentMethod,
                 fontSize,
@@ -984,7 +1235,9 @@ class MainPageState extends State<MainPage> {
               width: 10,
             ),
             radioButtonLabelledTransactions(
-                'label_prelevement'.i18n(),
+                isMobile
+                    ? 'label_prelevement_short'.i18n()
+                    : 'label_prelevement'.i18n(),
                 PaymentMethodEnum.PRELEVEMENT,
                 _groupValuePaymentMethod,
                 fontSize,
@@ -994,7 +1247,7 @@ class MainPageState extends State<MainPage> {
               width: 10,
             ),
             radioButtonLabelledTransactions(
-                'label_paypal'.i18n(),
+                isMobile ? 'label_paypal_short'.i18n() : 'label_paypal'.i18n(),
                 PaymentMethodEnum.PAYPAL,
                 _groupValuePaymentMethod,
                 fontSize,

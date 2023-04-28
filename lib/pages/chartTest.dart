@@ -25,18 +25,23 @@ class LineChartSample2 extends StatefulWidget {
 }
 
 class _LineChartSample2State extends State<LineChartSample2> {
-  double? _deviceWidth;
+  double? _deviceHeight, _deviceWidth;
+  bool isMobile = false;
+  bool isDesktop = false;
 
   bool showAvg = false;
 
   @override
   Widget build(BuildContext context) {
+    _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
+    isMobile = _deviceWidth! < 768;
+    isDesktop = _deviceWidth! > 1024;
     return Stack(
       alignment: Alignment.center,
       children: <Widget>[
         AspectRatio(
-          aspectRatio: 4,
+          aspectRatio: isMobile ? 16 / 7 : 4,
           child: Padding(
             padding: const EdgeInsets.only(
               right: 18,
@@ -62,11 +67,24 @@ class _LineChartSample2State extends State<LineChartSample2> {
   }
 
   Widget bottomTitleWidgets(double value, TitleMeta meta) {
-    const style = TextStyle(
+    if (isMobile &&
+        value != 1 &&
+        value != 5 &&
+        value != 10 &&
+        value != 15 &&
+        value != 20 &&
+        value != 25 &&
+        value != widget.monthDays) {
+      return Text("");
+    }
+    TextStyle style = TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: 16,
+      fontSize: isMobile ? 8 : 16,
     );
-    Widget text = Text(value.toString());
+    Widget text = Text(
+      value.toString(),
+      style: style,
+    );
 
     return SideTitleWidget(
       axisSide: meta.axisSide,
@@ -77,7 +95,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
   Widget leftTitleWidgets(double value, TitleMeta meta) {
     TextStyle style = TextStyle(
       fontWeight: FontWeight.bold,
-      fontSize: _deviceWidth! * 0.01,
+      fontSize: isMobile ? _deviceWidth! * 0.035 : _deviceWidth! * 0.01,
     );
     String text = value.toString();
 
@@ -128,7 +146,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
               showTitles: true,
               interval: sideInterval.toDouble(),
               getTitlesWidget: leftTitleWidgets,
-              reservedSize: 62,
+              reservedSize: isMobile ? 40 : 62,
             ),
           ),
         ),
@@ -147,7 +165,7 @@ class _LineChartSample2State extends State<LineChartSample2> {
             spots: widget.data,
             isCurved: false,
             color: "#68b8b9".toColor(),
-            barWidth: 10,
+            barWidth: isMobile ? 4 : 10,
             isStrokeCapRound: false,
             isStrokeJoinRound: true,
             dotData: FlDotData(
@@ -162,13 +180,14 @@ class _LineChartSample2State extends State<LineChartSample2> {
         lineTouchData: LineTouchData(
           touchTooltipData: LineTouchTooltipData(
             tooltipBgColor: "#8d8d8d".toColor(),
-            tooltipRoundedRadius: 8,
+            tooltipRoundedRadius: isMobile ? 5 : 8,
             getTooltipItems: (touchedSpots) {
               return touchedSpots.map((LineBarSpot touchedSpot) {
                 TextStyle textStyle = TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: _deviceWidth! * 0.01,
+                  fontSize:
+                      isMobile ? _deviceWidth! * 0.03 : _deviceWidth! * 0.01,
                 );
                 return LineTooltipItem(
                     '${touchedSpot.y.toString()} €', textStyle);

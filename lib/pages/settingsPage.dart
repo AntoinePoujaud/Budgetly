@@ -58,7 +58,6 @@ class SettingsPageState extends State<SettingsPage> {
           future: _getStartingAmountForUser(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              print("aled");
               startingAmountAccount = snapshot.data as String;
               return settingsPage();
             }

@@ -1,11 +1,14 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 
+import 'package:budgetly/pages/ajoutTransactionPage.dart';
 import 'package:budgetly/pages/chartTest.dart';
+import 'package:budgetly/pages/tableauGeneralPage.dart';
 import 'package:budgetly/utils/extensions.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -49,6 +52,8 @@ class TableauRecapState extends State<TableauRecap> {
   int? initialMonth;
   List<String> filterMonthYears = [];
   List<String> colors = ["#466563", "#15646f", "#8d8d8d", "#184449"];
+  bool isMobile = false;
+  bool isDesktop = false;
   String serverUrl = 'https://moneytly.herokuapp.com';
   // String serverUrl = 'http://localhost:8081';
 
@@ -179,6 +184,8 @@ class TableauRecapState extends State<TableauRecap> {
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
+    isMobile = _deviceWidth! < 768;
+    isDesktop = _deviceWidth! > 1024;
 
     return Scaffold(
       backgroundColor: "#CCE4DD".toColor(),
@@ -186,116 +193,335 @@ class TableauRecapState extends State<TableauRecap> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          MenuLayout(
-              title: widget.title,
-              deviceWidth: _deviceWidth,
-              deviceHeight: _deviceHeight),
+          isMobile
+              ? const Text("")
+              : MenuLayout(
+                  title: widget.title,
+                  deviceWidth: _deviceWidth,
+                  deviceHeight: _deviceHeight),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
+              // isMobile
+              //     ? mobileMenu()
+              //     : const SizedBox(
+              //         height: 0,
+              //         width: 0,
+              //       ),
               Container(
                 color: "#0A454A".toColor(),
-                width: _deviceWidth! * 0.85,
+                width: isMobile ? _deviceWidth! : _deviceWidth! * 0.85,
                 height: _deviceHeight! * 0.1,
                 alignment: Alignment.center,
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: <Widget>[
-                    homeCurrentInformations(
-                        'actual_amount'.i18n().toUpperCase(),
-                        currentAmount.toStringAsFixed(2)),
-                    homeCurrentInformations('real_amount'.i18n().toUpperCase(),
-                        currentRealAmount.toStringAsFixed(2)),
+                    isMobile
+                        ? mobileMenu()
+                        : const SizedBox(
+                            height: 0,
+                            width: 0,
+                          ),
+                    isMobile
+                        ? const SizedBox(
+                            width: 20,
+                          )
+                        : const Text(""),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        homeCurrentInformations(
+                            isMobile
+                                ? "Compte :".toUpperCase()
+                                : 'actual_amount'.i18n().toUpperCase(),
+                            currentAmount.toStringAsFixed(2)),
+                        homeCurrentInformations(
+                            isMobile
+                                ? "Réel :".toUpperCase()
+                                : 'real_amount'.i18n().toUpperCase(),
+                            currentRealAmount.toStringAsFixed(2)),
+                      ],
+                    ),
                   ],
                 ),
               ),
               SizedBox(
-                width: _deviceWidth! * 0.82,
+                width: isMobile ? _deviceWidth! : _deviceWidth! * 0.82,
                 height: _deviceHeight! * 0.9,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: isMobile
+                      ? MainAxisAlignment.center
+                      : MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     selectMonthYearWidget(),
                     SizedBox(
-                      width: _deviceWidth! * 0.72,
+                      width: isMobile ? _deviceWidth! : _deviceWidth! * 0.72,
                       height: _deviceHeight! * 0.25,
-                      child: LineChartSample2(
-                        data: dailySpots,
-                        monthDays: DateUtils.getDaysInMonth(
-                            currentYear, currentMonthId),
-                        min: minValue,
-                        max: maxValue,
-                      ),
+                      child: isMobile
+                          ? LineChartSample2(
+                              data: dailySpots,
+                              monthDays: DateUtils.getDaysInMonth(
+                                  currentYear, currentMonthId),
+                              min: minValue,
+                              max: maxValue,
+                            )
+                          : const Text(""),
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: _deviceWidth! * 0.4,
-                              height: _deviceHeight! * 0.45,
-                              child: PieChartSample3(
-                                names: categStatsNames,
-                                percentages: categStatsPercentages,
-                                totals: categStatsTotals,
-                                colors: colors,
-                              ),
-                            ),
-                            SizedBox(
-                              width: _deviceWidth! * 0.4,
-                              height: _deviceHeight! * 0.1,
-                              child: Wrap(
-                                direction: Axis.vertical,
-                                spacing: 20,
-                                runSpacing: 20,
-                                runAlignment: WrapAlignment.center,
-                                children: List.generate(categStatsNames.length,
-                                    (index) {
-                                  String color = "";
-
-                                  if (colors.asMap().containsKey(index)) {
-                                    color = colors[index];
-                                  } else {
-                                    if (index - colors.length >=
-                                        colors.length) {
-                                      color = colors[colors.length - 1];
-                                    } else {
-                                      color = colors[index - colors.length];
-                                    }
-                                  }
-                                  return categLegend(
-                                      color, categStatsNames[index]);
-                                }),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: _deviceHeight! * 0.45,
-                          width: _deviceWidth! * 0.2,
-                          child: BarChartSample3(
-                            totalDepense: totalDepense,
-                            totalRevenu: totalRevenu,
-                            deviceWidth: _deviceWidth!,
-                          ),
-                        ),
-                      ],
-                    ),
+                    isMobile ? mobileStats() : desktopStats()
                   ],
                 ),
               ),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget mobileStats() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        PieChartSample3(
+          names: categStatsNames,
+          percentages: categStatsPercentages,
+          totals: categStatsTotals,
+          colors: colors,
+        ),
+        // SizedBox(
+        //   width: _deviceWidth!,
+        //   height: _deviceHeight! * 0.4,
+        //   child:
+        // ),
+        // SizedBox(
+        //   width: _deviceWidth!,
+        //   height: _deviceHeight! * 0.4,
+        //   child: Wrap(
+        //     direction: Axis.horizontal,
+        //     spacing: 20,
+        //     runSpacing: 20,
+        //     runAlignment: WrapAlignment.center,
+        //     children: List.generate(categStatsNames.length, (index) {
+        //       String color = "";
+
+        //       if (colors.asMap().containsKey(index)) {
+        //         color = colors[index];
+        //       } else {
+        //         if (index - colors.length >= colors.length) {
+        //           color = colors[colors.length - 1];
+        //         } else {
+        //           color = colors[index - colors.length];
+        //         }
+        //       }
+        //       return categLegend(color, categStatsNames[index]);
+        //     }),
+        //   ),
+        // ),
+      ],
+    );
+  }
+
+  Widget desktopStats() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: _deviceWidth! * 0.4,
+              height: _deviceHeight! * 0.45,
+              child: PieChartSample3(
+                names: categStatsNames,
+                percentages: categStatsPercentages,
+                totals: categStatsTotals,
+                colors: colors,
+              ),
+            ),
+            SizedBox(
+              width: _deviceWidth! * 0.4,
+              height: _deviceHeight! * 0.1,
+              child: Wrap(
+                direction: Axis.vertical,
+                spacing: 20,
+                runSpacing: 20,
+                runAlignment: WrapAlignment.center,
+                children: List.generate(categStatsNames.length, (index) {
+                  String color = "";
+
+                  if (colors.asMap().containsKey(index)) {
+                    color = colors[index];
+                  } else {
+                    if (index - colors.length >= colors.length) {
+                      color = colors[colors.length - 1];
+                    } else {
+                      color = colors[index - colors.length];
+                    }
+                  }
+                  return categLegend(color, categStatsNames[index]);
+                }),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: _deviceHeight! * 0.45,
+          width: _deviceWidth! * 0.2,
+          child: BarChartSample3(
+            totalDepense: totalDepense,
+            totalRevenu: totalRevenu,
+            deviceWidth: _deviceWidth!,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget mobileMenu() {
+    return PopupMenuButton(
+      color: "#133543".toColor(),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 0,
+          child: Row(children: [
+            Icon(
+              Icons.home,
+              color: widget.title == 'tableau_recap_title'.i18n()
+                  ? Colors.grey
+                  : Colors.white,
+            ),
+            Text(
+              'tableau_recap_title'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: widget.title == 'tableau_recap_title'.i18n()
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed("/");
+            widget.title != 'tableau_recap_title'.i18n()
+                ? Navigator.of(context).pushNamed("/")
+                : "";
+          },
+        ),
+        PopupMenuItem(
+          value: 1,
+          child: Row(children: [
+            Icon(
+              Icons.add,
+              color: widget.title == 'add_transaction_title'.i18n()
+                  ? Colors.grey
+                  : Colors.white,
+            ),
+            Text(
+              'add_transaction_title'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: widget.title == 'add_transaction_title'.i18n()
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed("/addTransaction");
+            widget.title != 'add_transaction_title'.i18n()
+                ? Navigator.of(context).pushNamed("/addTransaction")
+                : "";
+          },
+        ),
+        PopupMenuItem(
+          value: 2,
+          child: Row(children: [
+            Icon(
+              Icons.manage_search,
+              color: widget.title == 'tableau_general_title'.i18n()
+                  ? Colors.grey
+                  : Colors.white,
+            ),
+            Text(
+              'tableau_general_title'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: widget.title == 'tableau_general_title'.i18n()
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed("/transactions");
+            widget.title != 'tableau_general_title'.i18n()
+                ? Navigator.of(context).pushNamed("/transactions")
+                : "";
+          },
+        ),
+        PopupMenuItem(
+          value: 3,
+          child: Row(children: [
+            Icon(
+              Icons.settings,
+              color: widget.title == 'settings_title'.i18n()
+                  ? Colors.grey
+                  : Colors.white,
+            ),
+            Text(
+              'settings_title'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: widget.title == 'settings_title'.i18n()
+                    ? Colors.grey
+                    : Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () {
+            Navigator.of(context).pushNamed("/settings");
+            widget.title != 'settings_title'.i18n()
+                ? Navigator.of(context).pushNamed("/settings")
+                : "";
+          },
+        ),
+        PopupMenuItem(
+          value: 4,
+          child: Row(children: [
+            const Icon(
+              Icons.logout,
+              color: Colors.white,
+            ),
+            Text(
+              'label_disconnect'.i18n().toUpperCase(),
+              style: GoogleFonts.roboto(
+                fontWeight: FontWeight.w700,
+                color: Colors.white,
+              ),
+            ),
+          ]),
+          onTap: () async {
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setString("userId", "");
+            // ignore: use_build_context_synchronously
+            Navigator.of(context).pushNamed("/login");
+          },
+        ),
+      ],
+      icon: const Icon(
+        Icons.menu,
+        color: Colors.white,
       ),
     );
   }
@@ -322,7 +548,8 @@ class TableauRecapState extends State<TableauRecap> {
     return SizedBox(
       width: _deviceWidth! * 0.79,
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment:
+            isMobile ? MainAxisAlignment.center : MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.max,
         children: [
           Visibility(
@@ -367,7 +594,9 @@ class TableauRecapState extends State<TableauRecap> {
                           .toUpperCase(),
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: _deviceWidth! * 0.013,
+                        fontSize: isMobile
+                            ? _deviceWidth! * 0.05
+                            : _deviceWidth! * 0.013,
                       ),
                     ),
                   ),
@@ -404,9 +633,11 @@ class TableauRecapState extends State<TableauRecap> {
 
   Widget homeCurrentInformations(String label, String value) {
     return SizedBox(
-      width: _deviceWidth! *
-          0.85 /
-          2, // 2 est le nombre de homeCurrentInformations sur la même ligne
+      width: isMobile
+          ? _deviceWidth! / 3
+          : _deviceWidth! *
+              0.85 /
+              2, // 2 est le nombre de homeCurrentInformations sur la même ligne
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -423,10 +654,9 @@ class TableauRecapState extends State<TableauRecap> {
           ),
           Text(
             "$value €",
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-            ),
+            style: TextStyle(
+                color: Colors.white,
+                fontSize: isMobile ? _deviceWidth! * 0.04 : 32),
           ),
         ],
       ),

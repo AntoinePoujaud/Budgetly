@@ -22,38 +22,48 @@ class PieChartSample3 extends StatefulWidget {
 
 class PieChartSample3State extends State<PieChartSample3> {
   int touchedIndex = -1;
+  double? _deviceHeight, _deviceWidth;
+  bool isMobile = false;
+  bool isDesktop = false;
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
+    _deviceHeight = MediaQuery.of(context).size.height;
+    _deviceWidth = MediaQuery.of(context).size.width;
+    isMobile = _deviceWidth! < 768;
+    isDesktop = _deviceWidth! > 1024;
+    // return AspectRatio(
+    //   aspectRatio: 1,
+    /* child: */ return /* AspectRatio(
       aspectRatio: 1,
-      child: AspectRatio(
-        aspectRatio: 1,
-        child: PieChart(
-          PieChartData(
-            pieTouchData: PieTouchData(
-              touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                setState(() {
-                  if (!event.isInterestedForInteractions ||
-                      pieTouchResponse == null ||
-                      pieTouchResponse.touchedSection == null) {
-                    touchedIndex = -1;
-                    return;
-                  }
-                  touchedIndex =
-                      pieTouchResponse.touchedSection!.touchedSectionIndex;
-                });
-              },
-            ),
-            borderData: FlBorderData(
-              show: false,
-            ),
-            sectionsSpace: 1,
-            centerSpaceRadius: 0,
-            sections: showingSections(),
+      child: */
+        Expanded(
+      child: PieChart(
+        PieChartData(
+          pieTouchData: PieTouchData(
+            touchCallback: (FlTouchEvent event, pieTouchResponse) {
+              setState(() {
+                if (!event.isInterestedForInteractions ||
+                    pieTouchResponse == null ||
+                    pieTouchResponse.touchedSection == null) {
+                  touchedIndex = -1;
+                  return;
+                }
+                touchedIndex =
+                    pieTouchResponse.touchedSection!.touchedSectionIndex;
+              });
+            },
           ),
+          borderData: FlBorderData(
+            show: false,
+          ),
+          sectionsSpace: 1,
+          centerSpaceRadius: 0,
+          sections: showingSections(),
         ),
+        //   ),
       ),
+      // ),
     );
   }
 
@@ -107,10 +117,11 @@ class PieChartSample3State extends State<PieChartSample3> {
       return [
         PieChartSectionData(
           color: AppColors.contentColorBlue,
+          radius: 155.0,
           value: 100,
           title: "Pas de données disponibles ce mois",
-          titleStyle: const TextStyle(
-            fontSize: 24,
+          titleStyle: TextStyle(
+            fontSize: isMobile ? 15 : 10,
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
