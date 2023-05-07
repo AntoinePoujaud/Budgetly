@@ -262,15 +262,13 @@ class TableauRecapState extends State<TableauRecap> {
                     SizedBox(
                       width: isMobile ? _deviceWidth! : _deviceWidth! * 0.72,
                       height: _deviceHeight! * 0.25,
-                      child: isMobile
-                          ? LineChartSample2(
-                              data: dailySpots,
-                              monthDays: DateUtils.getDaysInMonth(
-                                  currentYear, currentMonthId),
-                              min: minValue,
-                              max: maxValue,
-                            )
-                          : const Text(""),
+                      child: LineChartSample2(
+                        data: dailySpots,
+                        monthDays: DateUtils.getDaysInMonth(
+                            currentYear, currentMonthId),
+                        min: minValue,
+                        max: maxValue,
+                      ),
                     ),
                     isMobile ? mobileStats() : desktopStats()
                   ],
