@@ -19,7 +19,6 @@ class _BarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool test = false;
     return BarChart(
       BarChartData(
         barTouchData: barTouchData,

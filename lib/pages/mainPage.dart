@@ -1,9 +1,7 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 
-import 'package:budgetly/pages/ajoutTransactionPage.dart';
 import 'package:budgetly/pages/chartTest.dart';
-import 'package:budgetly/pages/tableauGeneralPage.dart';
 import 'package:budgetly/utils/extensions.dart';
 import 'package:budgetly/utils/menuLayout.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -18,7 +16,6 @@ import '../Enum/MonthEnum.dart';
 import '../utils/utils.dart';
 import 'barChart.dart';
 import 'categChart.dart';
-import 'dart:math';
 
 class TableauRecap extends StatefulWidget {
   const TableauRecap({Key? key, required this.title}) : super(key: key);

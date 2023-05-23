@@ -4,7 +4,6 @@ import 'dart:convert';
 
 import 'package:budgetly/utils/extensions.dart';
 import 'package:budgetly/utils/menuLayout.dart';
-import 'package:budgetly/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:localization/localization.dart';
@@ -74,7 +73,7 @@ class SettingsPageState extends State<SettingsPage> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    var response = await http.post(
+    await http.post(
         Uri.parse("$serverUrl/updateInitialAmount/$userId?amount=$amount"));
   }
 
@@ -115,10 +114,6 @@ class SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                     TextFormField(
-                      // inputFormatters: <TextInputFormatter>[
-                      //   FilteringTextInputFormatter.allow(
-                      //       RegExp(r'[0-9]+[,.]{0,1}[0-9]*')),
-                      // ],
                       keyboardType: const TextInputType.numberWithOptions(
                           decimal: true, signed: true),
                       initialValue: startingAmountAccount,

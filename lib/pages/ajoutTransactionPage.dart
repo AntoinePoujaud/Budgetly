@@ -28,7 +28,7 @@ class AjoutTransaction extends StatefulWidget {
 
 class AjoutTransactionState extends State<AjoutTransaction> {
   double? _deviceHeight, _deviceWidth;
-  String? _groupValue = TransactionEnum.NONE;
+  String _groupValue = TransactionEnum.NONE;
   String? _paymentMethodGroupValue = PaymentMethodEnum.CBRETRAIT;
   final _formKey = GlobalKey<FormState>();
   DateTime date = DateTime.now();
@@ -468,30 +468,6 @@ class AjoutTransactionState extends State<AjoutTransaction> {
           ),
         ],
       ),
-      // child: Row(
-      //   mainAxisSize: MainAxisSize.max,
-      //   mainAxisAlignment: MainAxisAlignment.start,
-      //   crossAxisAlignment: CrossAxisAlignment.center,
-      //   children: [
-      // radioButtonLabelledTransactions(
-      //         'label_depense'.i18n(),
-      //         TransactionEnum.DEPENSE,
-      //         _groupValue,
-      //         fontSize,
-      //         boxWidth,
-      //         'transaction'),
-      //     SizedBox(
-      //       width: _deviceWidth! * 0.005,
-      //     ),
-      //     radioButtonLabelledTransactions(
-      //         'label_revenu'.i18n(),
-      //         TransactionEnum.REVENU,
-      //         _groupValue,
-      //         fontSize,
-      //         boxWidth,
-      //         'transaction'),
-      //   ],
-      // ),
     );
   }
 
@@ -944,7 +920,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                   _paymentMethodGroupValue = value;
                   paymentMethod = value;
                 } else {
-                  _groupValue = value;
+                  _groupValue = value!;
                   transactionType = value;
                 }
               });

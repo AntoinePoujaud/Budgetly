@@ -17,7 +17,7 @@ class NavDrawer extends StatefulWidget {
 class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
   bool isInitialized = false;
 
-  double? _deviceHeight, _deviceWidth;
+  double? _deviceHeight;
   String? currentBtnValue;
   Locale? currentLocale;
 
@@ -29,9 +29,7 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
   @override
   Widget build(BuildContext context) {
     _deviceHeight = MediaQuery.of(context).size.height;
-    _deviceWidth = MediaQuery.of(context).size.width;
     String currentPage = widget.currentPage;
-    Locale locale = Localizations.localeOf(context);
     return Drawer(
       backgroundColor: "#063545".toColor(),
       child: Column(

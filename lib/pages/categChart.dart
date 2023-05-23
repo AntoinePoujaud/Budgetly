@@ -22,22 +22,16 @@ class PieChartSample3 extends StatefulWidget {
 
 class PieChartSample3State extends State<PieChartSample3> {
   int touchedIndex = -1;
-  double? _deviceHeight, _deviceWidth;
+  double? _deviceWidth;
   bool isMobile = false;
   bool isDesktop = false;
 
   @override
   Widget build(BuildContext context) {
-    _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     isMobile = _deviceWidth! < 768;
     isDesktop = _deviceWidth! > 1024;
-    // return AspectRatio(
-    //   aspectRatio: 1,
-    /* child: */ return /* AspectRatio(
-      aspectRatio: 1,
-      child: */
-        Expanded(
+      return Expanded(
       child: PieChart(
         PieChartData(
           pieTouchData: PieTouchData(
@@ -61,9 +55,7 @@ class PieChartSample3State extends State<PieChartSample3> {
           centerSpaceRadius: 0,
           sections: showingSections(),
         ),
-        //   ),
       ),
-      // ),
     );
   }
 
@@ -79,10 +71,8 @@ class PieChartSample3State extends State<PieChartSample3> {
           fontSize = isTouched ? 14.0 : 10.0;
         }
         final radius = isTouched ? 205.0 : 195.0;
-        final widgetSize = isTouched ? 155.0 : 140.0;
         final text =
             isTouched ? "${widget.totals[i]} €" : "${widget.percentages[i]} %";
-        const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
 
         if (widget.colors.asMap().containsKey(i)) {
           color = widget.colors[i];
@@ -105,15 +95,7 @@ class PieChartSample3State extends State<PieChartSample3> {
             color: color == "#ffffff"
                 ? const Color.fromARGB(255, 0, 0, 0)
                 : const Color(0xffffffff),
-            // shadows: shadows,
           ),
-          // badgeWidget: _Badge(
-          //   'assets/icons/ophthalmology-svgrepo-com.svg',
-          //   size: widgetSize,
-          //   borderColor: AppColors.contentColorBlack,
-          // text: widget.names[i],
-          // ),
-          // badgePositionPercentageOffset: .78,
           titlePositionPercentageOffset: titlePosPercentageOffset,
         );
       });

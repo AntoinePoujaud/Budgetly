@@ -1,11 +1,8 @@
 import 'dart:math';
 
-import 'package:budgetly/pages/app_colors.dart';
-import 'package:budgetly/pages/color_extensions.dart';
 import 'package:budgetly/utils/extensions.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 class LineChartSample2 extends StatefulWidget {
   const LineChartSample2(
@@ -25,7 +22,7 @@ class LineChartSample2 extends StatefulWidget {
 }
 
 class _LineChartSample2State extends State<LineChartSample2> {
-  double? _deviceHeight, _deviceWidth;
+  double? _deviceWidth;
   bool isMobile = false;
   bool isDesktop = false;
 
@@ -33,7 +30,6 @@ class _LineChartSample2State extends State<LineChartSample2> {
 
   @override
   Widget build(BuildContext context) {
-    _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     isMobile = _deviceWidth! < 768;
     isDesktop = _deviceWidth! > 1024;

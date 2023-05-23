@@ -31,7 +31,7 @@ class MainPageState extends State<MainPage> {
   double? _deviceHeight, _deviceWidth;
   double currentAmount = 0;
   double currentRealAmount = 0;
-  String? _groupValue = FilterGeneralEnum.LAST;
+  String _groupValue = FilterGeneralEnum.LAST;
   List<Map<String, String?>> resultTransactions = [];
   DateTime date = DateTime.now();
   List<AllCategories>? dropDownItems = [];
@@ -97,13 +97,7 @@ class MainPageState extends State<MainPage> {
   }
 
   Widget showPage() {
-    if (currentAmount == null) {
-      return const Center(
-        child: CircularProgressIndicator(),
-      );
-    } else {
       return pageWidget();
-    }
   }
 
   Widget pageWidget() {
@@ -768,7 +762,7 @@ class MainPageState extends State<MainPage> {
               groupValue: groupValue,
               onChanged: (String? value) {
                 setState(() {
-                  _groupValue = value;
+                  _groupValue = value!;
                 });
               }),
         ),
@@ -1330,7 +1324,7 @@ class MainPageState extends State<MainPage> {
   }
 
   Future<void> deleteCateg(int catId) async {
-    var response = await http.post(
+    await http.post(
         Uri.parse("$serverUrl/deleteCategorie?catId=${catId.toString()}"));
   }
 
