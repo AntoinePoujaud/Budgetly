@@ -51,7 +51,18 @@ class TableauRecapState extends State<TableauRecap> {
   int? initialYear;
   int? initialMonth;
   List<String> filterMonthYears = [];
-  List<String> colors = ["#466563", "#15646f", "#8d8d8d", "#184449"];
+  List<String> colors = [
+    "#466563",
+    "#ffffff",
+    "#15646f",
+    "#8d8d8d",
+    "#184449",
+    "#68b8b9",
+    "#d0ad3b",
+    "#dc6c68",
+    "#133543",
+    "#badf79",
+  ];
   bool isMobile = false;
   bool isDesktop = false;
   String serverUrl = 'https://moneytly.herokuapp.com';

@@ -73,7 +73,9 @@ class PieChartSample3State extends State<PieChartSample3> {
         String color = "";
         final isTouched = i == touchedIndex;
         double fontSize = isTouched ? 24.0 : 20.0;
+        double titlePosPercentageOffset = .60;
         if (widget.percentages[i] <= 5) {
+          titlePosPercentageOffset = .80;
           fontSize = isTouched ? 14.0 : 10.0;
         }
         final radius = isTouched ? 205.0 : 195.0;
@@ -100,7 +102,9 @@ class PieChartSample3State extends State<PieChartSample3> {
           titleStyle: TextStyle(
             fontSize: fontSize,
             fontWeight: FontWeight.bold,
-            color: const Color(0xffffffff),
+            color: color == "#ffffff"
+                ? const Color.fromARGB(255, 0, 0, 0)
+                : const Color(0xffffffff),
             // shadows: shadows,
           ),
           // badgeWidget: _Badge(
@@ -110,7 +114,7 @@ class PieChartSample3State extends State<PieChartSample3> {
           // text: widget.names[i],
           // ),
           // badgePositionPercentageOffset: .78,
-          titlePositionPercentageOffset: .60,
+          titlePositionPercentageOffset: titlePosPercentageOffset,
         );
       });
     } else {
