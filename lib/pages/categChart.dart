@@ -31,30 +31,28 @@ class PieChartSample3State extends State<PieChartSample3> {
     _deviceWidth = MediaQuery.of(context).size.width;
     isMobile = _deviceWidth! < 768;
     isDesktop = _deviceWidth! > 1024;
-      return Expanded(
-      child: PieChart(
-        PieChartData(
-          pieTouchData: PieTouchData(
-            touchCallback: (FlTouchEvent event, pieTouchResponse) {
-              setState(() {
-                if (!event.isInterestedForInteractions ||
-                    pieTouchResponse == null ||
-                    pieTouchResponse.touchedSection == null) {
-                  touchedIndex = -1;
-                  return;
-                }
-                touchedIndex =
-                    pieTouchResponse.touchedSection!.touchedSectionIndex;
-              });
-            },
-          ),
-          borderData: FlBorderData(
-            show: false,
-          ),
-          sectionsSpace: 1,
-          centerSpaceRadius: 0,
-          sections: showingSections(),
+    return PieChart(
+      PieChartData(
+        pieTouchData: PieTouchData(
+          touchCallback: (FlTouchEvent event, pieTouchResponse) {
+            setState(() {
+              if (!event.isInterestedForInteractions ||
+                  pieTouchResponse == null ||
+                  pieTouchResponse.touchedSection == null) {
+                touchedIndex = -1;
+                return;
+              }
+              touchedIndex =
+                  pieTouchResponse.touchedSection!.touchedSectionIndex;
+            });
+          },
         ),
+        borderData: FlBorderData(
+          show: false,
+        ),
+        sectionsSpace: 1,
+        centerSpaceRadius: 0,
+        sections: showingSections(),
       ),
     );
   }
