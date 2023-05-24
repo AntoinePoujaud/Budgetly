@@ -108,11 +108,12 @@ packages:
   fl_chart:
     dependency: "direct main"
     description:
-      name: fl_chart
-      sha256: "155556c4aba56c8474308d51b4e5446b80a07db9ab66a3cb74aff05c110df982"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.60.0"
+      path: "."
+      ref: "872878b"
+      resolved-ref: "872878b0ce126b226507692022d0f238715408c4"
+      url: "https://github.com/imaNNeo/fl_chart.git"
+    source: git
+    version: "0.62.0"
   fluro:
     dependency: "direct main"
     description:
@@ -531,5 +532,5 @@ packages:
     source: hosted
     version: "1.0.0"
 sdks:
-  dart: ">=3.0.0-0 <4.0.0"
+  dart: ">=3.0.0 <4.0.0"
   flutter: ">=3.3.0"
