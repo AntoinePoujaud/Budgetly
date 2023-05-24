@@ -51,7 +51,7 @@ dependencies:
   flutter_dotenv: ^5.0.2
   fluro: ^2.0.4
   url_strategy: ^0.2.0
-  fl_chart: ^0.62.0
+  fl_chart: ^0.60.0
   google_fonts: ^4.0.3
   native_device_orientation: ^1.1.4
 
