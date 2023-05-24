@@ -49,5 +49,6 @@
         "suis",
         "Valider",
         "VIREMENT"
-    ]
+    ],
+    "search.useIgnoreFiles": false
 }
