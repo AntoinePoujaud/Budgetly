@@ -22,13 +22,14 @@ class PieChartSample3 extends StatefulWidget {
 
 class PieChartSample3State extends State<PieChartSample3> {
   int touchedIndex = -1;
-  double? _deviceWidth;
+  double? _deviceHeight, _deviceWidth;
   bool isMobile = false;
   bool isDesktop = false;
 
   @override
   Widget build(BuildContext context) {
     _deviceWidth = MediaQuery.of(context).size.width;
+    _deviceHeight = MediaQuery.of(context).size.height;
     isMobile = _deviceWidth! < 768;
     isDesktop = _deviceWidth! > 1024;
     return PieChart(
@@ -68,7 +69,10 @@ class PieChartSample3State extends State<PieChartSample3> {
           titlePosPercentageOffset = .80;
           fontSize = isTouched ? 14.0 : 10.0;
         }
-        final radius = isTouched ? 205.0 : 195.0;
+        double radius = isTouched ? 205.0 : 195.0;
+        if (isMobile) {
+          radius = isTouched ? 160.0 : 150.0;
+        }
         final text =
             isTouched ? "${widget.totals[i]} €" : "${widget.percentages[i]} %";
 

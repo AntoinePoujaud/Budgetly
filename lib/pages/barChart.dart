@@ -45,6 +45,7 @@ class _BarChart extends StatelessWidget {
             BarChartRodData rod,
             int rodIndex,
           ) {
+            bool isMobile = deviceWidth < 768;
             String color = "#dc6c68";
             if (groupIndex == 1) {
               color = "#133543";
@@ -53,7 +54,7 @@ class _BarChart extends StatelessWidget {
               "${rod.toY.toStringAsFixed(2)} €",
               TextStyle(
                 color: color.toColor(),
-                fontSize: deviceWidth * 0.012,
+                fontSize: isMobile ? deviceWidth * 0.05 : deviceWidth * 0.012,
                 fontWeight: FontWeight.bold,
               ),
             );
@@ -62,6 +63,8 @@ class _BarChart extends StatelessWidget {
       );
 
   Widget getTitles(double value, TitleMeta meta) {
+    bool isMobile = deviceWidth < 768;
+
     String color = "";
     String text = "";
     switch (value.toInt()) {
@@ -77,7 +80,7 @@ class _BarChart extends StatelessWidget {
     final style = TextStyle(
       color: color.toColor(),
       fontWeight: FontWeight.bold,
-      fontSize: deviceWidth * 0.012,
+      fontSize: isMobile ? deviceWidth * 0.05 : deviceWidth * 0.012,
     );
     return SideTitleWidget(
       axisSide: meta.axisSide,
@@ -166,7 +169,7 @@ class BarChartSample3State extends State<BarChartSample3> {
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 1.106,
+      aspectRatio: 0.8,
       child: _BarChart(
         totalDepense: widget.totalDepense,
         totalRevenu: widget.totalRevenu,

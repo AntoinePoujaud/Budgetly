@@ -53,6 +53,7 @@ dependencies:
   url_strategy: ^0.2.0
   fl_chart: ^0.62.0
   google_fonts: ^4.0.3
+  native_device_orientation: ^1.1.4
 
 dev_dependencies:
   flutter_test:

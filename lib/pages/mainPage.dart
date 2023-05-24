@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:localization/localization.dart';
+import 'package:native_device_orientation/native_device_orientation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -193,144 +194,199 @@ class TableauRecapState extends State<TableauRecap> {
     _deviceHeight = MediaQuery.of(context).size.height;
     _deviceWidth = MediaQuery.of(context).size.width;
     isMobile = _deviceWidth! < 768;
+    if (_deviceWidth! > _deviceHeight!) {}
     isDesktop = _deviceWidth! > 1024;
 
     return Scaffold(
       backgroundColor: "#CCE4DD".toColor(),
-      body: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          isMobile
-              ? const Text("")
-              : MenuLayout(
-                  title: widget.title,
-                  deviceWidth: _deviceWidth,
-                  deviceHeight: _deviceHeight),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              // isMobile
-              //     ? mobileMenu()
-              //     : const SizedBox(
-              //         height: 0,
-              //         width: 0,
-              //       ),
-              Container(
-                color: "#0A454A".toColor(),
-                width: isMobile ? _deviceWidth! : _deviceWidth! * 0.85,
-                height: _deviceHeight! * 0.1,
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    isMobile
-                        ? mobileMenu()
-                        : const SizedBox(
-                            height: 0,
-                            width: 0,
-                          ),
-                    isMobile
-                        ? const SizedBox(
-                            width: 20,
-                          )
-                        : const Text(""),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        homeCurrentInformations(
-                            isMobile
-                                ? "Compte :".toUpperCase()
-                                : 'actual_amount'.i18n().toUpperCase(),
-                            currentAmount.toStringAsFixed(2)),
-                        homeCurrentInformations(
-                            isMobile
-                                ? "Réel :".toUpperCase()
-                                : 'real_amount'.i18n().toUpperCase(),
-                            currentRealAmount.toStringAsFixed(2)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                width: isMobile ? _deviceWidth! : _deviceWidth! * 0.82,
-                height: _deviceHeight! * 0.9,
-                child: Column(
-                  mainAxisAlignment: isMobile
-                      ? MainAxisAlignment.center
-                      : MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.max,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    selectMonthYearWidget(),
-                    SizedBox(
-                      width: isMobile ? _deviceWidth! : _deviceWidth! * 0.72,
-                      height: _deviceHeight! * 0.25,
-                      child: LineChartSample2(
-                        data: dailySpots,
-                        monthDays: DateUtils.getDaysInMonth(
-                            currentYear, currentMonthId),
-                        min: minValue,
-                        max: maxValue,
-                      ),
-                    ),
-                    isMobile ? mobileStats() : desktopStats()
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+      body: isMobile ? mobileWidget() : desktopWidget(),
     );
   }
 
-  Widget mobileStats() {
-    return Column(
+  Widget desktopWidget() {
+    return Row(
       mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.max,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PieChartSample3(
-          names: categStatsNames,
-          percentages: categStatsPercentages,
-          totals: categStatsTotals,
-          colors: colors,
+        MenuLayout(
+            title: widget.title,
+            deviceWidth: _deviceWidth,
+            deviceHeight: _deviceHeight),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Container(
+              color: "#0A454A".toColor(),
+              width: _deviceWidth! * 0.85,
+              height: _deviceHeight! * 0.1,
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: <Widget>[
+                  const SizedBox(
+                    height: 0,
+                    width: 0,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      homeCurrentInformations(
+                          isMobile
+                              ? "Compte :".toUpperCase()
+                              : 'actual_amount'.i18n().toUpperCase(),
+                          currentAmount.toStringAsFixed(2)),
+                      homeCurrentInformations(
+                          isMobile
+                              ? "Réel :".toUpperCase()
+                              : 'real_amount'.i18n().toUpperCase(),
+                          currentRealAmount.toStringAsFixed(2)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              width: _deviceWidth! * 0.82,
+              height: _deviceHeight! * 0.9,
+              child: Column(
+                mainAxisAlignment: isMobile
+                    ? MainAxisAlignment.center
+                    : MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  selectMonthYearWidget(),
+                  SizedBox(
+                    width: _deviceWidth! * 0.72,
+                    height: _deviceHeight! * 0.25,
+                    child: LineChartSample2(
+                      data: dailySpots,
+                      monthDays:
+                          DateUtils.getDaysInMonth(currentYear, currentMonthId),
+                      min: minValue,
+                      max: maxValue,
+                    ),
+                  ),
+                  desktopStats(),
+                ],
+              ),
+            ),
+          ],
         ),
-        // SizedBox(
-        //   width: _deviceWidth!,
-        //   height: _deviceHeight! * 0.4,
-        //   child:
-        // ),
-        // SizedBox(
-        //   width: _deviceWidth!,
-        //   height: _deviceHeight! * 0.4,
-        //   child: Wrap(
-        //     direction: Axis.horizontal,
-        //     spacing: 20,
-        //     runSpacing: 20,
-        //     runAlignment: WrapAlignment.center,
-        //     children: List.generate(categStatsNames.length, (index) {
-        //       String color = "";
-
-        //       if (colors.asMap().containsKey(index)) {
-        //         color = colors[index];
-        //       } else {
-        //         if (index - colors.length >= colors.length) {
-        //           color = colors[colors.length - 1];
-        //         } else {
-        //           color = colors[index - colors.length];
-        //         }
-        //       }
-        //       return categLegend(color, categStatsNames[index]);
-        //     }),
-        //   ),
-        // ),
       ],
+    );
+  }
+
+  Widget mobileWidget() {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Container(
+            color: "#0A454A".toColor(),
+            width: _deviceWidth!,
+            height: _deviceHeight! * 0.1,
+            alignment: Alignment.center,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                mobileMenu(),
+                const SizedBox(
+                  width: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    homeCurrentInformations(
+                        isMobile
+                            ? "Compte :".toUpperCase()
+                            : 'actual_amount'.i18n().toUpperCase(),
+                        currentAmount.toStringAsFixed(2)),
+                    homeCurrentInformations(
+                        isMobile
+                            ? "Réel :".toUpperCase()
+                            : 'real_amount'.i18n().toUpperCase(),
+                        currentRealAmount.toStringAsFixed(2)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            width: _deviceWidth!,
+            height: _deviceHeight! * 0.9,
+            child: ListView(
+              children: [
+                selectMonthYearWidget(),
+                SizedBox(
+                  width: _deviceWidth!,
+                  height: _deviceHeight! * 0.25,
+                  child: LineChartSample2(
+                    data: dailySpots,
+                    monthDays:
+                        DateUtils.getDaysInMonth(currentYear, currentMonthId),
+                    min: minValue,
+                    max: maxValue,
+                  ),
+                ),
+                SizedBox(
+                  width: _deviceWidth!,
+                  height: _deviceHeight! * 0.5,
+                  child: PieChartSample3(
+                    names: categStatsNames,
+                    percentages: categStatsPercentages,
+                    totals: categStatsTotals,
+                    colors: colors,
+                  ),
+                ),
+                SizedBox(
+                  width: _deviceWidth!,
+                  height: _deviceHeight! * 0.1,
+                  child: Wrap(
+                    direction: Axis.vertical,
+                    spacing: 10,
+                    runSpacing: 20,
+                    runAlignment: WrapAlignment.center,
+                    children: List.generate(categStatsNames.length, (index) {
+                      String color = "";
+
+                      if (colors.asMap().containsKey(index)) {
+                        color = colors[index];
+                      } else {
+                        if (index - colors.length >= colors.length) {
+                          color = colors[colors.length - 1];
+                        } else {
+                          color = colors[index - colors.length];
+                        }
+                      }
+                      return categLegend(color, categStatsNames[index]);
+                    }),
+                  ),
+                ),
+                SizedBox(
+                  width: _deviceWidth!,
+                  height: _deviceHeight! * 0.1,
+                ),
+                SizedBox(
+                  width: _deviceWidth!,
+                  height: _deviceHeight! * 0.5,
+                  child: BarChartSample3(
+                    totalDepense: totalDepense,
+                    totalRevenu: totalRevenu,
+                    deviceWidth: _deviceWidth!,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -540,11 +596,13 @@ class TableauRecapState extends State<TableauRecap> {
       children: [
         Icon(
           Icons.square,
+          size: isMobile ? 20 : 22,
           color: boxColor.toColor(),
         ),
         Text(
           categName,
-          style: TextStyle(color: "#133543".toColor()),
+          style: TextStyle(
+              color: "#133543".toColor(), fontSize: isMobile ? 10 : 24),
         ),
       ],
     );

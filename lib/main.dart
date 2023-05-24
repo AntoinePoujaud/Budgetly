@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:localization/localization.dart';
@@ -33,6 +34,10 @@ class MyAppState extends State<MyApp> {
     // set json file directory
     // default value is ['lib/i18n']
     LocalJsonLocalization.delegate.directories = ['lib/i18n'];
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
 
     return GetMaterialApp(
         supportedLocales: const [
