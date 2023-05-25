@@ -346,11 +346,11 @@ class TableauRecapState extends State<TableauRecap> {
                 ),
                 SizedBox(
                   width: _deviceWidth!,
-                  height: _deviceHeight! * 0.1,
+                  height: _deviceHeight! * 0.15,
                   child: Wrap(
                     direction: Axis.vertical,
                     spacing: 10,
-                    runSpacing: 20,
+                    runSpacing: 15,
                     runAlignment: WrapAlignment.center,
                     children: List.generate(categStatsNames.length, (index) {
                       String color = "";
@@ -601,7 +601,7 @@ class TableauRecapState extends State<TableauRecap> {
         Text(
           categName,
           style: TextStyle(
-              color: "#133543".toColor(), fontSize: isMobile ? 10 : 24),
+              color: "#133543".toColor(), fontSize: isMobile ? 10 : 20),
         ),
       ],
     );
