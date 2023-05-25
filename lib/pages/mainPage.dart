@@ -346,7 +346,7 @@ class TableauRecapState extends State<TableauRecap> {
                 ),
                 SizedBox(
                   width: _deviceWidth!,
-                  height: _deviceHeight! * 0.15,
+                  height: _deviceHeight! * 0.12,
                   child: Wrap(
                     direction: Axis.vertical,
                     spacing: 10,
