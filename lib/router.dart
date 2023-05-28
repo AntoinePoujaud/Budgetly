@@ -1,15 +1,15 @@
-import 'package:budgetly/pages/settingsPage.dart';
+import 'package:budgetly/pages/settings.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:localization/localization.dart';
 
-import 'pages/ajoutTransactionPage.dart';
+import 'pages/addTransaction.dart';
 import 'pages/forgottenPassword.dart';
-import 'pages/loginPage.dart';
-import 'pages/mainPage.dart';
+import 'pages/login.dart';
+import 'pages/homepage.dart';
 import 'pages/regeneratePassword.dart';
 import 'pages/signinPage.dart';
-import 'pages/tableauGeneralPage.dart';
+import 'pages/transactions.dart';
 
 class Routes {
   static final router = FluroRouter();
