@@ -14,21 +14,21 @@ import 'pages/transactions.dart';
 class Routes {
   static final router = FluroRouter();
   static var loginHandler = Handler(handlerFunc: ((context, parameters) {
-    return const LoginPage(title: 'Se connecter');
+    return const Login(title: 'Se connecter');
   }));
   static var signInHandler = Handler(handlerFunc: ((context, parameters) {
     return const SignInPage(title: "S'inscrire");
   }));
   static var addTransactionHandler =
       Handler(handlerFunc: ((context, parameters) {
-    return AjoutTransaction(title: 'add_transaction_title'.i18n());
+    return AddTransaction(title: 'add_transaction_title'.i18n());
   }));
   static var tableauGeneralHandler =
       Handler(handlerFunc: ((context, parameters) {
-    return MainPage(title: 'tableau_general_title'.i18n());
+    return Transactions(title: 'tableau_general_title'.i18n());
   }));
   static var homeHandler = Handler(handlerFunc: ((context, parameters) {
-    return TableauRecap(title: 'tableau_recap_title'.i18n());
+    return Home(title: 'tableau_recap_title'.i18n());
   }));
   static var settingsHandler = Handler(handlerFunc: ((context, parameters) {
     return SettingsPage(title: 'settings_title'.i18n());
