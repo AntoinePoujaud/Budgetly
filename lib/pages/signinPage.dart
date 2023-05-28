@@ -7,7 +7,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:universal_html/html.dart' as html;
 
 class SignInPage extends StatefulWidget {
   const SignInPage({Key? key, required this.title}) : super(key: key);
@@ -23,8 +25,8 @@ class SignInPageState extends State<SignInPage> {
   String? mail, password;
   TextEditingController passwordTxt = TextEditingController();
   TextEditingController emailTxt = TextEditingController();
-  String serverUrl = 'https://moneytly.herokuapp.com';
-  // String serverUrl = 'http://localhost:8081';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
 
   bool passwordVisible = false;
 
@@ -50,7 +52,7 @@ class SignInPageState extends State<SignInPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Créer un compte".toUpperCase(),
+                "label_create_account".toUpperCase(),
                 style: GoogleFonts.roboto(
                   color: Colors.white,
                   fontSize: _deviceWidth! > 500
@@ -68,7 +70,7 @@ class SignInPageState extends State<SignInPage> {
                   controller: emailTxt,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: 'Email'.toUpperCase(),
+                    labelText: 'label_email'.i18n().toUpperCase(),
                     labelStyle: GoogleFonts.roboto(
                       color: Colors.grey,
                       fontSize: _deviceWidth! > 500
@@ -110,7 +112,7 @@ class SignInPageState extends State<SignInPage> {
                   controller: passwordTxt,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: 'Mot de passe'.toUpperCase(),
+                    labelText: 'label_password'.i18n().toUpperCase(),
                     labelStyle: GoogleFonts.roboto(
                       color: Colors.grey,
                       fontSize: _deviceWidth! > 500
@@ -163,7 +165,7 @@ class SignInPageState extends State<SignInPage> {
                   backgroundColor: "EC6463".toColor(),
                 ),
                 child: Text(
-                  "S'inscrire".toUpperCase(),
+                  "label_sign_in".i18n().toUpperCase(),
                   style: GoogleFonts.roboto(
                     color: Colors.black,
                     fontSize: _deviceWidth! > 500
@@ -176,7 +178,7 @@ class SignInPageState extends State<SignInPage> {
               SizedBox(height: _deviceHeight! * 0.05),
               RichText(
                 text: TextSpan(
-                    text: "Se connecter".toUpperCase(),
+                    text: "label_connect_title".i18n().toUpperCase(),
                     style: GoogleFonts.roboto(
                       color: Colors.grey.shade600,
                       fontSize: 16,
@@ -211,11 +213,24 @@ class SignInPageState extends State<SignInPage> {
       showToast(context, const Text("Error while creating account"));
     } else {
       String userId = json.decode(response.body)["id"].toString();
+      String token = json.decode(response.body)["token"].toString();
+      setCookie("token", token);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("userId", userId);
       // ignore: use_build_context_synchronously
       Navigator.of(context).pushNamed("/settings");
     }
+  }
+
+  void setCookie(String name, String value, {int? maxAge}) {
+    String cookie = '$name=$value';
+
+    if (maxAge != null) {
+      final expires = DateTime.now().add(Duration(seconds: maxAge));
+      cookie += '; expires=${expires.toUtc().toString()}';
+    }
+
+    html.window.document.cookie = cookie;
   }
 
   void showToast(BuildContext context, content) {

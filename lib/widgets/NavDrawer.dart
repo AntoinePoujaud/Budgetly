@@ -69,7 +69,7 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                   ),
                   onTap: () {
                     currentPage != 'tableau_recap_title'.i18n()
-                        ? Navigator.of(context).pushNamed("/")
+                        ? Navigator.of(context).pushNamed("/homepage")
                         : "";
                   },
                 ),

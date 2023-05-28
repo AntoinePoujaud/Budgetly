@@ -62,42 +62,52 @@ class MainPageState extends State<MainPage> {
   int? initialYear;
   int? initialMonth;
   List<String> filterMonthYears = [];
+  bool isConnected = false;
 
-  String serverUrl = 'https://moneytly.herokuapp.com';
-  // String serverUrl = 'http://localhost:8081';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
   @override
   void initState() {
     super.initState();
-    Utils.checkIfConnected(context);
-    getTransactionsForMonthAndYear();
-    years = [currentYear - 1, currentYear, currentYear + 1];
-    initialMonth = currentMonthId;
-    initialYear = currentYear;
-    for (int i = currentYear - 1; i <= currentYear + 1; i++) {
-      for (int j = (i > currentYear - 1 ? 1 : currentMonthId);
-          j <= (i == currentYear + 1 ? currentMonthId : months.length);
-          j++) {
-        filterMonthYears.add("$j $i");
-      }
-    }
+    Utils.checkIfConnected(context).then(
+      (value) {
+        if (value) {
+          isConnected = true;
+          getTransactionsForMonthAndYear();
+          years = [currentYear - 1, currentYear, currentYear + 1];
+          initialMonth = currentMonthId;
+          initialYear = currentYear;
+          for (int i = currentYear - 1; i <= currentYear + 1; i++) {
+            for (int j = (i > currentYear - 1 ? 1 : currentMonthId);
+                j <= (i == currentYear + 1 ? currentMonthId : months.length);
+                j++) {
+              filterMonthYears.add("$j $i");
+            }
+          }
+        }
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    _deviceHeight = MediaQuery.of(context).size.height;
-    _deviceWidth = MediaQuery.of(context).size.width;
-    isMobile = _deviceWidth! < 768;
-    isDesktop = _deviceWidth! > 1024;
-    return Visibility(
-      child: Scaffold(
-        backgroundColor: "#CCE4DD".toColor(),
-        body: showPage(),
-      ),
-    );
+    if (isConnected) {
+      _deviceHeight = MediaQuery.of(context).size.height;
+      _deviceWidth = MediaQuery.of(context).size.width;
+      isMobile = _deviceWidth! < 768;
+      isDesktop = _deviceWidth! > 1024;
+      return Visibility(
+        child: Scaffold(
+          backgroundColor: "#CCE4DD".toColor(),
+          body: showPage(),
+        ),
+      );
+    }
+    return const Scaffold();
   }
 
   Widget showPage() {
-      return pageWidget();
+    return pageWidget();
   }
 
   Widget pageWidget() {
@@ -116,12 +126,6 @@ class MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: <Widget>[
-            // isMobile
-            //     ? mobileMenu()
-            //     : const SizedBox(
-            //         height: 0,
-            //         width: 0,
-            //       ),
             Container(
               color: "#0A454A".toColor(),
               width: isMobile ? _deviceWidth : _deviceWidth! * 0.85,
@@ -207,9 +211,9 @@ class MainPageState extends State<MainPage> {
             ),
           ]),
           onTap: () {
-            Navigator.of(context).pushNamed("/");
+            Navigator.of(context).pushNamed("/homepage");
             widget.title != 'tableau_recap_title'.i18n()
-                ? Navigator.of(context).pushNamed("/")
+                ? Navigator.of(context).pushNamed("/homepage")
                 : "";
           },
         ),
@@ -1324,8 +1328,10 @@ class MainPageState extends State<MainPage> {
   }
 
   Future<void> deleteCateg(int catId) async {
+    String token = Utils.getCookieValue("token");
     await http.post(
-        Uri.parse("$serverUrl/deleteCategorie?catId=${catId.toString()}"));
+        Uri.parse("$serverUrl/deleteCategorie?catId=${catId.toString()}"),
+        headers: {'custom-cookie': 'token=$token'});
   }
 
   Future<List<AllCategories>> getAllCategories() async {
@@ -1335,8 +1341,10 @@ class MainPageState extends State<MainPage> {
       userId = prefs.getString("userId");
     }
     List<AllCategories> allCategories = [];
-    var response =
-        await http.get(Uri.parse("$serverUrl/getCategories?userId=$userId"));
+    String token = Utils.getCookieValue("token");
+    var response = await http.get(
+        Uri.parse("$serverUrl/getCategories?userId=$userId"),
+        headers: {'custom-cookie': 'token=$token'});
     if (json.decode(response.body) != null) {
       for (var i = 0; i < json.decode(response.body).length; i++) {
         AllCategories category = AllCategories(
@@ -1353,12 +1361,14 @@ class MainPageState extends State<MainPage> {
   }
 
   Future<void> _getMyInformations() async {
+    String token = Utils.getCookieValue("token");
     String? userId = "";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    var response = await http.get(Uri.parse("$serverUrl/getAmounts/$userId"));
+    var response = await http.get(Uri.parse("$serverUrl/getAmounts/$userId"),
+        headers: {'custom-cookie': 'token=$token'});
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Error while getting informations"));
@@ -1376,8 +1386,10 @@ class MainPageState extends State<MainPage> {
   }
 
   Future<void> deleteTransaction(String id) async {
-    var response =
-        await http.post(Uri.parse("$serverUrl/deleteTransaction/$id"));
+    String token = Utils.getCookieValue("token");
+    var response = await http.post(
+        Uri.parse("$serverUrl/deleteTransaction/$id"),
+        headers: {'custom-cookie': 'token=$token'});
     if (response.statusCode != 204) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Error while deleting transaction"));
@@ -1386,15 +1398,16 @@ class MainPageState extends State<MainPage> {
   }
 
   Future<void> updateTransaction(List<dynamic> params) async {
+    String token = Utils.getCookieValue("token");
     String? userId = "";
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
     var response = await http.post(
-      Uri.parse(
-          "$serverUrl/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&paymentMethod=${params[6]}&userId=$userId"),
-    );
+        Uri.parse(
+            "$serverUrl/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&paymentMethod=${params[6]}&userId=$userId"),
+        headers: {'custom-cookie': 'token=$token'});
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Error while updating transaction"));
@@ -1425,8 +1438,12 @@ class MainPageState extends State<MainPage> {
 
   Future<List<TransactionByMonthAndYear>> fetchTransactions(
       String? userId) async {
-    var response = await http.get(Uri.parse(
-        "$serverUrl/getTransactionsForMonthAndYear?userId=$userId&selectedMonthId=$currentMonthId&selectedYear=$currentYear"));
+    String token = Utils.getCookieValue("token");
+    var response = await http.get(
+        Uri.parse(
+            "$serverUrl/getTransactionsForMonthAndYear?userId=$userId&selectedMonthId=$currentMonthId&selectedYear=$currentYear"),
+        headers: {'custom-cookie': 'token=$token'});
+
     return json.decode(response.body) != null
         ? (json.decode(response.body) as List)
             .map((e) => TransactionByMonthAndYear.fromJson(e))
@@ -1435,13 +1452,16 @@ class MainPageState extends State<MainPage> {
   }
 
   Future<void> addCategory(String categName) async {
+    String token = Utils.getCookieValue("token");
     String? userId;
     final prefs = await SharedPreferences.getInstance();
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    var response = await http.post(Uri.parse(
-        "$serverUrl/addCategorie?userId=$userId&name=${categName.toUpperCase()}"));
+    var response = await http.post(
+        Uri.parse(
+            "$serverUrl/addCategorie?userId=$userId&name=${categName.toUpperCase()}"),
+        headers: {'custom-cookie': 'token=$token'});
     if (response.statusCode != 201) {}
   }
 }

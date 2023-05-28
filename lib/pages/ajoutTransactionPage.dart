@@ -52,23 +52,29 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   String? categorie = CategorieEnum.LOISIRS;
   bool isMobile = false;
   bool isDesktop = false;
-  String serverUrl = 'https://moneytly.herokuapp.com';
-  // String serverUrl = 'http://localhost:8081';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
+
+  bool isConnected = false;
 
   @override
   void initState() {
     super.initState();
-    Utils.checkIfConnected(context);
-    years = [currentYear - 1, currentYear, currentYear + 1];
-    initialMonth = currentMonthId;
-    initialYear = currentYear;
-    for (int i = currentYear - 1; i <= currentYear + 1; i++) {
-      for (int j = (i > currentYear - 1 ? 1 : currentMonthId);
-          j <= (i == currentYear + 1 ? currentMonthId : months.length);
-          j++) {
-        filterMonthYears.add("$j $i");
+    Utils.checkIfConnected(context).then((value) {
+      if (value) {
+        isConnected = true;
+        years = [currentYear - 1, currentYear, currentYear + 1];
+        initialMonth = currentMonthId;
+        initialYear = currentYear;
+        for (int i = currentYear - 1; i <= currentYear + 1; i++) {
+          for (int j = (i > currentYear - 1 ? 1 : currentMonthId);
+              j <= (i == currentYear + 1 ? currentMonthId : months.length);
+              j++) {
+            filterMonthYears.add("$j $i");
+          }
+        }
       }
-    }
+    });
   }
 
   @override
@@ -156,7 +162,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                                     width: 0,
                                   ),
                             Text(
-                              "Ajouter une transaction".toUpperCase(),
+                              "add_transaction_title".i18n().toUpperCase(),
                               textAlign: TextAlign.start,
                               style: GoogleFonts.roboto(
                                 color: Colors.white,
@@ -292,9 +298,9 @@ class AjoutTransactionState extends State<AjoutTransaction> {
             ),
           ]),
           onTap: () {
-            Navigator.of(context).pushNamed("/");
+            Navigator.of(context).pushNamed("/homepage");
             widget.title != 'tableau_recap_title'.i18n()
-                ? Navigator.of(context).pushNamed("/")
+                ? Navigator.of(context).pushNamed("/homepage")
                 : "";
           },
         ),
@@ -432,7 +438,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                   : "#dc6c68".toColor(),
             ),
             child: Text(
-              "dépenses".toUpperCase(),
+              "enum_label_depense".i18n().toUpperCase(),
               style: GoogleFonts.roboto(
                   color: Colors.white,
                   fontSize: _deviceWidth! * fontSize,
@@ -459,7 +465,7 @@ class AjoutTransactionState extends State<AjoutTransaction> {
                   : "#133543".toColor(),
             ),
             child: Text(
-              "revenus".toUpperCase(),
+              "enum_label_revenu".i18n().toUpperCase(),
               style: GoogleFonts.roboto(
                   color: Colors.white,
                   fontSize: _deviceWidth! * fontSize,
@@ -874,8 +880,11 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    var response = await http.post(Uri.parse(
-        "$serverUrl/addCategorie?userId=$userId&name=${categName.toUpperCase()}"));
+    String token = Utils.getCookieValue("token");
+    var response = await http.post(
+        Uri.parse(
+            "$serverUrl/addCategorie?userId=$userId&name=${categName.toUpperCase()}"),
+        headers: {'custom-cookie': 'token=$token'});
     if (response.statusCode != 201) {}
   }
 
@@ -947,8 +956,10 @@ class AjoutTransactionState extends State<AjoutTransaction> {
       userId = prefs.getString("userId");
     }
     List<AllCategories> allCategories = [];
-    var response =
-        await http.get(Uri.parse("$serverUrl/getCategories?userId=$userId"));
+    String token = Utils.getCookieValue("token");
+    var response = await http.get(
+        Uri.parse("$serverUrl/getCategories?userId=$userId"),
+        headers: {'custom-cookie': 'token=$token'});
     if (json.decode(response.body) != null) {
       for (var i = 0; i < json.decode(response.body).length; i++) {
         AllCategories category = AllCategories(
@@ -970,9 +981,11 @@ class AjoutTransactionState extends State<AjoutTransaction> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-
-    var response = await http.post(Uri.parse(
-        "$serverUrl/addTransaction?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&userId=$userId&paymentMethod=${params[5]}"));
+    String token = Utils.getCookieValue("token");
+    var response = await http.post(
+        Uri.parse(
+            "$serverUrl/addTransaction?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&userId=$userId&paymentMethod=${params[5]}"),
+        headers: {'custom-cookie': 'token=$token'});
     if (response.statusCode != 201) {}
   }
 
@@ -986,8 +999,10 @@ class AjoutTransactionState extends State<AjoutTransaction> {
   }
 
   Future<void> deleteCateg(int catId) async {
+    String token = Utils.getCookieValue("token");
     var response = await http.post(
-        Uri.parse("$serverUrl/deleteCategorie?catId=${catId.toString()}"));
+        Uri.parse("$serverUrl/deleteCategorie?catId=${catId.toString()}"),
+        headers: {'custom-cookie': 'token=$token'});
     if (response.statusCode != 200) {}
   }
 }

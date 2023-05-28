@@ -6,8 +6,10 @@ import 'package:budgetly/utils/extensions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:universal_html/html.dart' as html;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key, required this.title}) : super(key: key);
@@ -24,8 +26,8 @@ class LoginPageState extends State<LoginPage> {
 
   TextEditingController passwordTxt = TextEditingController();
   TextEditingController emailTxt = TextEditingController();
-  String serverUrl = 'https://moneytly.herokuapp.com';
-  // String serverUrl = 'http://localhost:8081';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
   MaterialStatesController submitBtn = MaterialStatesController();
   bool isEnabled = true;
   bool passwordVisible = false;
@@ -52,7 +54,7 @@ class LoginPageState extends State<LoginPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Se connecter".toUpperCase(),
+                "label_connect".i18n().toUpperCase(),
                 style: GoogleFonts.roboto(
                   color: Colors.white,
                   fontSize: _deviceWidth! > 500
@@ -70,7 +72,7 @@ class LoginPageState extends State<LoginPage> {
                   controller: emailTxt,
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: 'Email'.toUpperCase(),
+                    labelText: 'label_email'.i18n().toUpperCase(),
                     labelStyle: GoogleFonts.roboto(
                       color: Colors.grey,
                       fontSize: _deviceWidth! > 500
@@ -115,7 +117,7 @@ class LoginPageState extends State<LoginPage> {
                   obscuringCharacter: "*",
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
-                    labelText: 'Mot de passe'.toUpperCase(),
+                    labelText: 'label_password'.i18n().toUpperCase(),
                     labelStyle: GoogleFonts.roboto(
                       color: Colors.grey,
                       fontSize: _deviceWidth! > 500
@@ -174,7 +176,7 @@ class LoginPageState extends State<LoginPage> {
                   backgroundColor: isEnabled ? "EC6463".toColor() : Colors.grey,
                 ),
                 child: Text(
-                  "Connexion".toUpperCase(),
+                  "label_connect".i18n().toUpperCase(),
                   style: GoogleFonts.roboto(
                     color: Colors.black,
                     fontSize: _deviceWidth! > 500
@@ -192,7 +194,7 @@ class LoginPageState extends State<LoginPage> {
                 children: [
                   RichText(
                     text: TextSpan(
-                        text: "Créer un compte".toUpperCase(),
+                        text: "label_create_account".i18n().toUpperCase(),
                         style: GoogleFonts.roboto(
                           color: Colors.grey.shade600,
                           fontSize: 16,
@@ -206,7 +208,7 @@ class LoginPageState extends State<LoginPage> {
                   ),
                   RichText(
                     text: TextSpan(
-                        text: "Mot de passe oublié".toUpperCase(),
+                        text: "label_forgot_password".i18n().toUpperCase(),
                         style: GoogleFonts.roboto(
                           color: Colors.grey.shade600,
                           fontSize: 16,
@@ -239,11 +241,24 @@ class LoginPageState extends State<LoginPage> {
       });
     } else {
       String userId = json.decode(response.body)["id"].toString();
+      String token = json.decode(response.body)["token"].toString();
+      setCookie("token", token);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("userId", userId);
       // ignore: use_build_context_synchronously
-      Navigator.of(context).pushNamed("/");
+      Navigator.of(context).pushNamed("/homepage");
     }
+  }
+
+  void setCookie(String name, String value, {int? maxAge}) {
+    String cookie = '$name=$value';
+
+    if (maxAge != null) {
+      final expires = DateTime.now().add(Duration(seconds: maxAge));
+      cookie += '; expires=${expires.toUtc().toString()}';
+    }
+
+    html.window.document.cookie = cookie;
   }
 
   void waitForServerResponse() {

@@ -62,8 +62,9 @@ class TableauRecapState extends State<TableauRecap> {
   ];
   bool isMobile = false;
   bool isDesktop = false;
-  String serverUrl = 'https://moneytly.herokuapp.com';
-  // String serverUrl = 'http://localhost:8081';
+  bool isConnected = false;
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
 
   Future<void> _getMyInformations() async {
     String? userId = "";
@@ -71,7 +72,9 @@ class TableauRecapState extends State<TableauRecap> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    var response = await http.get(Uri.parse("$serverUrl/getAmounts/$userId"));
+    String token = Utils.getCookieValue("token");
+    var response = await http.get(Uri.parse("$serverUrl/getAmounts/$userId"),
+        headers: {'custom-cookie': 'token=$token'});
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Can't fetch your informations"));
@@ -94,8 +97,11 @@ class TableauRecapState extends State<TableauRecap> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    var response = await http.get(Uri.parse(
-        "$serverUrl/stats/$userId/daily?date=$currentYear-${currentMonthId < 10 ? '0$currentMonthId' : currentMonthId}-01"));
+    String token = Utils.getCookieValue("token");
+    var response = await http.get(
+        Uri.parse(
+            "$serverUrl/stats/$userId/daily?date=$currentYear-${currentMonthId < 10 ? '0$currentMonthId' : currentMonthId}-01"),
+        headers: {'custom-cookie': 'token=$token'});
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Can't fetch your daily stats"));
@@ -119,8 +125,11 @@ class TableauRecapState extends State<TableauRecap> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    var response = await http.get(Uri.parse(
-        "$serverUrl/stats/$userId/categ?date=$currentYear-${currentMonthId < 10 ? '0$currentMonthId' : currentMonthId}-01"));
+    String token = Utils.getCookieValue("token");
+    var response = await http.get(
+        Uri.parse(
+            "$serverUrl/stats/$userId/categ?date=$currentYear-${currentMonthId < 10 ? '0$currentMonthId' : currentMonthId}-01"),
+        headers: {'custom-cookie': 'token=$token'});
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Can't fetch your categ stats"));
@@ -148,8 +157,11 @@ class TableauRecapState extends State<TableauRecap> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    var response = await http.get(Uri.parse(
-        "$serverUrl/stats/$userId/total?date=$currentYear-${currentMonthId < 10 ? '0$currentMonthId' : currentMonthId}-01"));
+    String token = Utils.getCookieValue("token");
+    var response = await http.get(
+        Uri.parse(
+            "$serverUrl/stats/$userId/total?date=$currentYear-${currentMonthId < 10 ? '0$currentMonthId' : currentMonthId}-01"),
+        headers: {'custom-cookie': 'token=$token'});
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Can't fetch your total stats"));
@@ -172,6 +184,7 @@ class TableauRecapState extends State<TableauRecap> {
     super.initState();
     Utils.checkIfConnected(context).then((value) {
       if (value) {
+        isConnected = true;
         _getMyInformations();
         _getStats();
         years = [currentYear - 1, currentYear, currentYear + 1];
@@ -190,16 +203,21 @@ class TableauRecapState extends State<TableauRecap> {
 
   @override
   Widget build(BuildContext context) {
-    _deviceHeight = MediaQuery.of(context).size.height;
-    _deviceWidth = MediaQuery.of(context).size.width;
-    isMobile = _deviceWidth! < 768;
-    if (_deviceWidth! > _deviceHeight!) {}
-    isDesktop = _deviceWidth! > 1024;
+    if (isConnected) {
+      _deviceHeight = MediaQuery.of(context).size.height;
+      _deviceWidth = MediaQuery.of(context).size.width;
+      isMobile = _deviceWidth! < 768;
+      if (_deviceWidth! > _deviceHeight! && _deviceWidth! < 900) {
+        isMobile = true;
+      }
+      isDesktop = _deviceWidth! > 1024;
 
-    return Scaffold(
-      backgroundColor: "#CCE4DD".toColor(),
-      body: isMobile ? mobileWidget() : desktopWidget(),
-    );
+      return Scaffold(
+        backgroundColor: "#CCE4DD".toColor(),
+        body: isMobile ? mobileWidget() : desktopWidget(),
+      );
+    }
+    return const Scaffold();
   }
 
   Widget desktopWidget() {
@@ -257,7 +275,7 @@ class TableauRecapState extends State<TableauRecap> {
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  selectMonthYearWidget(),
+                  selectMonthYearWidget(null),
                   SizedBox(
                     width: _deviceWidth! * 0.72,
                     height: _deviceHeight! * 0.25,
@@ -280,6 +298,14 @@ class TableauRecapState extends State<TableauRecap> {
   }
 
   Widget mobileWidget() {
+    return OrientationBuilder(builder: (context, orientation) {
+      return orientation == Orientation.portrait
+          ? mobilePortraitWidget()
+          : mobileLandscapeWidget();
+    });
+  }
+
+  Widget mobilePortraitWidget() {
     return SingleChildScrollView(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -322,7 +348,117 @@ class TableauRecapState extends State<TableauRecap> {
             height: _deviceHeight! * 0.9,
             child: ListView(
               children: [
-                selectMonthYearWidget(),
+                selectMonthYearWidget(null),
+                SizedBox(
+                  width: _deviceWidth!,
+                  height: _deviceHeight! * 0.25,
+                  child: LineChartSample2(
+                    data: dailySpots,
+                    monthDays:
+                        DateUtils.getDaysInMonth(currentYear, currentMonthId),
+                    min: minValue,
+                    max: maxValue,
+                  ),
+                ),
+                SizedBox(
+                  width: _deviceWidth!,
+                  height: _deviceHeight! * 0.5,
+                  child: PieChartSample3(
+                    names: categStatsNames,
+                    percentages: categStatsPercentages,
+                    totals: categStatsTotals,
+                    colors: colors,
+                  ),
+                ),
+                SizedBox(
+                  width: _deviceWidth!,
+                  height: _deviceHeight! * 0.12,
+                  child: Wrap(
+                    direction: Axis.vertical,
+                    spacing: 10,
+                    runSpacing: 15,
+                    runAlignment: WrapAlignment.center,
+                    children: List.generate(categStatsNames.length, (index) {
+                      String color = "";
+
+                      if (colors.asMap().containsKey(index)) {
+                        color = colors[index];
+                      } else {
+                        if (index - colors.length >= colors.length) {
+                          color = colors[colors.length - 1];
+                        } else {
+                          color = colors[index - colors.length];
+                        }
+                      }
+                      return categLegend(color, categStatsNames[index]);
+                    }),
+                  ),
+                ),
+                SizedBox(
+                  width: _deviceWidth!,
+                  height: _deviceHeight! * 0.1,
+                ),
+                SizedBox(
+                  width: _deviceWidth!,
+                  height: _deviceHeight! * 0.5,
+                  child: BarChartSample3(
+                    totalDepense: totalDepense,
+                    totalRevenu: totalRevenu,
+                    deviceWidth: _deviceWidth!,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget mobileLandscapeWidget() {
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          Container(
+            color: "#0A454A".toColor(),
+            width: _deviceWidth!,
+            height: _deviceHeight! * 0.2,
+            alignment: Alignment.center,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                mobileMenu(),
+                const SizedBox(
+                  width: 20,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    homeCurrentInformations(
+                        isMobile
+                            ? "Compte :".toUpperCase()
+                            : 'actual_amount'.i18n().toUpperCase(),
+                        currentAmount.toStringAsFixed(2)),
+                    homeCurrentInformations(
+                        isMobile
+                            ? "Réel :".toUpperCase()
+                            : 'real_amount'.i18n().toUpperCase(),
+                        currentRealAmount.toStringAsFixed(2)),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          SizedBox(
+            width: _deviceWidth!,
+            height: _deviceHeight! * 0.9,
+            child: ListView(
+              children: [
+                selectMonthYearWidget(0.04),
                 SizedBox(
                   width: _deviceWidth!,
                   height: _deviceHeight! * 0.25,
@@ -473,9 +609,9 @@ class TableauRecapState extends State<TableauRecap> {
             ),
           ]),
           onTap: () {
-            Navigator.of(context).pushNamed("/");
+            Navigator.of(context).pushNamed("/homepage");
             widget.title != 'tableau_recap_title'.i18n()
-                ? Navigator.of(context).pushNamed("/")
+                ? Navigator.of(context).pushNamed("/homepage")
                 : "";
           },
         ),
@@ -607,7 +743,7 @@ class TableauRecapState extends State<TableauRecap> {
     );
   }
 
-  Widget selectMonthYearWidget() {
+  Widget selectMonthYearWidget(double? fontSize) {
     return SizedBox(
       width: _deviceWidth! * 0.79,
       child: Row(
@@ -657,9 +793,11 @@ class TableauRecapState extends State<TableauRecap> {
                           .toUpperCase(),
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: isMobile
-                            ? _deviceWidth! * 0.05
-                            : _deviceWidth! * 0.013,
+                        fontSize: fontSize != null
+                            ? fontSize * _deviceWidth!
+                            : (isMobile
+                                ? _deviceWidth! * 0.05
+                                : _deviceWidth! * 0.013),
                       ),
                     ),
                   ),

@@ -69,7 +69,7 @@ class PieChartSample3State extends State<PieChartSample3> {
           titlePosPercentageOffset = .80;
           fontSize = isTouched ? 14.0 : 10.0;
         }
-        double radius = isTouched ? 205.0 : 195.0;
+        double radius = isTouched ? 195.0 : 205.0;
         if (isMobile) {
           radius = isTouched ? 160.0 : 150.0;
         }

@@ -34,10 +34,6 @@ class MyAppState extends State<MyApp> {
     // set json file directory
     // default value is ['lib/i18n']
     LocalJsonLocalization.delegate.directories = ['lib/i18n'];
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
 
     return GetMaterialApp(
         supportedLocales: const [

@@ -43,9 +43,13 @@ class Routes {
         <String, dynamic>{}) as Map;
     return RegeneratePassword(title: "Nouveau mdp", argsEmail: args["email"]);
   }));
+  static var nothingReturnedHandler =
+      Handler(handlerFunc: ((context, parameters) {
+    return null;
+  }));
 
   static dynamic defineRoutes() {
-    router.define("/",
+    router.define("/homepage",
         handler: homeHandler, transitionType: TransitionType.none);
     router.define("/addTransaction",
         handler: addTransactionHandler, transitionType: TransitionType.none);
@@ -62,5 +66,7 @@ class Routes {
         transitionType: TransitionType.none);
     router.define("/settings",
         handler: settingsHandler, transitionType: TransitionType.none);
+    router.define("/",
+        handler: nothingReturnedHandler, transitionType: TransitionType.none);
   }
 }

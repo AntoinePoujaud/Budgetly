@@ -62,6 +62,13 @@
     "label_month_november": "Novembre",
     "label_month_december": "Décembre",
 
+    "label_connect_title": "Se connecter",
+    "label_sign_in": "S'inscrire",
+    "label_connect": "Connexion",
+    "label_email": "Email",
+    "label_password": "Mot de passe",
+    "label_create_account": "Créer un compte",
+    "label_forgot_password": "Mot de passe oublié",
     "label_disconnect": "Se déconnecter",
     "label_settings": "Paramètres",
     "label_update_starting_amount": "Mettre à jour"

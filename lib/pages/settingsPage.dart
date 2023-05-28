@@ -10,6 +10,8 @@ import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import '../utils/utils.dart';
+
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key, required this.title}) : super(key: key);
   final String title;
@@ -24,8 +26,9 @@ class SettingsPageState extends State<SettingsPage> {
   String currentPage = 'Paramètres';
   bool isMobile = false;
   bool isDesktop = false;
-  String serverUrl = 'https://moneytly.herokuapp.com';
-  // String serverUrl = 'http://localhost:8081';
+  // String serverUrl = 'https://moneytly.herokuapp.com';
+  String serverUrl = 'http://localhost:8081';
+  bool isConnected = false;
 
   Future<String> _getStartingAmountForUser() async {
     String? userId;
@@ -33,12 +36,18 @@ class SettingsPageState extends State<SettingsPage> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
-    var response =
-        await http.get(Uri.parse("$serverUrl/getInitialAmount/$userId"));
+    String token = Utils.getCookieValue("token");
+    var response = await http.get(
+      Uri.parse("$serverUrl/getInitialAmount/$userId"),
+      headers: {'custom-cookie': 'token=$token'},
+    );
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Can't fetch your initial amount"));
+      setState(() {});
+      return "";
     }
+    setState(() {});
     return double.parse(json.decode(response.body)["initialAmount"].toString())
         .toDouble()
         .toStringAsFixed(2);
@@ -47,6 +56,11 @@ class SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
+    Utils.checkIfConnected(context).then((value) {
+      if (value) {
+        isConnected = true;
+      }
+    });
   }
 
   @override
@@ -77,8 +91,10 @@ class SettingsPageState extends State<SettingsPage> {
     if (prefs.getString("userId") != null) {
       userId = prefs.getString("userId");
     }
+    String token = Utils.getCookieValue("token");
     await http.post(
-        Uri.parse("$serverUrl/updateInitialAmount/$userId?amount=$amount"));
+        Uri.parse("$serverUrl/updateInitialAmount/$userId?amount=$amount"),
+        headers: {'custom-cookie': 'token=$token'});
   }
 
   void showToast(BuildContext context, content) {
@@ -333,9 +349,9 @@ class SettingsPageState extends State<SettingsPage> {
                 ),
               ]),
               onTap: () {
-                Navigator.of(context).pushNamed("/");
+                Navigator.of(context).pushNamed("/homepage");
                 widget.title != 'tableau_recap_title'.i18n()
-                    ? Navigator.of(context).pushNamed("/")
+                    ? Navigator.of(context).pushNamed("/homepage")
                     : "";
               },
             ),
