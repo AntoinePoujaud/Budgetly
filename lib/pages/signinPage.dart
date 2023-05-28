@@ -25,8 +25,8 @@ class SignInPageState extends State<SignInPage> {
   String? mail, password;
   TextEditingController passwordTxt = TextEditingController();
   TextEditingController emailTxt = TextEditingController();
-  // String serverUrl = 'https://moneytly.herokuapp.com';
-  String serverUrl = 'http://localhost:8081';
+  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'http://localhost:8081';
 
   bool passwordVisible = false;
 

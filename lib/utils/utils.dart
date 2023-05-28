@@ -5,8 +5,8 @@ import 'package:universal_html/html.dart' as html;
 
 class Utils {
   static Future<bool> checkIfConnected(context) async {
-    // String serverUrl = 'https://moneytly.herokuapp.com';
-    String serverUrl = 'http://localhost:8081';
+    String serverUrl = 'https://moneytly.herokuapp.com';
+    // String serverUrl = 'http://localhost:8081';
 
     final prefs = await SharedPreferences.getInstance();
     // prefs.setString("userId", "1");

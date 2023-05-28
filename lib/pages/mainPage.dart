@@ -63,8 +63,8 @@ class TableauRecapState extends State<TableauRecap> {
   bool isMobile = false;
   bool isDesktop = false;
   bool isConnected = false;
-  // String serverUrl = 'https://moneytly.herokuapp.com';
-  String serverUrl = 'http://localhost:8081';
+  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'http://localhost:8081';
 
   Future<void> _getMyInformations() async {
     String? userId = "";

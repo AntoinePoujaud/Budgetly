@@ -26,8 +26,8 @@ class SettingsPageState extends State<SettingsPage> {
   String currentPage = 'Paramètres';
   bool isMobile = false;
   bool isDesktop = false;
-  // String serverUrl = 'https://moneytly.herokuapp.com';
-  String serverUrl = 'http://localhost:8081';
+  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'http://localhost:8081';
   bool isConnected = false;
 
   Future<String> _getStartingAmountForUser() async {

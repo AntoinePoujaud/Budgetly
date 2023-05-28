@@ -26,8 +26,8 @@ class LoginPageState extends State<LoginPage> {
 
   TextEditingController passwordTxt = TextEditingController();
   TextEditingController emailTxt = TextEditingController();
-  // String serverUrl = 'https://moneytly.herokuapp.com';
-  String serverUrl = 'http://localhost:8081';
+  String serverUrl = 'https://moneytly.herokuapp.com';
+  // String serverUrl = 'http://localhost:8081';
   MaterialStatesController submitBtn = MaterialStatesController();
   bool isEnabled = true;
   bool passwordVisible = false;
