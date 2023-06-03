@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:localization/localization.dart';
 
 class ForgottenPassword extends StatefulWidget {
   const ForgottenPassword({Key? key, required this.title}) : super(key: key);
@@ -48,7 +49,7 @@ class ForgottenPasswordPageState extends State<ForgottenPassword> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                "Mot de passe oublié".toUpperCase(),
+                "label_forgot_password".i18n().toUpperCase(),
                 style: GoogleFonts.roboto(
                   color: Colors.white,
                   fontSize: _deviceWidth! > 500
@@ -107,7 +108,7 @@ class ForgottenPasswordPageState extends State<ForgottenPassword> {
                         backgroundColor: "EC6463".toColor(),
                       ),
                       child: Text(
-                        "Envoyer mon code de vérification".toUpperCase(),
+                        "label_verif_code".i18n().toUpperCase(),
                         style: GoogleFonts.roboto(
                             color: Colors.black,
                             fontSize: _deviceWidth! > 500
@@ -122,7 +123,7 @@ class ForgottenPasswordPageState extends State<ForgottenPassword> {
               SizedBox(height: _deviceHeight! * 0.05),
               RichText(
                 text: TextSpan(
-                    text: "Retour".toUpperCase(),
+                    text: "label_back".i18n().toUpperCase(),
                     style: GoogleFonts.roboto(
                         color: Colors.grey.shade600,
                         fontSize: 16,
@@ -144,17 +145,13 @@ class ForgottenPasswordPageState extends State<ForgottenPassword> {
         await http.get(Uri.parse("$serverUrl/sendMailPassword?email=$email"));
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
-      showToast(
-          context, const Text("Nous ne connaissons pas cette adresse mail"));
+      showToast(context, Text("toast_forget_pwd_mail_dont_exist".i18n()));
       setState(() {
         mailSentSuccessfully = false;
       });
     } else {
       // ignore: use_build_context_synchronously
-      showToast(
-          context,
-          const Text(
-              "Si votre email est dans notre base de données, un mail vous a été envoyé"));
+      showToast(context, Text("toast_forget_pwd_if_mail_exists".i18n()));
       setState(() {
         mailSentSuccessfully = true;
       });

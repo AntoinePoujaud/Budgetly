@@ -53,6 +53,10 @@ class LoginState extends State<Login> {
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              // const Image(
+              //   image: AssetImage('lib/img/new_add_transaction.png'),
+              //   width: 100,
+              // ),
               Text(
                 "label_connect".i18n().toUpperCase(),
                 style: GoogleFonts.roboto(
@@ -242,7 +246,7 @@ class LoginState extends State<Login> {
     } else {
       String userId = json.decode(response.body)["id"].toString();
       String token = json.decode(response.body)["token"].toString();
-      setCookie("token", token);
+      setCookie("token", token, maxAge: 5184000);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("userId", userId);
       // ignore: use_build_context_synchronously

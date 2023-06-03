@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:localization/localization.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:universal_html/html.dart' as html;
 
 class NavDrawer extends StatefulWidget {
   const NavDrawer({Key? key, required this.currentPage}) : super(key: key);
@@ -157,6 +158,7 @@ class NavDrawerState<StatefulWidget> extends State<NavDrawer> {
                   onTap: () async {
                     final prefs = await SharedPreferences.getInstance();
                     prefs.setString("userId", "");
+                    html.window.document.cookie = "token=;expires=;path=/";
                     // ignore: use_build_context_synchronously
                     Navigator.of(context).pushNamed("/login");
                   },

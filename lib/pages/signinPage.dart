@@ -214,7 +214,7 @@ class SignInPageState extends State<SignInPage> {
     } else {
       String userId = json.decode(response.body)["id"].toString();
       String token = json.decode(response.body)["token"].toString();
-      setCookie("token", token);
+      setCookie("token", token, maxAge: 5184000);
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString("userId", userId);
       // ignore: use_build_context_synchronously

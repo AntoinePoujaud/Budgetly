@@ -71,5 +71,9 @@
     "label_forgot_password": "Mot de passe oublié",
     "label_disconnect": "Se déconnecter",
     "label_settings": "Paramètres",
-    "label_update_starting_amount": "Mettre à jour"
+    "label_update_starting_amount": "Mettre à jour",
+    "label_verif_code": "Envoyer mon code de vérification",
+    "label_back": "Retour ",
+    "toast_forget_pwd_if_mail_exists": "Si votre email est dans notre base de données, un mail vous a été envoyé",
+    "toast_forget_pwd_mail_dont_exist": "Nous ne connaissons pas cette adresse mail"
 }
