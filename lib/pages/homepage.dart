@@ -74,7 +74,7 @@ class HomeState extends State<Home> {
     }
     String token = Utils.getCookieValue("token");
     var response = await http.get(Uri.parse("$serverUrl/getAmounts/$userId"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Can't fetch your informations"));
@@ -101,7 +101,7 @@ class HomeState extends State<Home> {
     var response = await http.get(
         Uri.parse(
             "$serverUrl/stats/$userId/daily?date=$currentYear-${currentMonthId < 10 ? '0$currentMonthId' : currentMonthId}-01"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Can't fetch your daily stats"));
@@ -129,7 +129,7 @@ class HomeState extends State<Home> {
     var response = await http.get(
         Uri.parse(
             "$serverUrl/stats/$userId/categ?date=$currentYear-${currentMonthId < 10 ? '0$currentMonthId' : currentMonthId}-01"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Can't fetch your categ stats"));
@@ -161,7 +161,7 @@ class HomeState extends State<Home> {
     var response = await http.get(
         Uri.parse(
             "$serverUrl/stats/$userId/total?date=$currentYear-${currentMonthId < 10 ? '0$currentMonthId' : currentMonthId}-01"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Can't fetch your total stats"));

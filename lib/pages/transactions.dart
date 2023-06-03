@@ -1331,7 +1331,7 @@ class TransactionsState extends State<Transactions> {
     String token = Utils.getCookieValue("token");
     await http.post(
         Uri.parse("$serverUrl/deleteCategorie?catId=${catId.toString()}"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
   }
 
   Future<List<AllCategories>> getAllCategories() async {
@@ -1344,7 +1344,7 @@ class TransactionsState extends State<Transactions> {
     String token = Utils.getCookieValue("token");
     var response = await http.get(
         Uri.parse("$serverUrl/getCategories?userId=$userId"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
     if (json.decode(response.body) != null) {
       for (var i = 0; i < json.decode(response.body).length; i++) {
         AllCategories category = AllCategories(
@@ -1368,7 +1368,7 @@ class TransactionsState extends State<Transactions> {
       userId = prefs.getString("userId");
     }
     var response = await http.get(Uri.parse("$serverUrl/getAmounts/$userId"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Error while getting informations"));
@@ -1389,7 +1389,7 @@ class TransactionsState extends State<Transactions> {
     String token = Utils.getCookieValue("token");
     var response = await http.post(
         Uri.parse("$serverUrl/deleteTransaction/$id"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
     if (response.statusCode != 204) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Error while deleting transaction"));
@@ -1407,7 +1407,7 @@ class TransactionsState extends State<Transactions> {
     var response = await http.post(
         Uri.parse(
             "$serverUrl/updateTransaction/${params[5]}?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&paymentMethod=${params[6]}&userId=$userId"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
       showToast(context, const Text("Error while updating transaction"));
@@ -1442,7 +1442,7 @@ class TransactionsState extends State<Transactions> {
     var response = await http.get(
         Uri.parse(
             "$serverUrl/getTransactionsForMonthAndYear?userId=$userId&selectedMonthId=$currentMonthId&selectedYear=$currentYear"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
 
     return json.decode(response.body) != null
         ? (json.decode(response.body) as List)
@@ -1461,7 +1461,7 @@ class TransactionsState extends State<Transactions> {
     var response = await http.post(
         Uri.parse(
             "$serverUrl/addCategorie?userId=$userId&name=${categName.toUpperCase()}"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
     if (response.statusCode != 201) {}
   }
 }

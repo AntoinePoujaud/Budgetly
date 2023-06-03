@@ -884,7 +884,7 @@ class AddTransactionState extends State<AddTransaction> {
     var response = await http.post(
         Uri.parse(
             "$serverUrl/addCategorie?userId=$userId&name=${categName.toUpperCase()}"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
     if (response.statusCode != 201) {}
   }
 
@@ -959,7 +959,7 @@ class AddTransactionState extends State<AddTransaction> {
     String token = Utils.getCookieValue("token");
     var response = await http.get(
         Uri.parse("$serverUrl/getCategories?userId=$userId"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
     if (json.decode(response.body) != null) {
       for (var i = 0; i < json.decode(response.body).length; i++) {
         AllCategories category = AllCategories(
@@ -985,7 +985,7 @@ class AddTransactionState extends State<AddTransaction> {
     var response = await http.post(
         Uri.parse(
             "$serverUrl/addTransaction?date=${params[0].year}-${params[0].month}-${params[0].day}&type=${params[1]}&amount=${params[2]}&description=${params[3]}&catId=${params[4]}&userId=$userId&paymentMethod=${params[5]}"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
     if (response.statusCode != 201) {}
   }
 
@@ -1002,7 +1002,7 @@ class AddTransactionState extends State<AddTransaction> {
     String token = Utils.getCookieValue("token");
     var response = await http.post(
         Uri.parse("$serverUrl/deleteCategorie?catId=${catId.toString()}"),
-        headers: {'custom-cookie': 'token=$token'});
+       headers: {'Authorization': 'Bearer $token'});
     if (response.statusCode != 200) {}
   }
 }

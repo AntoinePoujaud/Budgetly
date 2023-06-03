@@ -39,7 +39,7 @@ class SettingsPageState extends State<SettingsPage> {
     String token = Utils.getCookieValue("token");
     var response = await http.get(
       Uri.parse("$serverUrl/getInitialAmount/$userId"),
-      headers: {'custom-cookie': 'token=$token'},
+      headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode != 200) {
       // ignore: use_build_context_synchronously
@@ -94,7 +94,7 @@ class SettingsPageState extends State<SettingsPage> {
     String token = Utils.getCookieValue("token");
     await http.post(
         Uri.parse("$serverUrl/updateInitialAmount/$userId?amount=$amount"),
-        headers: {'custom-cookie': 'token=$token'});
+        headers: {'Authorization': 'Bearer $token'});
   }
 
   void showToast(BuildContext context, content) {
